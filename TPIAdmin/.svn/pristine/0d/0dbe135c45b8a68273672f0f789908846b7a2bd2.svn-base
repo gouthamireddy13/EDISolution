@@ -1,0 +1,330 @@
+
+<div class="dashboard-wrap"  ng-init="inittpp();">
+<div class="breadcrumbs">
+	
+	<h2>TPP Management</h2>	
+</div>
+</div>	
+
+<div style="width:95%;" >
+ <div class="panel panel-default" style="background-color: #404951;" >
+ <div style="padding-top:20px;padding-left:20px;" >
+      <div class="panel-heading ">TPP NAME</div>
+      </div>
+      <div class="panel-body " style="padding-top:0px; padding-left:20px" >
+      	
+		
+		<input class="form-control" id="panelsearch" type="text" name="search" > 
+      
+      </div>
+      <div class=" panel-body pull-right col-sm-12" style=" background-color:#59626b ;">	
+
+  
+		  <!-- Trigger the modal with a button -->
+		  <button type="button" class="btn btn-primary pull-right"   data-toggle="modal" data-target="#myModal" id="panelbtn"><img src="assets/AddPartner.png" id="panellogo">&nbsp;&nbsp;&nbsp; NEW TPP</button>
+
+</div>
+</div>
+ <table class="table table-striped">
+
+	        <thead id="partnerhead">
+	        <tr>
+	            
+	            <th id="partnerrow">TPP NAME </th>
+	            <th id="partnerrow"> TPP TYPE  </th>
+	        </tr>
+	        </thead>
+	        <tbody>
+	        <tr >
+	       
+	          
+	        
+	        </tr>
+	        </tbody>
+	      </table>
+	      
+	      </div>
+	      
+	      <!-- Modal -->
+	      
+		  <div class="modal fade" id="myModal" role="dialog"  data-backdrop="static" >
+		    <div class="modal-dialog modal-megamenu" >
+		    
+		    <div class="modal-content" style="background-color: rgb(240, 240, 240);">
+		    <div class="modal-header" style="background-color:#004c75;">
+		         <!-- <button type="button" class="close" data-dismiss="modal">&times;</button>-->
+				 <h1 class="modal-title" id="modtitle">TPP - New TPP
+				  <button type="button" class="close" id="close1"  data-dismiss="modal">&times;</button> </h1>
+		    </div>
+		    <div  style= " height:500px; overflow-y: scroll;">
+		    <div class="modal-wrap"style="margin-top:20px;background-color:#fff;">
+		        <form name="tppDetails" class="form-horizontal">
+		        <div class="modal-body" style="text-align:left; "> 		
+		              
+					    <div class="row" style="padding-left:13px;padding-right:13px;">
+					    <div class="form-group" >
+					     <div class = "col-sm-5 col-md-6 ">
+					      <label class="control-label " id="contactfields" for="partnerName" >TPP Name<font color="red">*</font>:</label>
+					      
+					         
+					        <input  class="form-control" id="partnerName"  name="partnerName" required > 
+					    <!--      <span><font color="red"  ng-show="ErrorMsg&&partnerDetails.partnerName.$error.required">TPP Name is Required</font></span>
+					         <span><font color="red"  ng-show="validName">Tpp Name Already Exist</font></span> -->
+					      
+					    
+					     </div>
+					      <div class="col-sm-5 col-md-6">
+					      <label class="control-label  "  id="contactfields" >Add TPP Type<font color="red">*</font>: </label> 
+					     
+							<select class="form-control "   ng-options="item.typeCode as item.description for item in tpplist" name="tppType" ng-model="tppType" >
+							<option value="">Please Select Type</option>
+							</select>
+							<!--   <span><font color="red"  ng-show="ErrorMsg&&partnerDetails.group.$error.required">Type is Required</font></span>  -->
+							</div>
+					      
+					      </div>
+					    
+					    
+					    
+					   
+					    </div>
+					    <div class="titlehead" > CONTACT DETAILS </div>
+                        
+                  <!--      <div id="extra" ng-show="showTable">
+                        <table class="table table-striped "   style="table-layout: fixed;">
+                         
+                 
+	        <thead id="partnerhead">
+	        <tr>
+	            <th class="row-name">Name</th>
+	            <th class="row-title">Title</th>
+	             <th class="row-phone">Phone</th>
+	            <th class="row-email">Email</th>
+	             <th class="row-action">Action</th> -->
+	            
+	            <!-- <th></th> -->
+	    <!--      </tr>
+	        </thead>
+	        
+	        <tbody>
+	        <tr  ng-repeat="contact in contactList">
+	          
+	          <td id="contactrow">{{contact.contactName}}</td>
+	          <td id="contactrow">{{contact.contactTitle}}</td>
+	          <td id="contactrow">{{contact.contactPhone}}</td>
+	          <td id="contactrow">{{contact.contactEmail}}</td>
+	          <td><a href=""  > <span class="glyphicon glyphicon-pencil"  ></span></a>&nbsp; 
+	         <a href=""    > <span class="glyphicon glyphicon-remove"  > </span></a></td>  --> 
+	          
+	         <!--  <td><button class="btn btn-primary" ng-click="edit(item)">Edit</button></td> -->
+	    <!--     </tr>
+	        </tbody>
+	       
+	     </table>
+	      </div>  --> 
+	      
+	      
+	      
+					<div class="row" style="padding-left:13px;padding-right:13px;padding-top:20px;">
+					
+					    <div class="form-group" >
+					 <div class = "col-sm-5 col-md-6 ">      
+					      <label class="control-label" id="contactfields" for="ContactName">Name<font color="red">*</font>:</label>
+					         <input class="form-control"  id="contactName" name="contactName"   required></input>
+					     <!--  <span><font color="red"  ng-show="ErrorMsg&&partnerDetails.contactName.$error.required">Contact Name is Required</font></span>-->
+					      </div>
+					    
+
+					   <div class = "col-sm-5 col-md-6 ">
+					      <label class="control-label "  id="contactfields" for="ContactTitle">Title:</label>
+					                
+					        <input  class="form-control"  id="ContactTitle"  name="contactTitle"></input>
+					       <!--   <span><font color="red"  ng-show="ErrorMsg&&partnerDetails.contactTitle.$error.required">Contact title is Required</font></span> -->
+					      </div>
+					      </div>
+					      </div>
+					       
+					    
+                        <div class="row" style="padding-left:13px;padding-right:13px;">
+						<div class="form-group">
+					      <div class="col-sm-5 col-md-6">
+					      <label class="control-label"  id="contactfields" for="ContactPhone">Phone<font color="red">*</font>:</label>
+					                
+					        <input  class="form-control"  id="ContactPhone" type="text"   name="ContactPhone"   required></input>
+					       <!--     <span><font color="red"  ng-show="ErrorMsg&&partnerDetails.ContactPhone.$error.required">Contact Phone is Required</font></span>  -->  
+					      
+					    </div>
+
+					 <div class="col-sm-5 col-md-6">
+					      <label class="control-label "  id="contactfields" for="email">Email<font color="red">*</font>:</label>
+					      
+					        <input class="form-control"  type="email" id="email" name="Contactemail"  required></input>
+					        <!--     <span><font color="red"  ng-show="ErrorMsg&&partnerDetails.Contactemail.$error.required">Contact Email is Required</font></span> 
+					              <span><font color="red"  ng-show="ErrorMsg&&partnerDetails.Contactemail.$error.email">Invalid Email</font></span> --> 
+					     
+					      </div>
+					      </div>
+					      </div>
+					      
+					   
+							
+										
+					   
+					  
+		        
+				 <div class="wrapper" style="text-align:center; padding-bottom:20px;padding-right:10px;" ng-show="!upbt">
+				
+		        	 <button type="submit" class="btn btn-primary pull-right" id="primary"  >ADD CONTACT</button> 
+					 <div class="divider" ></div>
+					 
+		      
+				</div>
+    <div class="titlehead" > PROTOCOL </div>
+    
+   <div style="padding-top:20px;" ng-repeat="item in ptcolList"><input type="checkbox" ng-model="item.checked" ng-click="updateSelection($index, ptcolList)" >{{item.protocolType}}
+   </div>
+				
+				<div class="divider" ></div>
+		
+				<div class="titlehead" > TRANSACTION </div>
+				
+				 <div class="row" style="padding-left:13px;padding-right:13px;padding-top:20px;">
+						<div class="form-group">
+					      <div class="col-6 col-md-4">
+					      <label class="control-label" id="contactfields">Direction<font color="red">*</font>: </label> 
+					     
+							<select class="form-control"  ng-options="item.id as item.directionCode for item in drList" name="direction" ng-model="direction" >
+							<option value="">Please Select</option>
+							</select>
+							<!--   <span><font color="red"  ng-show="ErrorMsg&&partnerDetails.group.$error.required">Direction is Required</font></span>  -->
+							</div>
+
+					<div class="col-6 col-md-4">
+					 <label class="control-label" id="contactfields">Transaction Type<font color="red">*</font>: </label> 
+					     
+							<select class="form-control "   ng-options="item.documentType as item.documentCode for item in ttypeList" name="transaction" ng-model="transaction" >
+							<option value="">Please Select</option>
+							</select>
+							<!--   <span><font color="red"  ng-show="ErrorMsg&&partnerDetails.group.$error.required">Transaction Type is Required</font></span>  -->
+							</div>
+							
+					<div class="col-6 col-md-4">
+					 <label class="control-label" id="contactfields">Version<font color="red">*</font>: </label> 
+					     
+							<select class="form-control "   ng-options="item.id as item.versionNumber for item in versionList" name="version" ng-model="version" >
+							<option value="">Please Select</option>
+							</select>
+							<!--   <span><font color="red"  ng-show="ErrorMsg&&partnerDetails.group.$error.required">Version is Required</font></span>  -->
+							</div>
+					      </div>
+					      </div>
+				 <div class="wrapper" style="text-align:center; padding-bottom:20px;padding-right:10px;" ng-show="!upbt">
+				
+		        	 <button type="submit" class="btn btn-primary pull-right" id="primary"  >ADD TRANSACTION</button> 
+					 <div class="divider" ></div>
+					 
+		      
+				</div>
+				<div ng-show="tppType!=undefined&&tppType!='2'&&tppType!='3'">
+		
+				<div class="titlehead" > PARTNER IDs  </div>
+				
+				<div class="row" style="padding-left:13px;padding-right:13px;padding-top:20px;">
+					
+					    <div class="form-group" >
+					 <div class = "col-sm-5 col-md-6 " id="test"><b>Test</b></div>
+					 <div class = "col-sm-5 col-md-6" id="test"><b>Production</b></div>
+					 <div class = "col-sm-5 col-md-6 ">      
+					      <label class="control-label" id="contactfields" >ISA ID<font color="red">*</font>:</label>
+					         <input class="form-control"  id="contactName" name="contactName"   required></input>
+					     <!--  <span><font color="red"  ng-show="ErrorMsg&&partnerDetails.contactName.$error.required">Test ISA ID is Required</font></span>-->
+					      </div>
+					    
+ 
+					   <div class = "col-sm-5 col-md-6 ">
+					      <label class="control-label" id="contactfields" >ISA ID<font color="red">*</font>:</label>
+					                
+					        <input  class="form-control"  id="ContactTitle"  ></input>
+					       <!--   <span><font color="red"  ng-show="ErrorMsg&&partnerDetails.contactTitle.$error.required">Production ISA ID is Required</font></span> -->
+					      </div>
+					      </div>
+					      <div class="form-group" >
+					      <div class = "col-sm-5 col-md-6 ">      
+					      <label class="control-label" id="contactfields" >ISA QUAL<font color="red">*</font>:</label>
+					         <input class="form-control"  id="contactName" name="contactName"   required></input>
+					     <!--  <span><font color="red"  ng-show="ErrorMsg&&partnerDetails.contactName.$error.required">Test ISA QUAL is Required</font></span>-->
+					      </div>
+					      
+					      <div class = "col-sm-5 col-md-6 ">      
+					      <label class="control-label" id="contactfields" >ISA QUAL<font color="red">*</font>:</label>
+					         <input class="form-control"  id="contactName" name="contactName"   required></input>
+					     <!--  <span><font color="red"  ng-show="ErrorMsg&&partnerDetails.contactName.$error.required">Production ISA QUAL is Required</font></span>-->
+					      </div>
+					      </div>
+					      
+					       <div class="form-group" >
+					      <div class = "col-sm-5 col-md-6 ">      
+					      <label class="control-label" id="contactfields" >GS ID<font color="red">*</font>:</label>
+					         <input class="form-control"  id="contactName" name="contactName"   required></input>
+					     <!--  <span><font color="red"  ng-show="ErrorMsg&&partnerDetails.contactName.$error.required">Test GS ID is Required</font></span>-->
+					      </div>
+					      
+					      <div class = "col-sm-5 col-md-6 ">      
+					      <label class="control-label" id="contactfields" >GS ID<font color="red">*</font>:</label>
+					         <input class="form-control"  id="contactName" name="contactName"   required></input>
+					     <!--  <span><font color="red"  ng-show="ErrorMsg&&partnerDetails.contactName.$error.required">Production GS ID is Required</font></span>-->
+					      </div>
+					      </div>
+					      </div>
+					      </div>
+				</div>
+				 
+				 <div class="wrapper" style="text-align:center; padding-bottom:20px;padding-right:10px;" ng-show="upbt">
+				
+		        <!--  	 <button type="submit" class="btn btn-default pull-right" id="warning" ng-click="revertAll();">CANCEL</button> <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
+		        	 <button type="submit" class="btn btn-primary pull-right" style="font-size:10px;font-weight:400;margin-right: 6px;" >UPDATE CONTACT</button> -->
+					   
+					 
+					 
+		      
+				</div>
+				<div class="wrapper" style="text-align:center; padding-bottom:20px;padding-right:10px;" ng-show="upbt">
+				
+		        <!--  	 <button type="submit" class="btn btn-default pull-right" id="warning" ng-click="revertAll();">CANCEL</button> <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
+		        	 <button type="submit" class="btn btn-primary pull-right" style="font-size:10px;font-weight:400;margin-right: 6px;" >UPDATE Transaction</button> -->
+					   
+					 
+					 
+		      
+				</div>
+				</form>
+				</div>
+				</div>
+		        <div class="modal-footer" style="text-align:center;">
+		        	 <button type="button" class="btn btn-primary pull-left" id="primary"  ng-show="!hideEdit" ng-disabled="contactList.length<1||upbt" ng-click="checkpartnerNameandSubmit(partnerName,partnerDetails.$valid);hide();">SAVE</button>
+		        	<!--    <button type="button" class="btn btn-primary pull-left" id="primary" ng-show="hideEdit" ng-click="EditPartner();">EDIT</button>
+		        	   <button type="button" class="btn btn-default"  ng-hide="onlyNew" id="warning" ng-click="deletePartner();" >REMOVE</button> -->
+		          <button type="button" class="btn btn-default pull-right" id="warning" ng-click="clear();" data-dismiss="modal">CANCEL</button>
+		        </div>
+		      		      
+		    </div>
+		  </div>
+		  </div>
+		    
+		     
+		    
+		    
+           
+	             
+	           
+	            
+
+	           
+	            
+	               
+	            
+	           
+	        
+	        
+	        
+    

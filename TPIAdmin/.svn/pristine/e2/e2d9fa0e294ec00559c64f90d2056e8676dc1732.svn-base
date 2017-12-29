@@ -1,0 +1,151 @@
+package com.abc.tpi.db;
+
+import java.util.List;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import com.abc.tpi.model.master.Protocol;
+import com.abc.tpi.model.master.TpiMap;
+import com.abc.tpi.model.partner.ContactDetail;
+import com.abc.tpi.model.service.BusinessService;
+import com.abc.tpi.model.service.Service;
+import com.abc.tpi.model.service.ServiceCategory;
+import com.abc.tpi.model.service.ServiceSubscription;
+import com.abc.tpi.model.tpp.LightWellPartner;
+import com.abc.tpi.model.tpp.Transaction;
+import com.abc.tpi.repository.ServiceSubscriptionRepository;
+import com.abc.tpi.service.ServiceSubscriptionService;
+
+@ContextConfiguration(locations={"classpath:application-contexttest.xml"})
+@RunWith(SpringJUnit4ClassRunner.class)
+
+public class TestTpiMigratorTest {
+
+	@Autowired
+	ServiceSubscriptionRepository serviceSubscriptionRepository;
+	
+	@Autowired
+	ServiceSubscriptionService serviceSubscriptionService;
+	
+	@Test
+	public void testFindingObjectsToBeMigrated()
+	{
+		List<ServiceSubscription> result = serviceSubscriptionRepository.namedFindAllNotMigratedServiceSubscription2();
+		
+		for (ServiceSubscription bs : result)
+		{
+			System.out.println(bs.getId());
+		}
+	}
+	
+	@Test
+	public void testGetServiceSubscriptionGraph()
+	{
+		long ssId = 1;
+		
+		ServiceSubscription ss = serviceSubscriptionService.findEntityUsingEntityGrpah(ServiceSubscription.class,ssId, "ServiceSubscriptionEntity.graphPartnerCategoryFull");
+		
+		for (ContactDetail contact: ss.getPartner().getContactDetails())
+		{
+			System.out.println(contact.getContactName());
+		}
+		
+		for (LightWellPartner lw: ss.getServiceCategory().getLightWellPartners())
+		{
+			{
+				System.out.println(lw.getId());
+			}
+		}
+		
+		for (Service s : ss.getServices())
+		{
+			System.out.println(s.getId());
+		}
+	}
+	
+	@Test
+	public void testGetServiceDetailsForMigrationGraph()
+	{
+		long serviceId = 202;
+		Service service = serviceSubscriptionService.findEntityUsingEntityGrpah(Service.class, serviceId, "ServiceEntity.graphMigrationReadyData");
+		
+		System.out.println("Business Services:");
+		for (BusinessService bs: service.getBusinessServices())
+		{
+			System.out.println(bs.getId());
+		}
+		
+		System.out.println("Light Well Partner:");
+		System.out.println(service.getLightWellPartner().getId() + "- " + service.getLightWellPartner().getOrganizationName());
+		
+		System.out.println("Tpp Protocols:");
+		for (Protocol protocol : service.getTpp().getProtocols())
+		{
+			System.out.println(protocol.getProtocolType());
+		}
+		
+		System.out.println("Tpp Contacts:");
+		for (ContactDetail contact : service.getTpp().getContactDetails())
+		{
+			System.out.println(contact.getContactName());
+		}
+		
+		System.out.println("Tpp Transactions:");		
+		for (Transaction transaction: service.getTpp().getTransactions())
+		{
+			System.out.println(transaction.getDocument().getDocumentType());
+		}
+	}
+	
+	@Test
+	public void testGetBusinessServiceForMigrationGraph()
+	{
+		long bsId = 212;
+		BusinessService businessService  = serviceSubscriptionService.findEntityUsingEntityGrpah(BusinessService.class, bsId, "BusinessServiceEntity.graphMigrationReadyData");
+		
+		System.out.println("Business Service " + businessService.getId() + " Change type: " + businessService.getChangeType());
+		
+		System.out.println("Business Service map: ");
+		if (businessService.getMap()!=null)
+		{
+			System.out.println("Business Service map: " + businessService.getMap().getMapName());
+		}
+		else
+		{
+			System.out.println("No map attached");
+		}
+		
+		System.out.println("Protocol: " + businessService.getProtocol().getProtocolType());
+		System.out.println("Service Type: " + businessService.getServiceType().getBusinessServiceName());
+		System.out.println("" + businessService.getVersion().getVersionNumber());
+
+		System.out.println("Business Service Lightwell Partner Id " + businessService.getLightWellPartner().getId());
+		
+		System.out.println("Map count for Service Type: " + businessService.getServiceType().getMaps().size());
+		System.out.println("Maps:");
+		for (TpiMap map : businessService.getServiceType().getMaps())
+		{
+			System.out.println(map.getMapName());
+		}
+		
+		System.out.println("Service Type company name " + businessService.getServiceType().getCompany());
+		System.out.println("Service Type direction name " + businessService.getServiceType().getDirection().getDirectionCode());
+		System.out.println("Service Type document name " + businessService.getServiceType().getDocument().getDocumentDescription());
+		System.out.println("Service Category Id " + businessService.getServiceType().getServiceCategory().getId());
+		
+		ServiceCategory sc = serviceSubscriptionService.findGenericEntityUsingEntityGrpah(ServiceCategory.class, businessService.getServiceType().getServiceCategory().getId(), "ServiceCategory.graphLW");
+		System.out.println("Service Category Light Well Partner Count " + sc.getLightWellPartners().size());
+		
+		for (LightWellPartner lw:sc.getLightWellPartners() )
+		{
+			System.out.println (lw.getOrganizationName());
+		}
+		
+	}
+	
+	
+}

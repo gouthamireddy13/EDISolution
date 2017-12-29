@@ -1,0 +1,270 @@
+package com.abc.tpi.service;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.abc.tpi.common.exceptions.TpiRepositoryException;
+import com.abc.tpi.controller.ServiceSubscriptionControllerRest;
+import com.abc.tpi.model.service.BusinessService;
+import com.abc.tpi.model.service.ServiceCategory;
+import com.abc.tpi.model.service.ServiceCategoryForDropDownProjection;
+import com.abc.tpi.model.service.ServiceSubscription;
+import com.abc.tpi.model.service.ServiceSubscriptionListViewProjection;
+import com.abc.tpi.model.service.ServiceType;
+import com.abc.tpi.model.tpp.LightWellPartner;
+import com.abc.tpi.model.tpp.Tpp;
+import com.abc.tpi.model.tpp.Transaction;
+import com.abc.tpi.repository.BusinessServiceRepository;
+import com.abc.tpi.repository.LightWellPartnerRepository;
+import com.abc.tpi.repository.ServiceCategoryRepository;
+import com.abc.tpi.repository.ServiceSubscriptionRepository;
+import com.abc.tpi.repository.ServiceTypeRepository;
+import com.abc.tpi.repository.TppRepository;
+@Service
+public class ServiceSubscriptionServiceImpl implements ServiceSubscriptionService {
+
+	@Autowired
+	ServiceCategoryRepository serviceCategoryRepository;
+	
+	@Autowired
+	ServiceTypeRepository servivceTypeRepository;
+	
+	@Autowired
+	TppRepository tppRepository;
+	
+	@Autowired
+	TppService	tppService;
+	
+	@Autowired
+	ServiceSubscriptionRepository serviceSubscriptionRepository;
+	
+	@Autowired
+	LightWellPartnerRepository lightWellPartnerRepository;
+	
+	@Autowired
+	BusinessServiceRepository businessServiceRepository;
+	
+	@PersistenceContext	
+	EntityManager em;
+	
+	private static final Logger logger = LogManager.getLogger(ServiceSubscriptionServiceImpl.class);
+	
+	public ServiceSubscriptionServiceImpl()
+	{
+		super();
+		logger.debug("ServiceSubscriptionServiceImpl initialized");
+	}
+	
+	@Transactional
+	public List<ServiceType> getBusinessServiceForTppAndServiceCat(long serviceCategoryId, long tppId) throws TpiRepositoryException {
+		
+		List<ServiceType> result = null;
+		if (tppId<=0) 
+		{
+			result = servivceTypeRepository.namedFindAllServiceTypesByServiceCategoryId(serviceCategoryId);
+		}
+		else
+		{
+			//get Transactions associated with the TPP
+			Tpp tpp = tppService.findTppById(tppId);
+			
+			if (tpp != null)
+			{
+				for (Transaction transaction : tpp.getTransactions()) {
+					List<ServiceType> serviceTypes = servivceTypeRepository
+													.namedFindServiceTypesForServiceCategoryAndTransaction(serviceCategoryId,
+															transaction.getDirection().getId(), 
+															transaction.getDocument().getId(),
+															transaction.getVersion().getId());
+					if (serviceTypes!=null)
+					{
+						if (result==null)
+						{
+							result = serviceTypes;
+						}
+						else
+						{
+							result.addAll(serviceTypes);
+						}						
+					}
+				}
+				
+				if (result!=null)
+				{
+					Set<ServiceType> distinctSet = new HashSet<ServiceType>(result);
+					result.clear();
+					result.addAll(distinctSet);
+				}
+			}
+			else
+			{
+				throw new TpiRepositoryException("Tpp with id : " + tppId + " not found");
+			}
+		}
+
+		return result;
+	}
+	
+	@Transactional
+	public ServiceSubscription saveServiceSubscription(ServiceSubscription serviceSubscription) throws TpiRepositoryException
+	{
+		for (com.abc.tpi.model.service.Service service: serviceSubscription.getServices())
+		{
+			
+			if (service.getTpp() !=null)
+			{
+				Tpp tpp = tppRepository.getOne(service.getTpp().getId());
+				LightWellPartner lwPartner = new LightWellPartner();
+				LightWellPartner tppLwPartner = tpp.getLightWellPartner();
+				
+				if (tppLwPartner!=null)
+				{				
+					lwPartner.setActive(tppLwPartner.isActive());
+					lwPartner.setNotes(tppLwPartner.getNotes());
+					lwPartner.setOrganizationName(tppLwPartner.getOrganizationName());
+					lwPartner.setProductionGsId(tppLwPartner.getProductionGsId());
+					lwPartner.setProductionIsaID(tppLwPartner.getProductionIsaID());
+					lwPartner.setProductionIsaQualifier(tppLwPartner.getProductionIsaQualifier());
+					lwPartner.setTestGsId(tppLwPartner.getTestGsId());
+					lwPartner.setTestIsaID(tppLwPartner.getTestIsaID());
+					lwPartner.setTestIsaQualifier(tppLwPartner.getTestIsaQualifier());
+					service.setLightWellPartner(lwPartner);
+					em.detach(tppLwPartner);
+				}
+				em.detach(tpp);				
+			}
+		}
+		
+		return serviceSubscriptionRepository.save(serviceSubscription);
+	}
+
+	@Override
+	public List<ServiceSubscription> getAllServiceSubscriptions() 
+	{
+		return serviceSubscriptionRepository.findAll();
+	}
+
+	@Override
+	public List<ServiceType> getAllServiceTypes() {
+		return servivceTypeRepository.findAll();
+	}
+
+	@Override
+	public List<ServiceCategory> getAllServiceCategories() {
+		return serviceCategoryRepository.findAll();
+	}
+
+	@Override
+	public List<ServiceCategory> getAllServiceCategoriesOrderByName() {		
+		return serviceCategoryRepository.findAll(new Sort(Direction.ASC,"name"));
+	}
+
+	@Override
+	@Transactional
+	public ServiceCategory saveServiceCategory(ServiceCategory serviceCategory) {
+		return serviceCategoryRepository.save(serviceCategory);
+	}
+
+	@Override
+	public ServiceCategory findServiceCategoryById(long id) {
+		return serviceCategoryRepository.findOne(id);
+	}
+
+	@Override
+	public ServiceType saveServiceType(ServiceType serviceType) {
+		return servivceTypeRepository.save(serviceType);
+	}
+
+	@Override
+	public List<ServiceCategoryForDropDownProjection> getServiceCategoriesForDropDown() {		
+		return serviceCategoryRepository.findDistinctByOrderByName();
+	}
+
+	@Override
+	public List<ServiceSubscriptionListViewProjection> getServiceSubscriptionsListView() {		
+		return serviceSubscriptionRepository.findAllByOrderByPartnerPartnerName();
+	}
+
+	@Override
+	public ServiceSubscription getServiceSubscription(long id) {
+		return serviceSubscriptionRepository.findOne(id);
+	}
+
+	@Override
+	public void deleteServiceSubscription(long id) {
+		serviceSubscriptionRepository.delete(id);		
+	}
+
+	@Override
+	public void deleteServiceSubscription(ServiceSubscription serviceSubscription) {
+		serviceSubscriptionRepository.delete(serviceSubscription);
+		
+	}
+
+	@Override
+	public List<ServiceCategory> findAllByCategoryName(String name) {
+		
+		return serviceCategoryRepository.findAllByName(name);
+	}
+
+	@Override
+	public void deleteServiceCategory(long id) {
+		serviceCategoryRepository.delete(id);
+		
+	}
+
+	@Override
+	public LightWellPartner findLightWellParnterByServiceCategoryLWid(long serviceCategoryId, long lightWellId) {
+		return lightWellPartnerRepository.namedFindLightWellPartnerByServiceCategoryIdAndLwId(serviceCategoryId, lightWellId);
+	}
+
+	@Override
+	public ServiceCategory findServiceCategoryByNameIgnoreCase(String name) {
+		return serviceCategoryRepository.findByNameIgnoreCase(name);
+	}
+
+	@Override
+	public Collection<BusinessService> findBusinessServicesByServiceId(long serviceId) {
+		return businessServiceRepository.namedFindBusinessServicesByServiceId(serviceId);
+	}
+
+	@Override
+	public Collection<BusinessService> findBusinessServicesByServiceSubscriptionAndServiceId(long serviceSubscription,
+			long serviceId) {
+		return businessServiceRepository.namedFindBusinessServicesByServiceSubscriptionAndServiceId(serviceSubscription, serviceId);
+	}
+
+	@Override
+	public Service findServiceByServiceIdForSubscription(long serviceSubscription, long serviceId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public BusinessService findBusinessServiceByIdForSubscription(long serviceSubscription, long serviceId,
+			long businessServiceId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Collection<Long> findServiceSubscriptionByPartnerAndServiceCategory(long partnerId, long serviceCategoryId) {
+		
+		return serviceSubscriptionRepository.namedFindByParnterIdAndServiceCategoryId(partnerId, serviceCategoryId);
+	}
+	
+
+}

@@ -1,0 +1,103 @@
+ /* Remove the navbar's default margin-bottom and rounded borders */ 
+    .navbar {
+      margin-bottom: 0;
+      border-radius: 0;
+    }
+    
+    /* Set height of the grid so .sidenav can be 100% (adjust as needed) */
+    .row.content {height: 1000px}
+    
+    /* Set gray background color and 100% height */
+    .sidenav {
+      padding-left: 50px;
+	  padding-top: 10px;
+    background-color: #313942;
+    height:100%;
+     
+	margin: 0;
+    color: white;
+	font-size: 14px;
+    
+    line-height: 40px;
+	
+	}
+	.divider{
+    width:5px;
+    height:auto;
+    display:inline-block;
+}
+	.modal-wrap {
+    width: auto;
+    margin: 0 20px;
+    border: 1px solid #004c75;}
+	
+	span.description {
+    display: inline-block;
+    overflow: hidden;
+    white-space: nowrap;
+    width: 20px;
+}
+	.heading{
+	font-family: arial; 
+	 
+	font-weight: 700; 
+	font-size: 16px;
+	
+	border-bottom: 1px solid #6cc24a;
+    padding-bottom: 5px;
+	}
+	
+	h2{
+	color: #004c75;
+	font-size: 20px;
+	font-family: arial;
+	font-weight: normal;
+	}
+	
+	.modal {
+  text-align: center;
+  padding: 0!important;
+}
+
+.modal:before {
+    height: 100%;
+  vertical-align: middle;
+  margin-right: -4px;
+}
+
+.modal-dialog {
+  display: inline-block;
+  text-align: left;
+  vertical-align: middle;
+  width:300px;
+  
+}
+	
+	
+
+
+/* Column widths are based on these cells */                 
+.row-name {
+  width: 20%;
+}
+.row-title {
+  width: 20%;
+}
+.row-phone {
+  width: 20%;
+}
+.row-email {
+  width: 20%;
+}
+.row-action {
+  width: 20%;
+}
+
+.modal-megamenu{
+	width:600px;
+	top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+	

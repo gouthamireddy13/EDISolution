@@ -1,0 +1,535 @@
+ /* Remove the navbar's default margin-bottom and rounded borders */ 
+   input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+  -webkit-appearance: none; 
+  margin: 0; 
+}
+   
+   #browse{
+   padding-left:10%;
+   padding-top:10%;
+   padding-bottom:10%;
+   }
+   
+    #logo{
+    width:220px;
+    height:80px;
+    }
+    .navbar {
+      margin-bottom: 0;
+      border-radius: 0;
+    }
+    
+   #panellogo{
+    color:#fff;
+     height:20px;
+     width:20px;
+    }
+    
+    #panellogo1{
+    color:#fff;
+     height:13px;
+     width:13px;
+    }
+    
+    #exportlogo{
+    color:#fff;
+     height:18px;
+     width:18px;
+    }
+    
+    #panelbtn{
+    font-size:10px;
+    background-color:rgb(0, 133, 202);
+    }
+    
+    #panelbtn1{
+    font-size:12px;
+    background-color:rgb(0, 133, 202);
+    }
+    
+    #panelsearch{
+    width:220px;
+    background-color:#fff;
+    }
+    .panel-heading{
+    background-color:#004c75; 
+    color:#fff;
+    font-size:11px; 
+    font-family:arial;
+    width:220px;
+    height:23px;
+    padding-top:5px;
+    padding-left:0px;
+    padding-bottom:5px;
+    }
+    
+    /* Set height of the grid so .sidenav can be 100% (adjust as needed) */
+    .row.content{background-color: #e1e6e9;padding-bottom:0px;}
+    
+    /* Set gray background color and 100% height */
+    #sidenav {
+      
+    
+   height:100%;
+     
+	margin: 0;
+    color: white;
+	font-size: 14px;
+    
+    line-height: 40px;
+	
+	}
+	#headingleft{
+	text-decoration:none; 
+	color: white; 
+	font-size: 12px; 
+	font-family: arial;
+	}
+	
+	.portal-header{
+	height:100px;
+	background-color:#000;
+	 border-bottom: 2px solid green;
+	}
+	
+	.portal-footer{
+	height:100px;
+	background-color:#000;
+	 border-top: 2px solid green;
+	 padding-bottom:0px;
+	}
+	/*partner management styles*/
+	#sort{
+	width:12px;
+	height:12px;
+	
+	}
+	#sortlink{
+	cursor:pointer;
+	text-decoration:none;
+	color:#fff;
+	}
+	
+	#partnerhead{
+	background-color: #808080; 
+	color:#fff; 
+	font-family:arial; 
+	font-size:12px; 
+	font-weight:bold; 
+	table-layout: fixed;
+	}
+	
+	
+	
+	
+	#contactrow{
+	width: 20px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	}
+	
+	#contactrowXY{
+	width: 30px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	}
+	
+	#partnerrow{
+	width: 33.3px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	}
+	
+	#partnerrowXYZ{
+	width: 33.3%;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	}
+	
+	
+	#extra{
+	padding-top:10px;
+	height:150px; 
+	overflow-y: scroll;
+	}
+	
+	#extras{
+	padding-top:10px;
+	height:375px; 
+	overflow-y: scroll;
+	}
+	
+	#extrab{
+	padding-top:10px;
+	height:420px; 
+	overflow-y: scroll;
+	}
+	
+	#extraS{
+	padding-top:10px;
+	height:500px; 
+	overflow-y: scroll;
+	}
+	
+	#extraSG{
+	padding-top:10px;
+	height:200px; 
+	overflow-y: scroll;
+	}
+	
+	#extra2{
+	padding-top:10px;
+	height:180px;
+	overflow-y: scroll;
+	
+	}
+	
+	#extraXY{
+	padding-top:10px;
+	height:100px;
+	width:auto;  
+	overflow-y: scroll;
+	overflow-x: scroll;
+	
+	}
+	
+	.scrollable-menu {
+    height: auto;
+    max-height: 20px;
+    overflow-x: hidden;
+}
+	#extraDROP{
+	height:5px;
+	  
+	overflow-y: scroll;
+	}
+	
+	#contactfields
+	{text-align:left;
+	font-size:15.4px;
+	}
+	
+	#contactfieldsI
+	{text-align:left;
+	font-size:15.4px;
+	color: #fff;
+	padding-left: 30px;
+	padding-top: 10px;
+	}
+	
+	.place{
+	padding-left:30px;
+	padding-bottom:10px;
+	color: #fff;
+	}
+	
+	
+	#warning
+	{
+	font-size:10px;
+	font-weight:400; 
+	color:#fff;
+	background-color: #d84315;
+	}
+	#primary
+	{
+	font-size:10px;
+	font-weight:400;
+	color:#fff;
+	}
+	#modtitle
+	{
+	font-family: arial; 
+	color: #fff; 
+	font-weight: 700; 
+	font-size: 16px;
+	}
+	
+	.divider{
+    width:5px;
+    height:auto;
+    display:inline-block;
+}
+	.modal-wrap {
+    width: auto;
+    margin: 0 20px;
+    border: 1px solid #004c75;}
+	
+	span.description {
+    display: inline-block;
+    overflow: hidden;
+    white-space: nowrap;
+    width: 20px;
+}
+	.titlehead{
+	font-family: arial; 
+	 
+	font-weight: 700; 
+	font-size: 16px;
+	
+	border-bottom: 1px solid #6cc24a;
+    padding-bottom: 5px;
+    padding-left:0px;
+	}
+	
+	.phoneline{
+	font-family: arial; 
+	 
+	
+	border-bottom: 1px solid #808080;
+    
+    padding-left:0px;
+	}
+	
+	.titlephonehead{
+	font-family: arial; 
+	 
+	font-weight: 700; 
+	font-size: 14px;
+	
+	
+    padding-bottom: 5px;
+    padding-left:0px;
+	}
+	
+	.titlephone{
+	font-family: arial; 
+	 
+	font-weight: 700; 
+	font-size: 15.4px;
+	
+	
+    padding-bottom: 5px;
+    padding-left:0px;
+	}
+	
+	.titlephone3pphead{
+	font-family: arial; 
+	 
+	font-weight: 700; 
+	font-size: 14px;
+	
+	
+    padding-bottom: 5px;
+   
+    padding-left:10px;
+	}
+	
+	.titlephone3pp{
+	font-family: arial; 
+	 
+	
+	font-size: 14px;
+	
+	
+    padding-bottom: 5px;
+    padding-left:10px;
+	}
+	
+	h2{
+	color: #004c75;
+	font-size: 20px;
+	font-family: arial;
+	font-weight: normal;
+	}
+	
+	#close1{
+	font-family: arial; 
+	color: #fff; 
+	font-weight: 700; 
+	font-size: 20px;
+	background-color: #004c75; 
+	border:none;
+	
+	}
+	
+	.modal {
+  text-align: center;
+  padding: 0!important;
+}
+
+.modal:before {
+    content: '';
+  display: inline-block;
+    height: 100%;
+  vertical-align: middle;
+  margin-right: -4px;
+}
+
+.modal-dialog {
+  display: inline-block;
+  text-align: left;
+  vertical-align: middle;
+  width:600px;
+  
+  
+}
+	
+	
+
+
+/* Column widths are based on these cells */                 
+
+.modal
+{
+    overflow: hidden;
+}
+.modal-dialog{
+    margin-right: 0;
+    margin-left: 0;
+}
+.modal-header{      /* not necessary but imo important for user */
+    cursor: move;
+}
+#modal-megamenu{
+	width:700px;
+	
+	top: 0;
+    right: 0;
+    bottom: 0;
+    
+}
+
+.modal-megamenutpp{
+	width:700px;
+	top: 0;
+    right: 0;
+    bottom: 0;
+    
+}
+
+#myModal { overflow-y:scroll;
+
+}
+
+
+
+/* TPP SCREEN */
+
+#test{
+	font-family:arial;
+	font-size:16px;
+	font-weight:700;
+	padding-left:28px;
+	text-align:center;
+}
+
+
+#contactfields1
+	{text-align:left;
+	font-size:14px;
+	font-weight:400;
+	line-height: 17px;
+	}
+
+ .centered{
+ width:900px;
+ transform: translateX(-15%);
+ }
+
+.extra1{
+height:500px; 
+overflow-y: scroll;
+}
+
+.extraintra1{
+height:500px; 
+overflow-y: scroll;
+}
+
+.extra3{
+height:500px; 
+overflow-y: scroll;
+}
+.extraM{
+height:400px; 
+overflow-y: scroll;
+}
+
+#addTrans{
+	text-align:center; 
+	padding-top:15px; 
+	padding-bottom:20px;
+	padding-right:10px;
+}
+
+#row1
+{
+padding-left:13px;
+padding-right:13px;	
+}
+
+#rowC
+{
+padding-left:13px;
+padding-right:13px;
+text-align:center;	
+}
+	
+#row2{
+padding-left:13px;
+padding-right:13px;
+padding-top:20px;	
+}
+
+.check{
+	display:inline;
+	padding: 10px;
+	margin-top:10px;
+}	
+
+#add{
+	text-align:center; 
+	padding-bottom:20px;
+	padding-right:10px;
+}
+	
+#space{
+	padding-top:15px;
+}
+
+#space1{
+	padding-top:15px;
+	padding-bottom:15px;
+}
+	
+/* ABCIdMaintenance styles */
+
+.centeredab{
+ width:700px;
+ 
+ }	
+
+
+.email{
+max-width: 100px;
+	white-space : nowrap;
+  overflow : hidden;
+  text-overflow: ellipsis;
+}
+
+.email:hover {
+  max-width : initial; 
+}	
+	
+.remove-boundaries.pagination>li:last-child>a, 
+.remove-boundaries.pagination>li:last-child>span,
+.remove-boundaries.pagination>li:first-child>a, 
+.remove-boundaries.pagination>li:first-child>span {
+  display: none;
+}	
+	
+	
+.mouseon-examples input {
+    background-color: #004c75;
+    text-align: center;
+    width: 200px;
+    padding: 40px;
+}
+	
+		

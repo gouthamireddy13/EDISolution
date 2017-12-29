@@ -1,0 +1,74 @@
+
+<div class="dashboard-wrap">
+<div class="breadcrumbs">
+	
+	<h2>TPP Management</h2>	
+</div>
+</div>	
+
+<div style="width:95%;" >
+ <div class="panel panel-default" style="background-color: #404951;" >
+ <div style="padding-top:20px;padding-left:20px;" >
+      <div class="panel-heading ">TPP NAME</div>
+      </div>
+      <div class="panel-body " style="padding-top:0px; padding-left:20px" >
+      	
+		
+		<input class="form-control" id="panelsearch" type="text" name="search" > 
+      
+      </div>
+      <div class=" panel-body pull-right col-sm-12" style=" background-color:#59626b ;">	
+
+  
+		  <!-- Trigger the modal with a button -->
+		  <button type="button" class="btn btn-primary pull-right"   data-toggle="modal" data-target="#myModal" id="panelbtn"><img src="assets/AddPartner.png" id="panellogo">&nbsp;&nbsp;&nbsp; NEW TPP</button>
+
+</div>
+</div>
+ <table class="table table-striped">
+
+	        <thead id="partnerhead">
+	        <tr>
+	            
+	            <th id="partnerrow">TPP NAME </th>
+	            <th id="partnerrow"> TPP TYPE  </th>
+	        </tr>
+	        </thead>
+	        <tbody>
+	        <tr >
+	       
+	          
+	        
+	        </tr>
+	        </tbody>
+	      </table>
+	      
+	      </div>
+	      
+	      <!-- Modal -->
+		  <div class="modal fade" id="myModal" role="dialog"  data-backdrop="static" >
+		    <div class="modal-dialog modal-megamenu" >
+		    <div class="modal-content" style="background-color: rgb(240, 240, 240);">
+		    <div class="modal-header" style="background-color:#004c75;">
+		         <!-- <button type="button" class="close" data-dismiss="modal">&times;</button>-->
+				 <h1 class="modal-title" id="modtitle">TPP - New TPP
+				  <button type="button" class="close" id="close1" ng-click="clear();" data-dismiss="modal">&times;</button> </h1>
+		    </div>
+		     </div>
+		     </div>
+		     </div>
+		    
+           
+	             
+	           
+	            
+
+	           
+	            
+	               
+	            
+	           
+	        
+	        
+	        
+    

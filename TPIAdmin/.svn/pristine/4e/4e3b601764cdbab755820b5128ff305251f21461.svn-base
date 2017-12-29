@@ -1,0 +1,55 @@
+package com.abc.tpi.domain.json;
+
+import java.io.Serializable;
+
+public class PartnerContactDetailData implements Serializable {
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8983770854744019289L;
+	private Long partnerId;
+	private Long contactId;
+	private String contactName;
+	private String contactTitle;
+	private String contactPhone;
+	private String contactEmail;
+	
+	public String getContactEmail() {
+		return contactEmail;
+	}
+	public Long getContactId() {
+		return contactId;
+	}
+	public String getContactName() {
+		return contactName;
+	}
+	public String getContactPhone() {
+		return contactPhone;
+	}
+	public String getContactTitle() {
+		return contactTitle;
+	}
+	public Long getPartnerId() {
+		return partnerId;
+	}
+	public void setContactEmail(String contactEmail) {
+		this.contactEmail = contactEmail;
+	}
+	public void setContactId(Long contactId) {
+		this.contactId = contactId;
+	}
+	public void setContactName(String contractName) {
+		this.contactName = contractName;
+	}
+	public void setContactPhone(String contactPhone) {
+		this.contactPhone = contactPhone;
+	}
+	public void setContactTitle(String contactTitle) {
+		this.contactTitle = contactTitle;
+	}
+	public void setPartnerId(Long partnerId) {
+		this.partnerId = partnerId;
+	}
+	
+}

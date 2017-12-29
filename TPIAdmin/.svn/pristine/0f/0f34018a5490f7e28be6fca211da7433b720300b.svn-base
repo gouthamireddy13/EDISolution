@@ -1,0 +1,100 @@
+<div>
+<div class="dashboard-wrap">
+<div class="breadcrumbs">
+	
+	<h2>Service Management</h2>	
+</div>
+</div>	
+<style>input:required:invalid {
+    outline: none;
+}
+</style>
+
+<div style="width:95%;" >
+ <div class="panel panel-default" style="background-color: #404951;" >
+ <div style="padding-top:20px;padding-left:20px;" ng-init="">
+      <div class="panel-heading ">SERVICE NAME</div>
+      </div>
+      <div class="panel-body " style="padding-top:0px; padding-left:20px" >
+      	
+		
+		<input class="form-control" id="panelsearch" type="text" name="search" ng-model="search.tppname"> 
+      
+      </div>
+      <div class=" panel-body pull-right col-sm-12" style=" background-color:#59626b ;">	
+
+  
+		  <!-- Trigger the modal with a button -->
+		  <button type="button" class="btn btn-primary pull-right"   data-toggle="modal" data-target="#myModal" id="panelbtn"><img src="assets/AddPartner.png" id="panellogo">&nbsp;&nbsp;&nbsp; NEW SERVICE</button>
+
+</div>
+</div>
+ <table class="table table-striped">
+
+	        <thead id="partnerhead">
+	        <tr>
+	            
+	            <tr>
+	            
+	            <th id="partnerrow"> <a id="sortlink"
+	             ng-click="sortType = 'tppname'; sortReverse = !sortReverse">SERVICE NAME
+            
+            <span ng-show="sortType == 'tppname' && !sortReverse" ><img src="assets/up.png" id="sort"></span>
+            <span ng-show="sortType == 'tppname' && sortReverse" ><img src="assets/down.png" id="sort"></span></a>
+	             </th>
+	            <th id="partnerrow"> <a id="sortlink"
+	             ng-click="sortType = 'type'; sortReverse = !sortReverse">COLUMN2 
+	              <span ng-show="sortType == 'type' && !sortReverse" ><img src="assets/up.png" id="sort"></span>
+                 <span ng-show="sortType == 'type' && sortReverse" ><img src="assets/down.png" id="sort"></span></a> </th>
+	        </tr>
+	        </thead>
+	        <tbody>
+	        <tr ng-repeat="item in items  |    orderBy:sortType:sortReverse   |    filter:search " ng-click="showData(item.data)" data-toggle="modal" data-target="#myModal" >
+	       
+	          <td id="partnerrow"></td>
+	          
+	          <td id="partnerrow"></td>
+	        
+	        </tr>
+	        </tbody>
+	      </table>
+	      
+	      </div>
+	      
+	      <!-- Modal -->
+	       
+		  <div class="modal fade" id="myModal" role="dialog"  data-backdrop="static" >
+		    <div class="modal-dialog modal-megamenu" >
+		    <div class="centered">
+		    <div class="modal-content" style="background-color: rgb(240, 240, 240);">
+		    <div class="modal-header" style="background-color:#004c75;">
+		         <!-- <button type="button" class="close" data-dismiss="modal">&times;</button>-->
+				 <h1 class="modal-title" id="modtitle">Service - New Service
+				  <button type="button" class="close" id="close1" ng-click="" data-dismiss="modal">&times;</button> </h1>
+		    </div>
+		    <div  class="extra1">
+		    <div class="modal-wrap"style="margin-top:20px;background-color:#fff;">
+		       
+		        <div class="modal-body" style="text-align:left; "> 	
+		         <form name="tppDetails" class="form-horizontal">	
+		              
+		               
+		              
+					    <div class="row" id="row1">
+					   
+					    <div class="form-group" >
+					     <div class = "col-sm-5 col-md-6 ">
+					      <label class="control-label col-sm-4" id="contactfields1" for="partnerName" >Partner Name<font color="red">*</font>:</label>
+					      
+					        <div class="col-sm-8"> 
+					        <input  class="form-control" id="partnerName" ng-disabled="hideEdit"  name="tppName" ng-model="tppName" required > 
+					          <span><font color="red"  ng-show="ErrorMsg&&tppDetails.tppName.$error.required">3PP Name is Required</font></span>
+					          <span><font color="red"  ng-show="validName">TPP Name Already Exist</font></span>
+					         </div>
+					      
+					    
+					     </div>
+		    </div>
+		    </div>
+		    </div>
+	      </div>

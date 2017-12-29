@@ -1,0 +1,56 @@
+package com.abc.tpi.domain.soap;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+
+@XmlAccessorType( XmlAccessType.FIELD )
+public class ContactWS {
+	
+	@XmlElement(name="NAME",required=true)
+	private String name;
+	
+	@XmlElement(name="TITLE",required=true,defaultValue=" ")
+	private String title;
+	
+	@XmlElement(name="PHONE",required=true)
+	private String phone;
+	
+	@XmlElement(name="EMAIL",required=true)
+	private String email;
+	
+	@XmlElement(name="TRANSACTION",required=true)
+	private String transactionType;
+	
+	public String getEmail() {
+		return email;
+	}
+	public String getName() {
+		return name;
+	}
+	public String getPhone() {
+		return phone;
+	}
+	public String getTitle() {
+		return title;
+	}
+	public String getTransactionType() {
+		return transactionType;
+	}
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+	public void setTitle(String title) {
+		this.title = title;
+	}
+	public void setTransactionType(String transactionType) {
+		this.transactionType = transactionType;
+	}
+
+}

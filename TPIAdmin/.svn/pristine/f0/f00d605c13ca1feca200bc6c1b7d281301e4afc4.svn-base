@@ -1,0 +1,130 @@
+package com.abc.tpi.model.service;
+
+import java.util.Collection;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+
+import com.abc.tpi.model.master.Delimiter;
+import com.abc.tpi.model.tpp.LightWellPartner;
+import com.abc.tpi.model.tpp.Tpp;
+
+@Entity
+
+@Table(name="ABC_TPI_SERVICE")
+public class Service {
+	@Id
+	@SequenceGenerator(name="ABC_TPI_SERVICE_GEN", sequenceName="ABC_TPI_SERVICE_SEQ",allocationSize=10)
+	@GeneratedValue(generator="ABC_TPI_SERVICE_GEN")
+	@Column(name="SERVICE_ID")
+	private Long id;
+	
+	@ManyToOne(fetch=FetchType.EAGER)
+	@JoinColumn(name="TPP_ID", nullable=true)	
+	private Tpp tpp;
+	
+	@NotNull
+	@OneToOne(cascade=CascadeType.ALL,fetch=FetchType.EAGER)
+	@JoinColumn(name="LW_ID", nullable=false)
+	private LightWellPartner lightWellPartner;
+	
+	
+	@NotNull
+	@ManyToOne
+	@JoinColumn(name="SEGMENT_DELIM", nullable=false)
+	private Delimiter segmentDelimiter;
+	
+	@NotNull
+	@ManyToOne
+	@JoinColumn(name="ELEMENT_DELIM")
+	private Delimiter elementDelimiter;
+	
+	@NotNull
+	@ManyToOne
+	@JoinColumn(name="COMPOSITE_DELIM")
+	private Delimiter compositeElementDelimiter;
+	
+	@ManyToOne
+	@JoinColumn(name="REPEAT_DELIM")
+	private Delimiter repeatDelimiter;
+	
+	//unidirectional
+	@OneToMany(fetch=FetchType.LAZY, cascade=CascadeType.ALL,orphanRemoval=true)
+	@JoinTable(name="ABC_TPI_SRVC_BSNS_SRVC",
+			joinColumns=@JoinColumn(name="SERVICE_ID"),
+			inverseJoinColumns=@JoinColumn(name="BUSINESS_SERVICE_ID"))
+	private Collection<BusinessService> businessServices;
+
+	public Collection<BusinessService> getBusinessServices() {
+		return businessServices;
+	}
+
+	public Delimiter getCompositeElementDelimiter() {
+		return compositeElementDelimiter;
+	}
+
+	public Delimiter getElementDelimiter() {
+		return elementDelimiter;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public LightWellPartner getLightWellPartner() {
+		return lightWellPartner;
+	}
+
+	public Delimiter getRepeatDelimiter() {
+		return repeatDelimiter;
+	}
+
+	public Delimiter getSegmentDelimiter() {
+		return segmentDelimiter;
+	}
+
+	public Tpp getTpp() {
+		return tpp;
+	}
+
+	public void setBusinessServices(Collection<BusinessService> businessServices) {
+		this.businessServices = businessServices;
+	}
+
+	public void setCompositeElementDelimiter(Delimiter compositeElementDelimiter) {
+		this.compositeElementDelimiter = compositeElementDelimiter;
+	}
+
+	public void setElementDelimiter(Delimiter elementDelimiter) {
+		this.elementDelimiter = elementDelimiter;
+	}
+
+	public void setLightWellPartner(LightWellPartner lightWellPartner) {
+		this.lightWellPartner = lightWellPartner;
+	}
+
+	public void setRepeatDelimiter(Delimiter repeatDelimiter) {
+		this.repeatDelimiter = repeatDelimiter;
+	}
+
+	public void setSegmentDelimiter(Delimiter segtmentDelimiter) {
+		this.segmentDelimiter = segtmentDelimiter;
+	}
+
+	public void setTpp(Tpp tpp) {
+		this.tpp = tpp;
+	}
+	
+}

@@ -1,0 +1,71 @@
+package com.abc.tpi.model.master;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+
+@Entity
+
+@NamedQueries
+(
+	{
+		@NamedQuery(name="Version.namedFindAllVersionsForTpp", query="select distinct v from Tpp t Join t.transactions trans Join trans.version v where t.id=:tppId")
+	}
+)
+@Table(name="ABC_TPI_VERSION")
+public class Version {
+	
+	@Id
+	@SequenceGenerator(name="ABC_TPI_VERSION_GEN", sequenceName="ABC_TPI_VERSION_SEQ",allocationSize=10)
+	@GeneratedValue(generator="ABC_TPI_VERSION_GEN")
+	@Column(name="VERSION_ID")
+	private Long id;
+	
+	@NotNull
+	@Column(name="VERSION_NUM",updatable=false,nullable=false,unique=true)
+	private Integer versionNumber;
+
+	@Column(name="VERSION_DESC",nullable=true)
+	private String versionDescription;
+	
+	public Long getId() {
+		return id;
+	}
+
+	public Integer getVersionNumber() {
+		return versionNumber;
+	}
+
+	public void setVersionNumber(Integer versionNumber) {
+		this.versionNumber = versionNumber;
+	}
+
+	public String getVersionDescription() {
+		return versionDescription;
+	}
+
+	public void setVersionDescription(String versionDescription) {
+		this.versionDescription = versionDescription;
+	}
+	
+	public static Version newInstance(Version version)
+	{
+		if (version==null)
+		{
+			return null;
+		}
+		
+		Version clone = new Version();
+		clone.setVersionDescription(version.getVersionDescription());
+		clone.setVersionNumber(version.getVersionNumber());
+		
+		return clone;
+	}
+	
+}

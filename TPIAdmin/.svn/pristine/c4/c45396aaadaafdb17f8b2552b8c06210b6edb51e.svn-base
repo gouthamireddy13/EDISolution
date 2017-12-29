@@ -1,0 +1,36 @@
+package com.abc.tpi.model;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+
+@Entity
+@Table(name="ABC_TPI_PARTNER_TYPE")
+public class PartnerType {
+	
+	@Id
+	@SequenceGenerator(name="ABC_TPI_PARTNER_TYPE_GEN", sequenceName="ABC_TPI_PARTNER_TYPE_SEQ",allocationSize=1)
+	@GeneratedValue(generator="ABC_TPI_PARTNER_TYPE_GEN")
+	@Column(name="PARTNER_TYPE_ID")
+	private Long id;
+	
+	@Column(name="PARTNER_TYPE_CODE")
+	private String typeCode;
+
+	public Long getId() {
+		return id;
+	}
+
+	public String getPartnerType() {
+		return typeCode;
+	}
+
+	public void setPartnerType(String partnerName) {
+		this.typeCode = partnerName;
+	}
+	
+
+}

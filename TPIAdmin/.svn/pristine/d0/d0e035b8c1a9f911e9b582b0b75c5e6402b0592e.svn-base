@@ -1,0 +1,19 @@
+#Default parent view.
+parent-view.(class)=org.springframework.web.servlet.view.JstlView
+parent-view.url=
+
+
+#No Need to repeat .class if it is JstlView, because we already set it as default
+#HomePage.(class)=org.springframework.web.servlet.view.JstlView
+HomePage.url=/WEB-INF/views/jsps/home.jsp
+SearchCustomerPage.url=/WEB-INF/views/jsps/CustomerSearch.jsp
+SearchSupplierPage.url=/WEB-INF/views/jsps/SupplierSearch.jsp
+SearchCustLinksPage.url=/WEB-INF/views/jsps/SearchCustLinks.jsp
+SearchLinksPage.url=/WEB-INF/views/jsps/SearchLinks.jsp
+SearchSuppLinksPage.url=/WEB-INF/views/jsps/SearchSuppLinks.jsp
+ListTransactionsPage.url=/WEB-INF/views/jsps/ListTransactions.jsp
+SuppViewX12DataPage.url=/WEB-INF/views/jsps/SuppViewX12Data.jsp
+CustViewX12DataPage.url=/WEB-INF/views/jsps/CustViewX12Data.jsp
+ListCustTransPage.url=/WEB-INF/views/jsps/ListCustTrans.jsp
+SearchOperationsPage.url=/WEB-INF/views/jsps/Operations.jsp
+excelViewCustomer.(class)=com.abc.edi.view.ExcelCustomerReport

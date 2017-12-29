@@ -1,0 +1,21 @@
+package com.abc.tpi.service.soap;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ws.server.endpoint.annotation.Endpoint;
+import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
+
+import com.abc.tpi.service.TppService;
+
+@Endpoint
+public class TppMarshalingEndpoint {
+	private static final String namespaceUri = "http://localhost:8080/TPIAdmin";
+	
+	@Autowired
+	private TppService tppService;
+	
+	@PayloadRoot(localPart="UploadTppsRequest",namespace=namespaceUri)
+	public UploadTppsResponse saveTpps(UploadTppsRequest request)
+	{
+		return null;
+	}
+	
+}

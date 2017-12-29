@@ -1,0 +1,9 @@
+package com.abc.tpi.model.poc;
+
+import javax.annotation.Generated;
+import javax.persistence.metamodel.StaticMetamodel;
+
+@Generated(value="Dali", date="2017-06-29T14:46:13.626-0400")
+@StaticMetamodel(PocParent.class)
+public class PocParent_ extends PocParentEntity_ {
+}

@@ -1,0 +1,197 @@
+package com.abc.tpi.model.tpp;
+
+import javax.persistence.Access;
+import javax.persistence.AccessType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+
+@Entity
+
+@NamedQueries
+(
+	{
+	@NamedQuery(name="LightWellPartner.namedFindLightWellPartnerByServiceCategoryIdAndLwId", 
+			query="select lw from ServiceCategory sc join sc.lightWellPartners  lw where sc.id = :scId and lw.id = :lwId")	
+	}
+)
+
+@Table(name="ABC_TPI_LW")
+@Access(AccessType.FIELD)
+public class LightWellPartner {
+	
+	@Id
+	@SequenceGenerator(name="ABC_TPI_LW_GEN", sequenceName="ABC_TPI_LW_SEQ",allocationSize=10)
+	@GeneratedValue(generator="ABC_TPI_LW_GEN")
+	@Column(name="LW_ID")
+	private Long id;
+
+	@Column(name="ORG_NAME",nullable=true)
+	private String organizationName;
+	
+	@NotNull
+	@Column(name="TEST_ISA_ID",nullable=false)
+	private String testIsaID;
+	
+	@NotNull
+	@Column(name="TEST_ISA_QUAL",nullable=false)
+	private String testIsaQualifier;
+	
+	@NotNull
+	@Column(name="TEST_GS_ID",nullable=false)
+	private String testGsId;
+	
+	@NotNull
+	@Column(name="PROD_ISA_ID",nullable=false)
+	private String productionIsaID;
+	
+	@NotNull
+	@Column(name="PROD_ISA_QUAL",nullable=false)
+	private String productionIsaQualifier;
+	
+	@NotNull
+	@Column(name="PROD_GS_ID",nullable=false)
+	private String productionGsId;
+	
+	@Column(name="ACTIVE",nullable=true)
+	private boolean isActive;
+		
+	@Column(name="NOTES",nullable=true)
+	private String notes;
+	
+
+	public String getNotes() {
+		return notes;
+	}
+	public String getOrganizationName() {
+		return organizationName;
+	}
+	public String getProductionGsId() {
+		return productionGsId;
+	}
+	public String getProductionIsaID() {
+		return productionIsaID;
+	}
+	public String getProductionIsaQualifier() {
+		return productionIsaQualifier;
+	}
+	public String getTestGsId() {
+		return testGsId;
+	}
+	public String getTestIsaID() {
+		return testIsaID;
+	}
+	public String getTestIsaQualifier() {
+		return testIsaQualifier;
+	}
+	public boolean isActive() {
+		return isActive;
+	}
+	public void setActive(boolean isActive) {
+		this.isActive = isActive;
+	}
+	public void setNotes(String notes) {
+		this.notes = notes;
+	}
+	public void setOrganizationName(String organizationName) {
+		this.organizationName = organizationName;
+	}
+	public void setProductionGsId(String productionGsId) {
+		this.productionGsId = productionGsId;
+	}
+	public void setProductionIsaID(String productionisaID) {
+		this.productionIsaID = productionisaID;
+	}
+	public void setProductionIsaQualifier(String productionIsaQualifier) {
+		this.productionIsaQualifier = productionIsaQualifier;
+	}
+	public void setTestGsId(String testGsId) {
+		this.testGsId = testGsId;
+	}
+	public void setTestIsaID(String testIsaID) {
+		this.testIsaID = testIsaID;
+	}
+	public void setTestIsaQualifier(String testIsaQualifier) {
+		this.testIsaQualifier = testIsaQualifier;
+	}
+	public Long getId() {
+		return id;
+	}
+
+	public static LightWellPartner newInstance(LightWellPartner lw)
+	{
+		if (lw==null)
+		{
+			return null;
+		}
+		
+		LightWellPartner clonedLW = new LightWellPartner();
+		clonedLW.setActive(lw.isActive());
+		clonedLW.setNotes(lw.getNotes());
+		clonedLW.setOrganizationName(lw.getOrganizationName());
+		clonedLW.setProductionGsId(lw.getProductionGsId());
+		clonedLW.setProductionIsaID(lw.getProductionIsaID());
+		clonedLW.setProductionIsaQualifier(lw.getProductionIsaQualifier());
+		clonedLW.setTestGsId(lw.getTestGsId());
+		clonedLW.setTestIsaID(lw.getTestIsaID());
+		clonedLW.setTestIsaQualifier(lw.getTestIsaQualifier());
+		
+		return clonedLW;
+	}
+
+	@Override
+	public boolean equals(Object o)
+	{
+		if (this==o) return true;
+		if (!(o instanceof LightWellPartner)) return false;
+		
+		LightWellPartner that = (LightWellPartner)o;
+		
+		boolean result = true;
+		
+		if (this.isActive()!=that.isActive()) return false;
+		
+		if (this.getNotes()==null && that.getNotes()!=null) return false;
+		if (this.getOrganizationName()==null && that.getOrganizationName()!=null) return false;
+		if (this.getProductionGsId()==null && that.getProductionGsId()!=null) return false;
+		if (this.getProductionIsaID()==null && that.getProductionIsaID()!=null) return false;
+		if (this.getTestGsId()==null && that.getTestGsId()!=null) return false;
+		if (this.getTestIsaID()==null && that.getTestIsaID()!=null) return false;
+		if (this.getTestIsaQualifier()==null && that.getTestIsaQualifier()!=null) return false;
+		
+		if (this.getNotes()!=null && !this.getNotes().equals(that.getNotes())) return false;
+		if (this.getOrganizationName()!=null && !this.getOrganizationName().equals(that.getOrganizationName())) return false;
+		if (this.getProductionGsId()!=null && !this.getProductionGsId().equals(that.getProductionGsId())) return false;
+		if (this.getProductionIsaID()!=null && !this.getProductionIsaID().equals(that.getProductionIsaID())) return false;
+		if (this.getTestGsId()!=null && !this.getTestGsId().equals(that.getTestGsId())) return false;
+		if (this.getTestIsaID()!=null && !this.getTestIsaID().equals(that.getTestIsaID())) return false;
+		if (this.getTestIsaQualifier()!=null && !this.getTestIsaQualifier().equals(that.getTestIsaQualifier())) return false;
+
+		return result;
+	}
+	
+	@Override
+	public int hashCode() 
+	{
+		int prime = 2;
+		int result = 1;
+		result = prime * result + ((this.isActive() == true) ? 0 : 1);
+		result = prime * result + ((this.getNotes() == null) ? 0 : this.getNotes().hashCode());
+		result = prime * result + ((this.getOrganizationName() == null) ? 0 : this.getOrganizationName().hashCode());
+		result = prime * result + ((this.getProductionGsId() == null) ? 0 : this.getProductionGsId().hashCode());
+		result = prime * result + ((this.getProductionIsaID() == null) ? 0 : this.getProductionIsaID().hashCode());
+		result = prime * result + ((this.getProductionIsaQualifier() == null) ? 0 : this.getProductionIsaQualifier().hashCode());
+		result = prime * result + ((this.getTestGsId() == null) ? 0 : this.getTestGsId().hashCode());
+		result = prime * result + ((this.getTestIsaID() == null) ? 0 : this.getTestIsaID().hashCode());
+		result = prime * result + ((this.getTestIsaQualifier() == null) ? 0 : this.getTestIsaQualifier().hashCode());
+		
+		return result;
+	}
+	
+}

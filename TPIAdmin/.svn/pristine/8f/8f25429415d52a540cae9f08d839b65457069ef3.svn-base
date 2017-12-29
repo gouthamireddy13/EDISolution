@@ -1,0 +1,50 @@
+package com.abc.tpi.model;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+
+@Entity
+@Table(name="ABC_TPI_DELIMETER")
+public class Delimiter {
+	@Id
+	@SequenceGenerator(name="ABC_TPI_DELIMETER_GEN", sequenceName="ABC_TPI_DELIMETER_SEQ",allocationSize=1)
+	@GeneratedValue(generator="ABC_TPI_DELIMETER_GEN")
+	@Column(name="DELIMETER_ID")
+	private Long id;
+	
+	@Column(length=5)
+	private String delimeter;
+
+	private String description;
+
+	public String getDelimeter() {
+		return delimeter;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+
+	public void setDelimeter(String delimeter) {
+		this.delimeter = delimeter;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+
+}

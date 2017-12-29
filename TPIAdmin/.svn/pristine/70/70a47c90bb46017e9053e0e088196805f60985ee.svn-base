@@ -1,0 +1,17 @@
+package com.abc.tpi.repository;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
+public class PocRepositoryImpl implements PocRepositoryCustom {
+
+	@PersistenceContext
+	private EntityManager entityManager;
+	
+	@Override
+	public long readParentbjectId(long pocId) {
+
+		long parentId =  (long) this.entityManager.createQuery("select prnt.id from PocParent prnt JOIN prnt.pocs chld where child.id = :pocId").setParameter("pocId", pocId).getSingleResult();
+		return parentId;
+	}
+}

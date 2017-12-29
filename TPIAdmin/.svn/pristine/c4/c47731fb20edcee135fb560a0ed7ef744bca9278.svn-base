@@ -1,0 +1,30 @@
+package com.abc.tpi.service.soap;
+
+import java.util.List;
+
+import javax.jws.WebMethod;
+import javax.jws.WebService;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.abc.tpi.domain.soap.Tpp;
+import com.abc.tpi.repository.DocumentRepository;
+
+@Component
+@WebService(serviceName = "tpi", endpointInterface = "com.abc.tpi.service.soap.TpiWebService")
+public class TpiWebServiceImpl implements TpiWebService {
+
+	@Autowired
+	private DocumentRepository documentRepository;
+	
+	@Override
+	@WebMethod(operationName = "uploadTpps")
+	public String uploadTpps(List<Tpp> tpps) {
+		// 
+		
+		return String.valueOf(documentRepository.count());
+
+	}
+
+}

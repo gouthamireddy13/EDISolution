@@ -1,0 +1,12 @@
+package com.abc.tpi.repository;
+
+import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import com.abc.tpi.model.service.ServiceCategory;
+@Repository("serviceCategoryRepository")
+public interface ServiceCategoryRepository extends JpaRepository<ServiceCategory, Long> {
+	List<ServiceCategory> findAllByOrderByName();
+}

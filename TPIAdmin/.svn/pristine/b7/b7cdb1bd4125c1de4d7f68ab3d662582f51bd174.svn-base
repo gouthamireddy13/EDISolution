@@ -1,0 +1,12 @@
+package com.abc.tpi.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+
+import com.abc.tpi.model.sd.ServiceCategories;
+
+public interface SDServiceCategoryRepository extends JpaRepository<ServiceCategories, Long> {
+
+	ServiceCategories findOneByServiceCategoryIgnoreCase(String serviceCategory);
+	ServiceCategories findByserviceKeyIgnoreCase(String id);
+}

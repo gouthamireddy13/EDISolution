@@ -1,0 +1,285 @@
+ /* Remove the navbar's default margin-bottom and rounded borders */ 
+    #logo{
+    width:220px;
+    height:80px;
+    }
+    .navbar {
+      margin-bottom: 0;
+      border-radius: 0;
+    }
+    
+   #panellogo{
+    color:#fff;
+     height:20px;
+     width:20px;
+    }
+    
+    #panelbtn{
+    font-size:10px;
+    background-color:rgb(0, 133, 202);
+    }
+    #panelsearch{
+    width:220px;
+    background-color:#fff;
+    }
+    .panel-heading{
+    background-color:#004c75; 
+    color:#fff;
+    font-size:11px; 
+    font-family:arial;
+    width:220px;
+    height:23px;
+    padding-top:5px;
+    padding-left:0px;
+    padding-bottom:5px;
+    }
+    
+    /* Set height of the grid so .sidenav can be 100% (adjust as needed) */
+    .row.content{background-color: #313942;height:100%;}
+    
+    /* Set gray background color and 100% height */
+    .sidenav {
+      padding-left: 50px;
+	  padding-top: 10px;
+    
+   height:100%;
+     
+	margin: 0;
+    color: white;
+	font-size: 14px;
+    
+    line-height: 40px;
+	
+	}
+	#headingleft{
+	text-decoration:none; 
+	color: white; 
+	font-size: 12px; 
+	font-family: arial;
+	}
+	.rightpanel{
+	background-color:#fff;
+	height:100%;
+	}
+	
+	/*partner management styles*/
+	#sort{
+	width:12px;
+	height:12px;
+	
+	}
+	#sortlink{
+	cursor:pointer;
+	text-decoration:none;
+	color:#fff;
+	}
+	
+	#partnerhead{
+	background-color: #808080; 
+	color:#fff; 
+	font-family:arial; 
+	font-size:12px; 
+	font-weight:bold; 
+	table-layout: fixed;
+	}
+	
+	#contactrow{
+	width: 20px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	}
+	
+	#partnerrow{
+	width: 33.3px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	}
+	
+	#extra{
+	height:100px; 
+	overflow-y: scroll;
+	}
+	
+	#contactfields
+	{text-align:left;
+	font-size:15.4px;
+	}
+	#warning
+	{
+	font-size:10px;
+	font-weight:400; 
+	color:#fff;
+	background-color: #d84315;
+	}
+	#primary
+	{
+	font-size:10px;
+	font-weight:400;
+	color:#fff;
+	}
+	#modtitle
+	{
+	font-family: arial; 
+	color: #fff; 
+	font-weight: 700; 
+	font-size: 16px;
+	}
+	
+	.divider{
+    width:5px;
+    height:auto;
+    display:inline-block;
+}
+	.modal-wrap {
+    width: auto;
+    margin: 0 20px;
+    border: 1px solid #004c75;}
+	
+	span.description {
+    display: inline-block;
+    overflow: hidden;
+    white-space: nowrap;
+    width: 20px;
+}
+	.titlehead{
+	font-family: arial; 
+	 
+	font-weight: 700; 
+	font-size: 16px;
+	
+	border-bottom: 1px solid #6cc24a;
+    padding-bottom: 5px;
+    padding-left:0px;
+	}
+	
+	h2{
+	color: #004c75;
+	font-size: 20px;
+	font-family: arial;
+	font-weight: normal;
+	}
+	
+	#close1{
+	font-family: arial; 
+	color: #fff; 
+	font-weight: 400;
+	font-size: 28px;
+	padding-right:10px; 
+	}
+	
+	.modal {
+  text-align: center;
+  padding: 0!important;
+}
+
+.modal:before {
+    content: '';
+  display: inline-block;
+    height: 100%;
+  vertical-align: middle;
+  margin-right: -4px;
+}
+
+.modal-dialog {
+  display: inline-block;
+  text-align: left;
+  vertical-align: middle;
+  width:400px;
+  
+}
+	
+	
+
+
+/* Column widths are based on these cells */                 
+.row-name {
+  width: 20%;
+}
+.row-title {
+  width: 20%;
+}
+.row-phone {
+  width: 20%;
+}
+.row-email {
+  width: 20%;
+}
+.row-action {
+  width: 20%;
+}
+
+.modal-megamenu{
+	width:600px;
+	top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+#myModal { overflow-y:scroll }
+
+
+
+/* TPP SCREEN */
+
+#test{
+	font-family:arial;
+	font-size:16px;
+	font-weight:700;
+	text-align:center;
+}
+
+
+#contactfields1
+	{text-align:left;
+	font-size:14px;
+	font-weight:400;
+	line-height: 17px;
+	}
+
+ .centered{
+ width:900px;
+ transform: translateX(-15%);
+ }
+
+.extra1{
+height:500px; 
+overflow-y: scroll;
+}
+
+#addTrans{
+	text-align:center; 
+	padding-top:15px; 
+	padding-bottom:20px;
+	padding-right:10px;
+}
+
+#row1
+{
+padding-left:13px;
+padding-right:13px;	
+}
+	
+#row2{
+padding-left:13px;
+padding-right:13px;
+padding-top:20px;	
+}
+
+.check{
+	display:inline;
+	padding: 10px;
+	margin-top:10px;
+}	
+
+#add{
+	text-align:center; 
+	padding-bottom:20px;
+	padding-right:10px;
+}
+	
+	
+	
+	
+	

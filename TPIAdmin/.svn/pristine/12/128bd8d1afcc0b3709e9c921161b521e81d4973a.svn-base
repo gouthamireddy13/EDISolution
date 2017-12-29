@@ -1,0 +1,432 @@
+<div>
+<div class="dashboard-wrap">
+<div class="breadcrumbs">
+	
+	<h2>3PP Management</h2>	
+</div>
+</div>	
+
+<div style="width:95%;" >
+ <div class="panel panel-default" style="background-color: #404951;" >
+ <div style="padding-top:20px;padding-left:20px;" ng-init="inittpp();inittableList();">
+      <div class="panel-heading ">3PP NAME</div>
+      </div>
+      <div class="panel-body " style="padding-top:0px; padding-left:20px" >
+      	
+		
+		<input class="form-control" id="panelsearch" type="text" name="search" ng-model="search.tppname"> 
+      
+      </div>
+      <div class=" panel-body pull-right col-sm-12" style=" background-color:#59626b ;">	
+
+  
+		  <!-- Trigger the modal with a button -->
+		  <button type="button" class="btn btn-primary pull-right"   data-toggle="modal" data-target="#myModal" id="panelbtn"><img src="assets/AddPartner.png" id="panellogo">&nbsp;&nbsp;&nbsp; NEW 3PP</button>
+
+</div>
+</div>
+ <table class="table table-striped">
+
+	        <thead id="partnerhead">
+	        <tr>
+	            
+	            <tr>
+	            
+	            <th id="partnerrow"> <a id="sortlink"
+	             ng-click="sortType = 'tppname'; sortReverse = !sortReverse">3PP NAME
+            
+            <span ng-show="sortType == 'tppname' && !sortReverse" ><img src="assets/up.png" id="sort"></span>
+            <span ng-show="sortType == 'tppname' && sortReverse" ><img src="assets/down.png" id="sort"></span></a>
+	             </th>
+	            <th id="partnerrow"> <a id="sortlink"
+	             ng-click="sortType = 'type'; sortReverse = !sortReverse">3PP TYPE 
+	              <span ng-show="sortType == 'type' && !sortReverse" ><img src="assets/up.png" id="sort"></span>
+                 <span ng-show="sortType == 'type' && sortReverse" ><img src="assets/down.png" id="sort"></span></a> </th>
+	        </tr>
+	        </thead>
+	        <tbody>
+	        <tr ng-repeat="item in items  |    orderBy:sortType:sortReverse   |    filter:search " ng-click="showData(item.data)" data-toggle="modal" data-target="#myModal" >
+	       
+	          <td id="partnerrow">{{item.tppname}}</td>
+	          
+	          <td id="partnerrow">{{item.type}}</td>
+	        
+	        </tr>
+	        </tbody>
+	      </table>
+	      
+	      </div>
+	      
+	      <!-- Modal -->
+	       
+		  <div class="modal fade" id="myModal" role="dialog"  data-backdrop="static" >
+		    <div class="modal-dialog modal-megamenu" >
+		    <div class="centered">
+		    <div class="modal-content" style="background-color: rgb(240, 240, 240);">
+		    <div class="modal-header" style="background-color:#004c75;">
+		         <!-- <button type="button" class="close" data-dismiss="modal">&times;</button>-->
+				 <h1 class="modal-title" id="modtitle">3PP - New 3PP
+				  <button type="button" class="close" id="close1" ng-click="cleadata();" data-dismiss="modal">&times;</button> </h1>
+		    </div>
+		    <div  class="extra1">
+		    <div class="modal-wrap"style="margin-top:20px;background-color:#fff;">
+		       
+		        <div class="modal-body" style="text-align:left; "> 	
+		         <form name="tppDetails" class="form-horizontal">	
+		              
+		               
+		              
+					    <div class="row" id="row1">
+					   
+					    <div class="form-group" >
+					     <div class = "col-sm-5 col-md-6 ">
+					      <label class="control-label col-sm-4" id="contactfields1" for="tppName" >3PP Name<font color="red">*</font>:</label>
+					      
+					        <div class="col-sm-8"> 
+					        <input  class="form-control" id="partnerName" ng-disabled="hideEdit"  name="tppName" ng-model="tppName" required > 
+					          <span><font color="red"  ng-show="ErrorMsg&&tppDetails.tppName.$error.required">3PP Name is Required</font></span>
+					          <span><font color="red"  ng-show="validName">TPP Name Already Exist</font></span>
+					         </div>
+					      
+					    
+					     </div>
+					      <div class="col-sm-5 col-md-6">
+					      <label class="control-label col-sm-4 "  id="contactfields1" >Add 3PP Type<font color="red">*</font>: </label> 
+					      <div class="col-sm-8">
+							<select class="form-control "  ng-disabled="hideEdit" ng-options="item.id as item.description for item in tpplist" name="tppType" ng-model="tppType" required>
+							
+							<option value="">Please Select Type</option>
+							</select>
+							 <span><font color="red"  ng-show="ErrorMsg&&tppDetails.tppType.$error.required">Type is Required</font></span> 
+							</div>
+							</div>
+					      
+					      </div>
+					    
+					    
+					    
+					   
+					    </div>
+					    
+					    <div class="titlehead" > CONTACT DETAILS </div>
+                        
+                      <div id="extra" ng-show="showTable&&contactList.length!=0">
+                        <table class="table table-striped "   style="table-layout: fixed;">
+                         
+                 
+	        <thead id="partnerhead">
+	        <tr>
+	            <th class="row-name">Name</th>
+	            <th class="row-title">Title</th>
+	             <th class="row-phone">Phone</th>
+	            <th class="row-email">Email</th>
+	             <th class="row-action">Action</th> 
+	            
+	            <!-- <th></th> -->
+	          </tr>
+	        </thead>
+	        
+	        <tbody>
+	        <tr  ng-repeat="contact in contactList" >
+	          
+	          <td id="contactrow">{{contact.contactName}}</td>
+	          <td id="contactrow">{{contact.contactTitle}}</td>
+	          <td id="contactrow">{{contact.contactPhone}}</td>
+	          <td id="contactrow">{{contact.contactEmail}}</td>
+	          <td><a href="" ng-click="editcontact(contact)"  ng-show="!upbt&&!hideEdit" > <span class="glyphicon glyphicon-pencil"   ></span></a>&nbsp; 
+	         <a href=""    ng-click="deletecontact(contact)"   ng-show="contactList.length>1&&!upbt&&!hideEdit"> <span class="glyphicon glyphicon-remove"  > </span></a></td>   
+	          
+	         <!--  <td><button class="btn btn-primary" ng-click="edit(item)">Edit</button></td> -->
+	        </tr>
+	        </tbody>
+	       
+	     </table>
+	      </div> 
+	      
+	      
+	      
+					<div class="row" id="row2">
+					
+					    <div class="form-group" >
+					 <div class = "col-sm-5 col-md-6 ">      
+					      <label class="control-label col-sm-4" id="contactfields1" for="ContactName">Name<font color="red">*</font>:</label>
+					        <div class="col-sm-8">
+					         <input class="form-control"  id="contactName" name="contactName" ng-disabled="hideEdit" ng-model="contact.contactName"  required></input>
+					       <span><font color="red"  ng-show="ErrorMsg&&tppDetails.contactName.$error.required">Contact Name is Required</font></span>
+					      </div>
+					      </div>
+					    
+
+					   <div class = "col-sm-5 col-md-6 ">
+					      <label class="control-label col-sm-4"  id="contactfields1" for="ContactTitle">Title:</label>
+					         <div class="col-sm-8">       
+					        <input  class="form-control"  id="ContactTitle"  name="contactTitle" ng-disabled="hideEdit" ng-model="contact.contactTitle"></input>
+					         <span><font color="red"  ng-show="ErrorMsg&&tppDetails.contactTitle.$error.required">Contact title is Required</font></span> 
+					       </div>
+					      </div>
+					      </div>
+					      </div>
+					       
+					    
+                        <div class="row" id="row1">
+						<div class="form-group">
+					      <div class="col-sm-5 col-md-6">
+					      <label class="control-label col-sm-4"  id="contactfields1" for="ContactPhone">Phone<font color="red">*</font>:</label>
+					        <div class="col-sm-8">        
+					        <input  class="form-control"  id="ContactPhone" type="text" ng-disabled="hideEdit" ng-pattern="/[0-9]+/"ui-mask="(999)-999-9999"  name="ContactPhone" ng-model="contact.contactPhone"  required></input>
+					            <span><font color="red"  ng-show="ErrorMsg&&tppDetails.ContactPhone.$error.required">Contact Phone is Required</font></span> 
+					        </div>
+					    </div>
+
+					 <div class="col-sm-5 col-md-6">
+					      <label class="control-label col-sm-4"  id="contactfields1" for="email">Email<font color="red">*</font>:</label>
+					      <div class="col-sm-8">
+					        <input class="form-control"  type="email" id="email" name="Contactemail" ng-disabled="hideEdit" ng-model="contact.contactEmail" required></input>
+    <span><font color="red"  ng-show="ErrorMsg&&tppDetails.Contactemail.$error.required">Contact Email is Required</font></span> 
+					              <span><font color="red"  ng-show="ErrorMsg&&tppDetails.Contactemail.$error.email">Invalid Email</font></span>
+					      </div>
+					 </div>
+					      </div>
+					      </div>
+					 <div class="wrapper" id="add" ng-show="!upbt">
+				
+		        	 <button type="submit" class="btn btn-primary pull-right" id="primary" ng-disabled="hideEdit" ng-click="addContact(tppDetails.$valid,contact)" formnovalidate>ADD CONTACT</button> 
+					 <div class="divider" ></div>
+					 
+		      
+				</div>      
+					   
+		         <div class="wrapper" id="add" ng-show="upbt">
+				
+		        	 <button type="submit" class="btn btn-default pull-right" id="warning" ng-click="revertAll();"  formnovalidate>CANCEL</button> <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
+		        	 <button type="submit" class="btn btn-primary pull-right" style="font-size:10px;font-weight:400;margin-right: 6px;" ng-click="addContact(tppDetails.$valid,contact); " formnovalidate>UPDATE CONTACT</button> 
+					   
+					 <div class="divider" ></div>
+					 
+		      
+				</div>
+				</form>
+				<form name="ProtoForm">
+    <div class="titlehead" > PROTOCOL <font color="red">*</font></div>
+    
+  <div style="padding-top:20px"> <span class="check" ng-repeat="item in ptcolList"><input type="checkbox" ng-disabled="hideEdit" name="protocol" ng-model="item.checked" ng-click="updateSelection($index, ptcolList)" >{{item.protocolType}}
+   </span> 
+   <span><font color="red"  ng-show="ErrorMsgP&&protoval">Protocol is Required</font></span>
+   </div>
+			</form>	
+				<div class="divider" ></div>
+		
+				<div class="titlehead" > TRANSACTION </div>
+	     <div id="extra" ng-show="showtransTable&&backtransactionList.length!=0">
+                        <table class="table table-striped "   style="table-layout: fixed;">
+                         
+                 
+	        <thead id="partnerhead">
+	        <tr>
+	            <th class="row-direction">Direction</th>
+	            <th class="row-transaction">Transaction Type</th>
+	            <th class="row-version">Version</th>
+	            <th class="row-action">Action</th> 
+	            
+	            
+	         </tr>
+	        </thead>
+	        
+	        <tbody>
+	        
+	        <tr  ng-repeat="trans in backtransactionList"  >
+	          
+	          <td id="contactrow">{{trans.direction.directionCode}}</td>
+	          <td id="contactrow">{{trans.document.documentType}}</td>
+	          <td id="contactrow">{{trans.version.versionNumber}}</td>
+	          
+	          <td><a href=""  ng-click="Edittrans(trans)" ng-show="!uptransbt&&!hideEdit"> <span class="glyphicon glyphicon-pencil"  ></span></a>&nbsp; 
+	         <a href=""     ng-click="deletetrans(trans)" ng-show="backtransactionList.length>1&&!uptransbt&&!hideEdit"> <span class="glyphicon glyphicon-remove"  > </span></a></td>  
+	          
+	         
+	        </tr>
+	        </tbody>
+	       
+	     </table>
+	      </div> 
+	      
+				<form name="transactionForm">
+				 <div class="row" id="row2">
+						<div class="form-group">
+					      <div class="col-6 col-md-4">
+					      <label class="control-label" id="contactfields1">Direction<font color="red">*</font>: </label> 
+					     
+							<select class="form-control"  ng-options="item.id as item.directionCode for item in drList" name="direction" ng-disabled="hideEdit" ng-model="transaction.direction" required>
+							<option value="">Please Select</option>
+							</select>
+							  <span><font color="red"  ng-show="ErrorMsg1&&transactionForm.direction.$error.required">Direction is Required</font></span>  
+							</div>
+
+					<div class="col-6 col-md-4">
+					 <label class="control-label" id="contactfields1">Transaction Type<font color="red">*</font>: </label> 
+					     
+							<select class="form-control "   ng-options="item.id as item.documentType for item in ttypeList" name="transaction" ng-disabled="hideEdit" ng-model="transaction.document" required>
+							<option value="">Please Select</option>
+							</select>
+							  <span><font color="red"  ng-show="ErrorMsg1&&transactionForm.transaction.$error.required">Transaction Type is Required</font></span> 
+							</div>
+							
+					<div class="col-6 col-md-4">
+					 <label class="control-label" id="contactfields1">Version<font color="red">*</font>: </label> 
+					     
+							<select class="form-control "   ng-options="item.id as item.versionNumber for item in versionList" name="version" ng-disabled="hideEdit" ng-model="transaction.version" required>
+							<option value="">Please Select</option>
+							</select>
+							  <span><font color="red"  ng-show="ErrorMsg1&&transactionForm.version.$error.required">Version is Required</font></span>  
+							</div>
+					      </div>
+					      </div>
+				 <div class="wrapper" id="addTrans"  ng-show="!uptransbt">
+				
+		        	 <button type="submit" class="btn btn-primary pull-right" id="primary" ng-disabled="hideEdit" ng-click="addTransaction(transactionForm.$valid,transaction)" formnovalidate>ADD TRANSACTION</button> 
+					 <div class="divider" ></div>
+					 
+		      
+				</div>
+				 <div class="wrapper" id="addTrans" ng-show="uptransbt">
+				
+		        	 <button type="submit" class="btn btn-default pull-right" id="warning" ng-click="revertTransAll();"  formnovalidate>CANCEL</button> <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
+		        	 <button type="submit" class="btn btn-primary pull-right" style="font-size:10px;font-weight:400;margin-right: 6px;" ng-click="addTransaction(transactionForm.$valid,transaction);" formnovalidate>UPDATE TRANSACTION</button> 
+					   
+					 <div class="divider" ></div>
+					 
+		      
+				</div>
+				</form>
+				<div ng-show="tppType!=undefined&&tppType!='2'&&tppType!='3'">
+		
+				<div class="titlehead" > PARTNER IDs  </div>
+				
+				<form name="idForm">
+				<div class="row" id="row2">
+					
+					    <div class="form-group" >
+					 <div class = "col-sm-5 col-md-6 " id="test"><b>Test</b></div>
+					 <div class = "col-sm-5 col-md-6" id="test"><b>Production</b></div>
+					 <div class = "col-sm-5 col-md-6 " id="space">      
+					      <label class="control-label col-sm-4" id="contactfields1" >ISA ID<font color="red">*</font>:</label>
+					         <div class="col-sm-8">
+					         <input class="form-control"  id="isaidt" name="isaidt" ng-model="lightWellPartner.testIsaID" ng-disabled="hideEdit" required></input>
+					       <span><font color="red"  ng-show="ErrorMsg2&&idForm.isaidt.$error.required">Test ISA ID is Required</font></span>
+					      </div>
+					      </div>
+					    
+ 
+					   <div class = "col-sm-5 col-md-6 " id="space">
+					      <label class="control-label col-sm-4" id="contactfields1" >ISA ID<font color="red">*</font>:</label>
+					        <div class="col-sm-8">        
+					        <input  class="form-control"  id="Cisaidp" name="isaidp" ng-model="lightWellPartner.productionIsaID" ng-disabled="hideEdit" required></input>
+					         <span><font color="red"  ng-show="ErrorMsg2&&idForm.isaidp.$error.required">Production ISA ID is Required</font></span> 
+					      </div>
+					      </div>
+					      </div>
+					      <div class="form-group" >
+					      <div class = "col-sm-5 col-md-6 " id="space">      
+					      <label class="control-label col-sm-4" id="contactfields1" >ISA QUAL<font color="red">*</font>:</label>
+					         <div class="col-sm-8">
+					         <input class="form-control"  id="isaqualt" name="isaqualt" ng-model="lightWellPartner.testIsaQualifier" ng-disabled="hideEdit"  required></input>
+					     <span><font color="red"  ng-show="ErrorMsg2&&idForm.isaqualt.$error.required">Test ISA QUAL is Required</font></span>
+					      </div>
+					      </div>
+					      
+					      <div class = "col-sm-5 col-md-6 " id="space">      
+					      <label class="control-label col-sm-4" id="contactfields1" >ISA QUAL<font color="red">*</font>:</label>
+					         <div class="col-sm-8">
+					         <input class="form-control"  id="isaqualp" name="isaqualp" ng-model="lightWellPartner.productionIsaQualifier" ng-disabled="hideEdit" required></input>
+					       <span><font color="red"  ng-show="ErrorMsg2&&idForm.isaqualp.$error.required">Production ISA QUAL is Required</font></span>
+					      </div>
+					      </div>
+					      </div>
+					      
+					       <div class="form-group" >
+					      <div class = "col-sm-5 col-md-6 " id="space1">      
+					      <label class="control-label col-sm-4" id="contactfields1" >GS ID<font color="red">*</font>:</label>
+					         <div class="col-sm-8">
+					         <input class="form-control"  id="gsidt" name="gsidt" ng-model="lightWellPartner.testGsId" ng-disabled="hideEdit" required></input>
+					      <span><font color="red"  ng-show="ErrorMsg2&&idForm.gsidt.$error.required">Test GS ID is Required</font></span>
+					      </div>
+					      </div>
+					      
+					      <div class = "col-sm-5 col-md-6 " id="space1">      
+					      <label class="control-label col-sm-4" id="contactfields1" >GS ID<font color="red">*</font>:</label>
+					         <div class="col-sm-8">
+					         <input class="form-control"  id="gsidp" name="gsidp" ng-model="lightWellPartner.productionGsId" ng-disabled="hideEdit" required></input>
+					      <span><font color="red"  ng-show="ErrorMsg2&&idForm.gsidp.$error.required">Production GS ID is Required</font></span>
+					      </div>
+					      </div>
+					      </div>
+					     
+					      </div>
+					      </form>
+					      </div>
+					      
+				</div>
+				 
+				 
+				
+				</div>
+				</div>
+		        <div class="modal-footer" style="text-align:center;">
+		        	 <button type="button" class="btn btn-primary pull-left" id="primary"  ng-show="!hideEdit" ng-disabled="backtransactionList.length<1||contactList.length<1||upbt" ng-click="checktppNameandSubmit(tppName,tppDetails.$valid,transactionForm.$valid,idForm.$valid)">SAVE</button>
+		           <button type="button" class="btn btn-primary pull-left" id="primary" ng-show="hideEdit" ng-click="EditTppPartner();">EDIT</button>
+		        	   <button type="button" class="btn btn-default"  ng-hide="onlyNew" id="warning" ng-click="deleteTpp();" >REMOVE</button>
+		          <button type="button" class="btn btn-default pull-right" id="warning" ng-click="cleadata();" data-dismiss="modal">CANCEL</button>
+		        </div>
+		      		      
+		    </div>
+		  </div>
+		  </div>
+		  </div>
+		  <script type="text/ng-template" id="myModalContent.html">
+    
+   
+		   
+       
+            <div class="modal-content" style="background-color: #f0f0f0 ;height:auto;" >
+                <div class="modal-header" style="background-color:#004c75;">
+                    <h1 class="modal-title" id="modtitle"> 3PP 
+                    <button type="button" class="close" data-dismiss="modal" ng-click="cancel()" style="color: #fff; font-weight: 400; font-size: 24px;" aria-hidden="true">&times;</button> </h1>
+                    
+                </div>
+               
+<div class="modal-body" style="border: 1px solid;margin:15px;background-color:#fff; text-align:center;  " >
+              <span style="font-family:arial;font-weight:700;"><b> {{user.msg}} </b> </span>
+ </div>
+
+               <div class="modal-footer">
+                    <button type="button" class="btn btn-primary pull-left"   id="primary" ng-click="cancel(user.del,user.edit)">OK</button>
+<button type="button" class="btn btn-default pull-right" ng-show="user.edit||user.del"   id="warning" ng-click="close(false)">CANCEL</button>
+
+   </div>     
+     
+            </div><!-- /.modal-content -->
+       
+     
+      
+    
+		</script>  
+		  </div>
+		  
+		    
+		     
+		    
+		    
+           
+	             
+	           
+	            
+
+	           
+	            
+	               
+	            
+	           
+	        
+	        
+	        
+    

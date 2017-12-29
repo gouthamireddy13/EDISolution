@@ -1,0 +1,1592 @@
+var ABApp = angular.module('ABApp');
+
+ABApp.directive('uppercased', function() {
+    return {
+        require: 'ngModel',        
+        link: function(scope, element, attrs, modelCtrl) {
+            modelCtrl.$parsers.push(function(input) {
+                return input ? input.toUpperCase() : "";
+            });
+            element.css("text-transform","uppercase");
+        }
+    };
+});s
+
+
+ABApp.controller('serviceinterController', function($scope,$modal, $http, $window,$interval,$filter) {
+	$scope.sortType     = 'name'; 
+	  $scope.sortReverse  = false;
+	$scope.message="";
+	$scope.tpplist=[];
+	$scope.ErrorMsg1 = false;
+	$scope.tppCodeList=[];
+	$scope.emptylList=[];
+	
+	
+	
+	
+	$scope.upbsbt=false;
+	$scope.upgrbt=false;
+	
+
+	
+	$scope.scNull = function(){
+	    
+		$scope.enabletppn=true;
+		$scope.tppName = null;
+		$scope.selecttpp = null;
+		
+	
+}
+	$scope.tppNull = function(){
+		
+			$scope.bussService.businessService = null;
+			$scope.bussService.serviceCategory = null;
+			$scope.bussService.version = null;
+			$scope.bussService.protocol = null;
+			$scope.bussService.ack = null;
+		
+	}
+	$scope.disdelitList=[];
+	//
+	$scope.elementdimitDisable=false;
+	$scope.disableDilimeters = function(){
+		var tempList=[];
+		//$scope.disdelitList.indexOf($scope.elementDelimiter);
+		$scope.disdelitList=angular.copy(tempList);
+		if($scope.segmentDelimiter!=null&&$scope.segmentDelimiter!=undefined)
+		{
+			$scope.delimitersEList = angular.copy(tempList);
+			angular.forEach( $scope.eBackList , function (item) {
+				
+				if(item.id!= $scope.segmentDelimiter){
+					$scope.delimitersEList.push(item);	
+				}
+			});
+			
+		}
+		if($scope.elementDelimiter!=null&&$scope.elementDelimiter!=undefined){
+			
+			
+			$scope.delimitersCList = angular.copy(tempList);
+				angular.forEach( $scope.cBackList , function (item) {
+					
+					if(item.id!= $scope.segmentDelimiter &&  item.id!= $scope.elementDelimiter ){
+						$scope.delimitersCList.push(item);	
+					}
+				});
+		}
+		if($scope.compositeElementDelimiter!=null&& $scope.compositeElementDelimiter!=undefined){
+		
+			$scope.delimitersRList = angular.copy(tempList);
+			angular.forEach( $scope.rBackList , function (item) {
+				
+				if(item.id!= $scope.segmentDelimiter &&  item.id!= $scope.elementDelimiter && item.id!= $scope.compositeElementDelimiter ){
+					$scope.delimitersRList.push(item);	
+				}
+			});
+		
+		
+		
+		}
+		//$scope.disdelitList.indexOf(elementDelimiter)
+	}
+	$scope.resetDilimeters = function(){
+		if($scope.segmentDelimiter==null||$scope.segmentDelimiter==undefined){
+			$scope.elementDelimiter=null;
+			$scope.compositeElementDelimiter=null;
+			$scope.repeatDelimiter=null;
+			};
+			
+		if($scope.elementDelimiter==null||$scope.elementDelimiter==undefined){
+				
+				$scope.compositeElementDelimiter=null;
+				$scope.repeatDelimiter=null;
+				};
+			
+		if($scope.compositeElementDelimiter==null||$scope.compositeElementDelimiter==undefined){
+					
+					
+					$scope.repeatDelimiter=null;
+					};	
+	}
+	
+	$scope.revertService = function(){
+		var emptyL = [];
+		$scope.bussServiceList = angular.copy(emptyL);
+		$scope.selecttpp = null;
+		$scope.upgrbt=false;
+		$scope.tppName = null;
+		$scope.protocolList();
+		$scope.bsList($scope.scname);
+		$scope.lightWellPartner.testIsaID = null;
+		$scope.lightWellPartner.productionIsaID = null;
+		$scope.lightWellPartner.testIsaQualifier = null;
+		$scope.lightWellPartner.productionIsaQualifier = null;
+		$scope.lightWellPartner.testGsId = null;
+		$scope.lightWellPartner.productionGsId = null;
+		$scope.segmentDelimiter = null;
+		$scope.compositeElementDelimiter = null;
+		$scope.elementDelimiter = null;
+		$scope.repeatDelimiter = null;
+		$scope.revertBusinessServiceAll();	
+	}
+	$scope.revertBusinessServiceAll = function(){
+		$scope.servError=false;
+		$scope.editService=false;
+		$scope.upbsbt=false;
+		$scope.bussService.businessService =null;
+		$scope.bussService.version =null;
+		$scope.bussService.protocol = null;
+		$scope.bussService.ack = null;
+		$scope.bussService.ackperiod = null;
+		$scope.bussService.serviceCategory = null;
+	};
+	$scope.upbsbt=false;
+	$scope.ttpNameList=[];
+$scope.bussService={};
+$scope.emp={};
+$scope.bussServiceList=[];
+$scope.servError=false;
+$scope.upbsbt=false;
+	$scope.addBusinessService = function(flag,data)
+	{
+		$scope.upbsbt=false;
+		$scope.servError=false;
+		if(!flag)
+			{
+			$scope.servError=true;
+			return false;
+			}
+		if($scope.editService)
+			{
+			
+			$scope.deleteBService(editService);
+	    	  editService=null;
+			}
+		
+		$scope.editService=false;
+		
+		
+		var obj=[],obj1=[];
+		var tempobj={};
+		
+		var temp = $filter("filter")($scope.versionList, {id:data.version});
+		if(temp.length!=0)
+			{
+			tempobj.version=temp[0];
+		
+			}
+		
+		var tempp = $filter("filter")($scope.pList, {id:data.protocol});
+		if(tempp.length!=0)
+			{
+			tempobj.protocol=tempp[0];
+		
+			}
+		var tempt = $filter("filter")($scope.bserviceList, {id:data.businessService});
+		if(tempt.length!=0)
+			{
+			
+			tempobj.businessService=tempt[0]
+			
+			}
+		tempobj.ackPeriod=data.ackperiod;
+		tempobj.ack=data.ack;
+		var tempbs = $filter("filter")($scope.serviceList, {id:data.serviceCategory});
+		if(tempbs.length!=0)
+			{
+			
+			tempobj.lightWellPartner=tempbs[0]
+			
+			} 
+		
+		//tempobj.lightWellPartner=data.serviceCategory;
+		
+		$scope.bussServiceList.push(tempobj);
+		$scope.bussService=null;
+		
+	};
+	$scope.editService=false;
+	var editService=null;
+	
+	
+	$scope.showName=function(list,obj)
+	{
+		
+		if(obj!=undefined){
+			var tempsc = $filter("filter")(list, {id:obj});
+			if(tempsc.length!=0)
+				{
+				return tempsc[0].display;
+				}
+		}
+		
+		return obj;	
+		
+	};
+	$scope.showackP= false;
+	$scope.delimitErr= false;
+	$scope.checkdelimiter=function()
+	{
+		
+		
+		if($scope.segmentDelimiter==$scope.elementDelimiter)
+		{
+		$scope.delimitErr= true;
+		}
+		if($scope.elementDelimiter==$scope.compositeDelimiter)
+		{
+		$scope.delimitErr= true;
+		}
+		if($scope.compositeDelimiter==$scope.repeatDelimiter)
+		{
+		$scope.delimitErr= true;
+		}
+		
+		else
+	{
+			$scope.delimitErr= false;
+	}
+	}
+	$scope.showNm=function(list,obj)
+	{
+		
+		
+			var tempsc = $filter("filter")(list, {id:obj});
+			if(tempsc.length!=0)
+				{
+				$scope.showackP= tempsc[0].businessServiceName.indexOf("Out")!=-1;
+				}
+			else
+				
+				{
+				$scope.showackP= false;
+				}
+			if($scope.bussService.ack==null||$scope.bussService.ack==undefined||$scope.bussService.ack!='true')
+				{
+				$scope.showackP= false;
+				}
+			if($scope.showackP == false){
+				$scope.bussService.ackperiod = undefined;
+			}
+		
+		
+	};
+	$scope.editBService= function(item){
+		$scope.upbsbt=true;
+		$scope.user.edit=false;
+		$scope.bussService={};
+		$scope.bussService.businessService=item.businessService.id;
+		$scope.bussService.version= item.version.id;
+		$scope.bussService.protocol= item.protocol.id;
+		$scope.bussService.serviceCategory= item.lightWellPartner.id;
+	/*	if(item.ack==true || item.ack == "true"){
+		$scope.bussService.ack= "true";
+		}
+		else{
+			$scope.bussService.ack = "false";
+		}*/
+		
+		$scope.bussService.ack = item.ack.toString();
+		$scope.showNm($scope.bserviceList,$scope.bussService.businessService);
+         if(item.ackPeriod!=undefined&&item.ackPeriod!=null)
+        	 {
+		$scope.bussService.ackperiod= item.ackPeriod.toString();
+        	 }
+		editService=item;
+		$scope.editService=true;
+	};
+	$scope.getforDB=function(dataList)
+	{
+		var temp = [];
+		$scope.ServiceobjdbList = angular.copy(temp);
+		
+		angular.forEach(dataList, function (item) {
+			var sarobj=
+			{
+					segmentDelimiter:{},
+					elementDelimiter:{},
+					compositeElementDelimiter:{},
+					repeatDelimiter:{},
+					lightWellPartner:{},
+					businessServices:[]
+				};
+			
+		if(item.services.tpp !=null)
+			{
+			var temps = $filter("filter")($scope.ttpNameList, {name:item.services.tpp});
+			if(temps.length!=0)
+				{
+				sarobj.tpp= {id:temps[0].id};
+				}
+			
+			}
+			//serviceobj.services.segtmentDelimiter = $scope.segmentDelimiter;
+		var temps = $filter("filter")($scope.delimitersSList, {delimiter:item.services.segmentDelimiter});
+		if(temps.length!=0)
+			{
+			sarobj.segmentDelimiter.id=temps[0].id;
+			}
+		
+		var tempe = $filter("filter")($scope.delimitersEList, {delimiter:item.services.elementDelimiter});
+		if(tempe.length!=0)
+			{
+			sarobj.elementDelimiter.id=tempe[0].id;
+			}
+		
+		var tempc = $filter("filter")($scope.delimitersCList, {delimiter:item.services.compositeElementDelimiter});
+		if(tempc.length!=0)
+			{
+			sarobj.compositeElementDelimiter.id=tempc[0].id;
+			}
+		var tempr = $filter("filter")($scope.delimitersRList, {delimiter:item.services.repeatDelimiter});
+		if(tempr.length!=0)
+			{
+			sarobj.repeatDelimiter.id=tempr[0].id;
+			}
+		
+		//sarobj.segmentDelimiter.id=$scope.segmentDelimiter;
+				
+		
+				//sarobj.elementDelimiter.id=$scope.elementDelimiter;
+				
+						
+				//sarobj.compositeElementDelimiter.id=$scope.compositeDelimiter;
+				
+			//serviceobj.services.elementDelimiter = $scope.elementDelimiter;
+			//serviceobj.services.compositeElementDelimiter = $scope.compositeDelimiter;
+			sarobj.lightWellPartner.testIsaID = item.services.lightWellPartner.testIsaID;
+			sarobj.lightWellPartner.productionIsaID = item.services.lightWellPartner.productionIsaID;
+			sarobj.lightWellPartner.testIsaQualifier = item.services.lightWellPartner.testIsaQualifier;
+			sarobj.lightWellPartner.productionIsaQualifier = item.services.lightWellPartner.productionIsaQualifier;
+			sarobj.lightWellPartner.testGsId = item.services.lightWellPartner.testGsId;
+			sarobj.lightWellPartner.productionGsId = item.services.lightWellPartner.productionGsId;
+			
+			
+			
+			
+			
+			
+			angular.forEach(item.businessServices, function (item) {
+			
+			 
+				 var ob={
+						 serviceType:{id:item.businessService.id},
+							 version:{id:item.version.id},
+							 protocol:{id:item.protocol.id},
+							 lightWellPartner:{id:item.lightWellPartner.id },
+							 ack:item.ack,
+							 ackPeriod:item.ackPeriod
+				 };
+				 sarobj.businessServices.push(ob);
+				
+			 });
+			//serviceobj.push(sarobj);
+			$scope.ServiceobjdbList.push(sarobj);
+			
+			 
+		 });
+
+		console.log(JSON.stringify($scope.ServiceobjdbList));
+		
+		
+		 $scope.cleargroup();
+		 
+	}
+$scope.deleteBService= function(editService){
+	$scope.user.edit=false;
+	var index = $scope.bussServiceList.indexOf(editService);
+	  $scope.bussServiceList.splice(index, 1);	
+	};
+	
+	$scope.serviceList=[];
+	$scope.ServiceobjList=[];
+	$scope.ServiceobjdbList=[];
+	$scope.addServiceCategory= function(){
+		$scope.ErrorMsg1 = true;
+		$scope.upgrbt=false;
+		$scope.enabletppn=true;
+		
+		
+		$scope.protocolList();
+		$scope.bsList($scope.scname);
+		var objlist=[];
+		if(	$scope.eidtser)
+			{
+			
+    		//var index = $scope.ServiceobjList.indexOf(servdel);
+    		//$scope.ServiceobjList.splice(index, 1);
+			angular.forEach($scope.ServiceobjList, function (serviceobj) {
+				var tppn="";
+								var temptpp = $filter("filter")($scope.ttpNameList, {id: $scope.tppName});
+								if(temptpp.length!=0)
+									{
+									tppn = temptpp[0].name;
+									}
+								if(serviceobj.id==$scope.id)
+									{
+									//serviceobj.services.serviceCategory = $scope.serviceCategory;
+									//serviceobj.services.segtmentDelimiter = $scope.segmentDelimiter;
+									var temps = $filter("filter")($scope.delimitersSList, {id:$scope.segmentDelimiter});
+									if(temps.length!=0)
+										{
+										serviceobj.services.segmentDelimiter=temps[0].delimiter;
+										}
+									var tempe = $filter("filter")($scope.delimitersEList, {id:$scope.elementDelimiter});
+									if(tempe.length!=0)
+										{
+										serviceobj.services.elementDelimiter=tempe[0].delimiter;
+										}
+									var tempc = $filter("filter")($scope.delimitersCList, {id:$scope.compositeElementDelimiter});
+									if(tempc.length!=0)
+										{
+										serviceobj.services.compositeElementDelimiter=tempc[0].delimiter;
+										}
+									var tempr = $filter("filter")($scope.delimitersRList, {id:$scope.repeatDelimiter});
+									if(tempr.length!=0)
+										{
+										serviceobj.services.repeatDelimiter=tempr[0].delimiter;
+										}
+									//serviceobj.services.elementDelimiter = $scope.elementDelimiter;
+									//serviceobj.services.compositeElementDelimiter = $scope.compositeDelimiter;
+									serviceobj.services.lightWellPartner.testIsaID = $scope.lightWellPartner.testIsaID;
+									serviceobj.services.lightWellPartner.productionIsaID = $scope.lightWellPartner.productionIsaID;
+									serviceobj.services.lightWellPartner.testIsaQualifier = $scope.lightWellPartner.testIsaQualifier;
+									serviceobj.services.lightWellPartner.productionIsaQualifier = $scope.lightWellPartner.productionIsaQualifier;
+									serviceobj.services.lightWellPartner.testGsId = $scope.lightWellPartner.testGsId;
+									serviceobj.services.lightWellPartner.productionGsId = $scope.lightWellPartner.productionGsId;
+									 var emptyListData=[];
+									 serviceobj.businessServices=angular.copy(emptyListData);
+									angular.forEach($scope.bussServiceList, function (item) {
+										 
+										/* var ob={
+												 serviceType:item.businessService.id,
+													 version:item.version.id
+										 };*/
+										
+										 serviceobj.businessServices.push(item);
+									 });
+										 //$scope.ServiceobjList.push(serviceobj);
+									
+									}
+								 
+							 });
+			
+			$scope.eidtser=false;
+			}
+		else
+			{
+			
+			
+		
+		var serviceobj={
+				
+				services:{},
+				businessServices:[],
+				services:{
+					lightWellPartner:{}
+				}
+				
+		};
+		serviceobj.partner = $scope.selected;
+		idn=idn+1;
+		serviceobj.id=idn;
+		if($scope.tppName!=null)
+		{
+			var temptpp = $filter("filter")($scope.ttpNameList, {id: $scope.tppName});
+			if(temptpp.length!=0)
+				{
+				serviceobj.services.tpp = temptpp[0].name;
+				}
+		}
+		//serviceobj.services.serviceCategory = $scope.serviceCategory;
+		//serviceobj.services.segtmentDelimiter = $scope.segmentDelimiter;
+		var temps = $filter("filter")($scope.delimitersSList, {id:$scope.segmentDelimiter});
+		if(temps.length!=0)
+			{
+			serviceobj.services.segmentDelimiter=temps[0].delimiter;
+			}
+		var tempe = $filter("filter")($scope.delimitersEList, {id:$scope.elementDelimiter});
+		if(tempe.length!=0)
+			{
+			serviceobj.services.elementDelimiter=tempe[0].delimiter;
+			}
+		var tempc = $filter("filter")($scope.delimitersCList, {id:$scope.compositeElementDelimiter});
+		if(tempc.length!=0)
+			{
+			serviceobj.services.compositeElementDelimiter=tempc[0].delimiter;
+			}
+		var tempr = $filter("filter")($scope.delimitersRList, {id:$scope.repeatDelimiter});
+		if(tempr.length!=0)
+			{
+			serviceobj.services.repeatDelimiter=tempr[0].delimiter;
+			}
+		//serviceobj.services.elementDelimiter = $scope.elementDelimiter;
+		//serviceobj.services.compositeElementDelimiter = $scope.compositeDelimiter;
+		serviceobj.services.lightWellPartner.testIsaID = $scope.lightWellPartner.testIsaID;
+		serviceobj.services.lightWellPartner.productionIsaID = $scope.lightWellPartner.productionIsaID;
+		serviceobj.services.lightWellPartner.testIsaQualifier = $scope.lightWellPartner.testIsaQualifier;
+		serviceobj.services.lightWellPartner.productionIsaQualifier = $scope.lightWellPartner.productionIsaQualifier;
+		serviceobj.services.lightWellPartner.testGsId = $scope.lightWellPartner.testGsId;
+		serviceobj.services.lightWellPartner.productionGsId = $scope.lightWellPartner.productionGsId;
+		
+		
+		angular.forEach($scope.bussServiceList, function (item) {
+		 
+			/* var ob={
+					 serviceType:item.businessService.id,
+						 version:item.version.id
+			 };*/
+			 serviceobj.businessServices.push(item);
+		 });
+			 
+		$scope.ServiceobjList.push(serviceobj);
+		console.log(JSON.stringify($scope.ServiceobjList));
+		
+		
+	//	$scope.getforDB();
+			}
+		$scope.getforDB($scope.ServiceobjList);
+			 $scope.cleardata();
+		//serviceobj.businessServices.version = $scope.bussService.version;
+		
+		//console.log(JSON.stringify($scope.ServiceobjList));
+		
+		
+	};
+	var idn=1;
+	$scope.SaveService=function()
+	{
+		
+			
+			var serviceobj={
+					
+					partner:{},
+					serviceCategory:{},
+					
+					businessServices:{},
+					services:[],
+					
+			};
+			var sarobj=
+			{
+					segmentDelimiter:{},
+					elementDelimiter:{},
+					compositeElementDelimiter:{},
+					repeatDelimiter:{},
+					lightWellPartner:{}
+				};
+			serviceobj.partner.id = $scope.selected;
+			serviceobj.services.tpp = $scope.tppName;
+		serviceobj.serviceCategory.id = $scope.scname;
+			//serviceobj.services.segtmentDelimiter = $scope.segmentDelimiter;
+			var temps = $filter("filter")($scope.delimitersSList, {id:$scope.segmentDelimiter});
+			if(temps.length!=0)
+				{
+				sarobj.segmentDelimiter.id=temps[0].delimiter;
+				}
+			var tempe = $filter("filter")($scope.delimitersEList, {id:$scope.elementDelimiter});
+			if(tempe.length!=0)
+				{
+				sarobj.elementDelimiter.id=tempe[0].delimiter;
+				}
+			var tempc = $filter("filter")($scope.delimitersCList, {id:$scope.compositeElementDelimiter});
+			if(tempc.length!=0)
+				{
+				sarobj.compositeElementDelimiter=tempc[0].delimiter;
+				}
+			var tempr = $filter("filter")($scope.delimitersRList, {id:$scope.repeatDelimiter});
+			if(tempr.length!=0)
+				{
+				sarobj.repeatDelimiter=tempr[0].delimiter;
+				}
+			//serviceobj.services.elementDelimiter = $scope.elementDelimiter;
+			//serviceobj.services.compositeElementDelimiter = $scope.compositeDelimiter;
+			sarobj.lightWellPartner.testIsaID = $scope.lightWellPartner.testIsaID;
+			sarobj.lightWellPartner.productionIsaID = $scope.lightWellPartner.productionIsaID;
+			sarobj.lightWellPartner.testIsaQualifier = $scope.lightWellPartner.testIsaQualifier;
+			sarobj.lightWellPartner.productionIsaQualifier = $scope.lightWellPartner.productionIsaQualifier;
+			sarobj.lightWellPartner.testGsId = $scope.lightWellPartner.testGsId;
+			sarobj.lightWellPartner.productionGsId = $scope.lightWellPartner.productionGsId;
+			
+			angular.forEach($scope.bussServiceList, function (item) {
+			
+			 
+				 var ob={
+						 lightWellPartner:item.lightWellPartner.id,
+						 serviceType:item.businessService.id,
+							 version:item.version.id,
+							protocol:item.protocol.id,
+							 ack:item.ack,
+							  ackPeriod:item.ackPeriod
+							 
+				 };
+				 sarobj.businessServices=angular.copy(obj);
+				
+			 });
+			serviceobj.push(sarobj);
+			 $scope.ServiceobjList.push(serviceobj);
+			
+			
+	};
+	$scope.id=null;
+	var servdel=null;
+	$scope.eidtser=false;
+    $scope.editServiceCategory= function(item){
+    	servdel=item;
+    	$scope.user.edit=false;
+    	$scope.upgrbt=true;
+    	$scope.eidtser=true;
+    	$scope.id=item.id;
+    	
+    	var temps = $filter("filter")($scope.delimitersSList, {delimiter:item.services.segmentDelimiter});
+		if(temps.length!=0)
+			{
+			$scope.segmentDelimiter=temps[0].id;
+			}
+		var tempe = $filter("filter")($scope.delimitersEList, {delimiter:item.services.elementDelimiter});
+		if(tempe.length!=0)
+			{
+			$scope.elementDelimiter=tempe[0].id;
+			}
+		$scope.delimitersCList= angular.copy($scope.cBackList);
+		var tempc = $filter("filter")($scope.delimitersCList, {delimiter:item.services.compositeElementDelimiter});
+		if(tempc.length!=0)
+			{
+			$scope.compositeElementDelimiter=tempc[0].id;
+			}
+		$scope.delimitersRList= angular.copy($scope.rBackList);
+		var tempr = $filter("filter")($scope.delimitersRList, {delimiter:item.services.repeatDelimiter});
+		if(tempr.length!=0)
+			{
+			$scope.repeatDelimiter=tempr[0].id;
+			}
+    	
+    	$scope.lightWellPartner={};
+    	$scope.selecttpp = false;
+    	if(item.services.tpp!= null){
+    	$scope.selecttpp = true;
+    	var temptpp = $filter("filter")($scope.ttpNameList, {name: item.services.tpp});
+		if(temptpp.length!=0)
+			 {
+			$scope.tppName = temptpp[0].id;
+			angular.forEach($scope.tppCodeList, function (item) {
+				 if(item.id==temptpp[0].id){
+			$scope.lightWellPartnerDisabled = true;
+			}
+			});
+			}
+    	}
+    	
+    	
+    //	$scope.tppName= item.services.tpp;
+    	
+    	$scope.lightWellPartner.testIsaID = item.services.lightWellPartner.testIsaID;
+		 $scope.lightWellPartner.productionIsaID = item.services.lightWellPartner.productionIsaID;
+		 $scope.lightWellPartner.testIsaQualifier = item.services.lightWellPartner.testIsaQualifier;
+		 $scope.lightWellPartner.productionIsaQualifier = item.services.lightWellPartner.productionIsaQualifier;
+		 $scope.lightWellPartner.testGsId = item.services.lightWellPartner.testGsId;
+		 $scope.lightWellPartner.productionGsId = item.services.lightWellPartner.productionGsId;
+		 if($scope.tppName == null || $scope.tppName == undefined){
+			 $scope.bsList($scope.scname);
+			 $scope.protocolList();
+			 
+		 } 
+		 if($scope.tppName != null || $scope.tppName != undefined){
+		 $scope.bspList($scope.scname,$scope.tppName);
+		 $scope.pcolList($scope.tppName);
+		 }
+		 $scope.bussServiceList = angular.copy($scope.emptylList);
+		 angular.forEach(item.businessServices, function (item1) {
+				$scope.bussServiceList.push(item1);
+				 
+			});
+		
+		// $scope.bussService.businessService=item.businessService.id;
+		//$scope.bussService.version= item.version.id;
+    //	$scope.bussServiceList = angular.copy($scope.emptylList);
+    	//$scope.bussService =angular.copy($scope.emp);
+	};
+	
+	var delsertempobj=null;
+	var delsertempobjList = null;
+    $scope.deleteServiceCategory= function(item,list){
+    	$scope.user.edit=true;
+    	delsertempobj = item;
+    	delsertempobjList = list;
+    	
+	};  
+	
+	$scope.inittpp = function()
+	{
+		
+		
+		
+		 $http.get('/TPIAdmin/app/tpps')
+	     .success(function (response, status, headers, config) {
+	    	 $scope.tpplist = angular.copy(response);
+	    	// console.log(JSON.stringify($scope.tpplist));
+	     })
+	     .error(function (data, status, header, config) {
+	         $scope.ResponseDetails = "Data: " + data +
+	             "<br />status: " + status ;
+	         //    "<br />headers: " + jsonFilter(header) +
+	           //  "<br />config: " + jsonFilter(config);
+	     })
+		 .then(function(response) {
+			 var temp=[];
+			 var temptpp=[];
+			 angular.forEach($scope.tpplist, function (item) {
+				 if(item.lightWellPartner!=null)
+					 {
+				 var obj={
+						 id:item.id,
+						 testIsaID:item.lightWellPartner.testIsaID,
+						 productionIsaID:item.lightWellPartner.productionIsaID,
+						 testIsaQualifier:item.lightWellPartner.testIsaQualifier,
+						 productionIsaQualifier:item.lightWellPartner.productionIsaQualifier,
+						 testGsId:item.lightWellPartner.testGsId,
+						 productionGsId:item.lightWellPartner.productionGsId
+				 };
+				 temp.push(obj);
+					 }
+				 var obj2=
+					 {
+						id:item.id,
+						name:item.name
+					 };
+				 temptpp.push(obj2);
+				
+        	});
+			 $scope.ttpNameList=angular.copy(temptpp);
+			 $scope.tppCodeList=angular.copy(temp);
+		    });
+		 };
+		 $scope.lightWellPartner={};
+		 $scope.emptyList={};
+		 $scope.lightWellPartnerDisabled=false;
+		 $scope.select3PPName=function(id)
+		 {
+			 $scope.lightWellPartner=angular.copy( $scope.emptyList);
+			 $scope.lightWellPartnerDisabled=false;
+			 angular.forEach($scope.tppCodeList, function (item) {
+				 if(item.id==id)
+					 {
+				 $scope.lightWellPartner.testIsaID=item.testIsaID;
+				 $scope.lightWellPartner.productionIsaID=item.productionIsaID;
+				 $scope.lightWellPartner.testIsaQualifier=item.testIsaQualifier;
+				 $scope.lightWellPartner.productionIsaQualifier=item.productionIsaQualifier;
+				 $scope.lightWellPartner.testGsId=item.testGsId;
+				 $scope.lightWellPartner.productionGsId=item.productionGsId;
+				 $scope.lightWellPartnerDisabled=true;
+					 }
+			 });
+						
+				
+			 
+				
+			 
+		 }
+		
+		 
+		 $scope.partChange=function(pt)
+		 {
+			 console.log(JSON.stringify($scope.selected));
+		//	 var temp = $filter("filter")($scope.partnerlist, {PracticeByFacilityId:id});
+			 if($scope.selected==undefined)
+				{
+				
+				 $scope.message = "partner name does not exist";
+				 
+				}
+			 else
+				 {
+				 
+				 $scope.message = " ";
+				 }
+		 };
+		 
+		 $scope.partnerlist=[];
+		 $scope.enabletppn=true;
+			$scope.changeSelTpp=function()
+			{
+				$scope.enabletppn=!$scope.enabletppn;
+				if($scope.enabletppn==true)
+					{
+					$scope.tppName=null;
+					$scope.lightWellPartner=angular.copy( $scope.emptyList);
+					$scope.lightWellPartnerDisabled=false;
+					}
+			};
+		 $scope.findPartner = function(name)
+			{
+				
+				$scope.editEnable=false;
+				var tempList=[];
+				 $http.get('/TPIAdmin/app/partners?projection=partnerName')
+			     .success(function (response, status, headers, config) {
+			    	 $scope.partnerlist=angular.copy(response);
+			    // console.log("inputdata "+JSON.stringify(response));
+			     })
+			     .error(function (data, status, header, config) {
+			         $scope.ResponseDetails = "Data: " + data +
+			             "<br />status: " + status ;
+			         //    "<br />headers: " + jsonFilter(header) +
+			           //  "<br />config: " + jsonFilter(config);
+			     })
+			     	
+				 .then(function(response) {
+					 $scope.versList();
+				 });
+					
+			};
+			
+			$scope.versList = function()
+			{
+				
+				
+				 $http.get('/TPIAdmin/app/versions')
+			     .success(function (response, status, headers, config) {
+			    	 
+			    	 $scope.versionList = angular.copy(response);
+			    	 
+			     })
+			     .error(function (data, status, header, config) {
+			         $scope.ResponseDetails = "Data: " + data +
+			             "<br />status: " + status ;
+			         //    "<br />headers: " + jsonFilter(header) +
+			           //  "<br />config: " + jsonFilter(config);
+			     })
+				 .then(function(response) {
+				       
+                //  $scope.myWelcome = response.data;
+					 $scope.protocolList();
+							 
+				    });
+
+
+				
+				};
+				
+				$scope.pList =[];
+				$scope.protocolList = function()
+				{
+					
+					
+					 $http.get('/TPIAdmin/app/protocols')
+				     .success(function (response, status, headers, config) {
+				    	 $scope.pList = angular.copy(response);
+				    	 
+				     })
+				     .error(function (data, status, header, config) {
+				         $scope.ResponseDetails = "Data: " + data +
+				             "<br />status: " + status ;
+				         //    "<br />headers: " + jsonFilter(header) +
+				           //  "<br />config: " + jsonFilter(config);
+				     })
+					 .then(function(response) {
+						 
+						   
+					    });
+
+
+					
+					};
+					$scope.pcolList = function(id)
+					{
+						
+						
+						 $http.get('/TPIAdmin/app/tpps/'+id+'/protocols')
+					     .success(function (response, status, headers, config) {
+					    	 $scope.pList = angular.copy(response);
+					    	 
+					     })
+					     .error(function (data, status, header, config) {
+					         $scope.ResponseDetails = "Data: " + data +
+					             "<br />status: " + status ;
+					         //    "<br />headers: " + jsonFilter(header) +
+					           //  "<br />config: " + jsonFilter(config);
+					     })
+						 .then(function(response) {
+							 
+							   
+						    });
+
+
+						
+						};
+					
+				$scope.serviceNameList=[];
+				$scope.initname = function()
+				{
+					
+					
+					 $http.get('/TPIAdmin/app/serviceCategories/distinctNames')
+				     .success(function (response, status, headers, config) {
+				    	 
+				    	 $scope.serviceNameList=angular.copy(response);
+				    	// console.log("inputdata "+JSON.stringify(tempList));
+				     })
+				     .error(function (data, status, header, config) {
+				    	
+				         $scope.ResponseDetails = "Data: " + data +
+				             "<br />status: " + status ;
+				         //    "<br />headers: " + jsonFilter(header) +
+				           //  "<br />config: " + jsonFilter(config);
+				     })
+				     	
+					 .then(function(response) {
+						
+						  
+					 });
+						
+				};
+				
+				
+				$scope.serviceList=[];
+				 
+				 $scope.serviceId = function(id,item)
+					{
+						
+						
+						 $http.get('/TPIAdmin/app/serviceCategories/'+id)
+					     .success(function (response, status, headers, config) {
+					    	 var emptyListData=[];
+					    	 $scope.serviceList=angular.copy(emptyListData);
+					    	 
+					    	 angular.forEach(response.lightWellPartners, function (item) {
+					    		 var obj=
+					    			 {
+					    				id : item.id,
+					    				display:item.productionIsaID+"_"+item.productionGsId
+					    			 };
+					    		 $scope.serviceList.push(obj);
+					    	 });
+					    	// console.log("inputdata "+JSON.stringify(tempList));
+					     })
+					     .error(function (data, status, header, config) {
+					    	
+					         $scope.ResponseDetails = "Data: " + data +
+					             "<br />status: " + status ;
+					         //    "<br />headers: " + jsonFilter(header) +
+					           //  "<br />config: " + jsonFilter(config);
+					     })
+					     	
+						 .then(function(response) {
+							 if(item!=undefined){
+							 $scope.serviceCategory = item.serviceCategory.id;
+							 }
+							 $scope.dlSList();
+							 
+						 });
+							
+					};
+			
+					$scope.delimitersSList=[];
+					$scope.sBackList = [];
+					$scope.dlSList = function()
+					{
+						
+						
+						 $http.get('/TPIAdmin/app/delimiters?type=segment')
+					     .success(function (response, status, headers, config) {
+					    	 
+					    	 
+					    	 $scope.delimitersSList=angular.copy(response);
+					    	 $scope.sBackList = angular.copy(response);
+					    	// console.log("inputdata "+JSON.stringify(tempList));
+					     })
+					     .error(function (data, status, header, config) {
+					         $scope.ResponseDetails = "Data: " + data +
+					             "<br />status: " + status ;
+					         //    "<br />headers: " + jsonFilter(header) +
+					           //  "<br />config: " + jsonFilter(config);
+					     })
+					     	
+						 .then(function(response) {
+							 $scope.dlEList(); 
+						 });
+							
+					};
+					
+                  $scope.delimitersEList=[];
+                  $scope.eBackList = [];
+					
+					$scope.dlEList = function()
+					{
+						
+						
+						 $http.get('/TPIAdmin/app/delimiters?type=element')
+					     .success(function (response, status, headers, config) {
+					    	 
+					    	 
+					    	 $scope.delimitersEList=angular.copy(response);
+					    	 $scope.eBackList = angular.copy(response);
+					    	// console.log("inputdata "+JSON.stringify(tempList));
+					     })
+					     .error(function (data, status, header, config) {
+					         $scope.ResponseDetails = "Data: " + data +
+					             "<br />status: " + status ;
+					         //    "<br />headers: " + jsonFilter(header) +
+					           //  "<br />config: " + jsonFilter(config);
+					     })
+					     	
+						 .then(function(response) {
+							 $scope.dlCList(); 
+						 });
+							
+					};
+					
+					
+                 $scope.delimitersCList=[];
+                 $scope.cBackList = [];
+					
+					$scope.dlCList = function()
+					{
+						
+						
+						 $http.get('/TPIAdmin/app/delimiters?type=composite')
+					     .success(function (response, status, headers, config) {
+					    	 
+					    	 
+					    	$scope.delimitersCList=angular.copy(response);
+					    	 $scope.cBackList = angular.copy(response);
+					    	// console.log("inputdata "+JSON.stringify(tempList));
+					     })
+					     .error(function (data, status, header, config) {
+					         $scope.ResponseDetails = "Data: " + data +
+					             "<br />status: " + status ;
+					         //    "<br />headers: " + jsonFilter(header) +
+					           //  "<br />config: " + jsonFilter(config);
+					     })
+					     	
+						 .then(function(response) {
+							 $scope.dlRList();  
+						 });
+							
+					};
+					
+					
+                   $scope.delimitersRList=[];
+                   $scope.rBackList = [];
+					$scope.dlRList = function()
+					{
+						
+						
+						 $http.get('/TPIAdmin/app/delimiters?type=repeat')
+					     .success(function (response, status, headers, config) {
+					    	 
+					    	 
+					    	 $scope.delimitersRList=angular.copy(response);
+					    	 $scope.rBackList = angular.copy(response);
+					    	// console.log("inputdata "+JSON.stringify(tempList));
+					     })
+					     .error(function (data, status, header, config) {
+					         $scope.ResponseDetails = "Data: " + data +
+					             "<br />status: " + status ;
+					         //    "<br />headers: " + jsonFilter(header) +
+					           //  "<br />config: " + jsonFilter(config);
+					     })
+					     	
+						 .then(function(response) {
+							 
+						 });
+							
+					};
+					
+					
+					
+					
+					$scope.bserviceList=[];
+					$scope.bsList = function(id)
+					{
+						
+						
+						 $http.get('/TPIAdmin/app/serviceTypes?serviceCat='+id)
+					     .success(function (response, status, headers, config) {
+					    	 
+					    	 $scope.bserviceList = angular.copy(response);
+					    	 
+					     })
+					     .error(function (data, status, header, config) {
+					         $scope.ResponseDetails = "Data: " + data +
+					             "<br />status: " + status ;
+					         //    "<br />headers: " + jsonFilter(header) +
+					           //  "<br />config: " + jsonFilter(config);
+					     })
+						 .then(function(response) {
+						       
+		                  $scope.myWelcome = response.data;
+									 
+						    });
+
+
+						
+						};
+						//$scope.bservicepList = [];
+						$scope.bspList = function(id,pid)
+						{
+							
+							
+							 $http.get('/TPIAdmin/app/serviceTypes?serviceCat='+id+'&tpp='+pid)
+						     .success(function (response, status, headers, config) {
+						    	 
+						    	 $scope.bserviceList = angular.copy(response);
+						    	 
+						     })
+						     .error(function (data, status, header, config) {
+						         $scope.ResponseDetails = "Data: " + data +
+						             "<br />status: " + status ;
+						         //    "<br />headers: " + jsonFilter(header) +
+						           //  "<br />config: " + jsonFilter(config);
+						     })
+							 .then(function(response) {
+							    console.log(JSON.stringify($scope.bserviceList));   
+			                  $scope.myWelcome = response.data;
+										 
+							    });
+
+
+							
+							};
+$scope.cleargroup=function()
+{
+	$scope.segmentDelimiter =null;
+	$scope.elementDelimiter =null;
+	$scope.compositeElementDelimiter =null;
+	$scope.repeatDelimiter =null;
+
+	$scope.lightWellPartner={};
+	$scope.selecttpp = false;
+	$scope.tppName= null;
+	
+	$scope.bussServiceList = angular.copy($scope.emptylList);
+	$scope.bussService =angular.copy($scope.emp);
+
+	
+};
+
+$scope.onlyNew = false;
+$scope.comboCheck = function(id1,id2)
+{
+	$scope.combo = false;
+	if(!$scope.onlyNew ){
+		$scope.saveSS();
+		return true;
+	}
+	
+	 $http.get('/TPIAdmin/app/serviceSubscriptions/exists?partnerId='+id1.id+'&serviceCategoryId='+id2)
+     .success(function (response, status, headers, config) {
+    	 var temp =  angular.copy(response);
+    	
+    	 if(temp!="true"){
+    		$scope.saveSS();
+    	}
+    	else{
+    	$scope.combo = true;	
+    	}
+    // console.log("inputdata "+JSON.stringify(response));
+     })
+     .error(function (data, status, header, config) {
+         $scope.ResponseDetails = "Data: " + data +
+             "<br />status: " + status ;
+         //    "<br />headers: " + jsonFilter(header) +
+           //  "<br />config: " + jsonFilter(config);
+     })
+     	
+	 .then(function(response) {
+		 
+	 });
+		
+};
+$scope.cdata = function(){
+	$('.extra1').scrollTop(0);
+	$scope.idd = null;
+	$scope.upbsbt=false;
+	$scope.upgrbt=false;
+	$scope.servError=false;
+	$scope.ErrorMsg1 = false;
+	$scope.combo = false;
+	$scope.enabletppn = true;
+	
+	
+	
+	$scope.hideEdit = false;
+	
+	$scope.message="";
+	
+	$scope.selected = null;
+	$scope.scname = null;
+	$scope.selecttpp = null;
+	$scope.lightWellPartner={};
+	 $scope.emptyList={};
+	 $scope.lightWellPartnerDisabled=false;
+	$scope.tppName = null;
+	$scope.segmentDelimiter =null;
+	$scope.elementDelimiter =null;
+	$scope.compositeElementDelimiter =null;
+	$scope.repeatDelimiter =null;
+//	$scope.bussService.businessService =null;
+	//$scope.bussService.version =null;
+	//$scope.ServiceobjList = angular.copy($scope.emptylList);
+	$scope.bussServiceList = angular.copy($scope.emptylList);
+	$scope.bussService =angular.copy($scope.emptylList);
+	$scope.ServiceobjList = angular.copy($scope.emptylList);
+};					
+                          $scope.cleardata=function()
+							{
+								$scope.upbsbt=false;
+								$scope.servError=false;
+								$scope.ErrorMsg1 = false;
+								
+								$scope.message="";
+								
+								$scope.selecttpp = null;
+								$scope.lightWellPartner={};
+								 $scope.emptyList={};
+								 $scope.lightWellPartnerDisabled=false;
+								$scope.tppName = null;
+								$scope.segmentDelimiter =null;
+								$scope.elementDelimiter =null;
+								$scope.compositeElementDelimiter =null;
+								$scope.repeatDelimiter =null;
+							
+								$scope.bussServiceList = angular.copy($scope.emptylList);
+								$scope.bussService =angular.copy($scope.emp);
+							};
+				$scope.saveSS = function(){
+					//delsertempobj=item;
+		    	//	var index1 = $scope.ServiceobjdbList.indexOf(item);
+		    	//	$scope.ServiceobjdbList.splice(index, 1);	
+					var submitObj=
+						{
+							id : $scope.idd,
+							partner : {id:$scope.selected.id},
+							
+							serviceCategory : {id:$scope.scname},
+							services:$scope.ServiceobjdbList
+						};
+							$http.post("/TPIAdmin/app/serviceSubscriptions",submitObj)
+							.success(function (response, status, headers, config) {
+								 //$scope.grouplist = angular.copy(response);
+								$scope.idd=angular.copy(response.id); 
+								console.log(JSON.stringify(response));
+								 
+							 })
+							 .error(function (data, status, header, config) {
+								
+							     $scope.ResponseDetails = "Data: " + data +
+							         "<br />status: " + status ;
+							     //    "<br />headers: " + jsonFilter(header) +
+							       //  "<br />config: " + jsonFilter(config);
+							 })
+							.then(function(response) {
+								$scope.clickModal();
+							    
+							});
+									
+									
+								}
+				
+				$scope.items = [];
+				$scope.inittable = function()
+				{
+					
+					var tableList=[];
+					 $http.get('/TPIAdmin/app/serviceSubscriptions?projection=serviceSubscriptionListView')
+				     .success(function (response, status, headers, config) {
+				    	 
+				    	 tableList=angular.copy(response);
+				    	// console.log("inputdata "+JSON.stringify(tempList));
+				     })
+				     .error(function (data, status, header, config) {
+				    	
+				         $scope.ResponseDetails = "Data: " + data +
+				             "<br />status: " + status ;
+				         //    "<br />headers: " + jsonFilter(header) +
+				           //  "<br />config: " + jsonFilter(config);
+				     })
+				     	
+					 .then(function(response) {
+						 angular.forEach(tableList, function (item) {
+							 
+							 try
+							 {var obj=
+							 {       id:item.id, 
+									 partnerName:item.partnerName,
+									 serviceCategoryName:item.serviceCategoryName,
+									 gsIdProd:item.gsIdProd
+								 };
+							 
+							 $scope.items.push(obj);
+							 }catch(e)
+							 {}
+						 });
+						
+						  
+					 });
+					 console.log("list "+JSON.stringify($scope.items) );	
+				};
+				$scope.hideremove=false;
+				$scope.hideEdit=false;
+				$scope.hidefield=function()
+				{
+					
+					$scope.hideremove=true;
+					$scope.onlyNew=true;
+				
+				}
+				$scope.enableField=function()
+				{
+				
+					$scope.hideEdit=false;
+					
+				}
+				
+				$scope.initdisplay = function(item)
+				{
+					$scope.deleteId=item;
+					$scope.hideremove=false;
+					var displayList={};
+					 $http.get('/TPIAdmin/app/serviceSubscriptions/'+item.id)
+				     .success(function (response, status, headers, config) {
+				    	 
+				    	 displayList=angular.copy(response);
+				    	//console.log("inputdata "+JSON.stringify(response));
+				     })
+				     .error(function (data, status, header, config) {
+				    	
+				         $scope.ResponseDetails = "Data: " + data +
+				             "<br />status: " + status ;
+				         //    "<br />headers: " + jsonFilter(header) +
+				           //  "<br />config: " + jsonFilter(config);
+				     })
+				     	
+					 .then(function(response) {
+						$scope.showData(displayList); 
+						  
+					 });
+					 console.log("list "+JSON.stringify($scope.items) );	
+				};
+				$scope.nulllist = [];
+				$scope.enabletypeEdit = false;
+				$scope.deleteId=null;
+				$scope.showData=function(item)
+				{
+					$scope.onlyNew = false;
+					$scope.showackP= true;
+					$scope.idd=item.id;
+					
+					
+					$scope.onlyNew=false;
+					$scope.hideEdit=true;
+					$scope.ServiceobjList=angular.copy($scope.nulllist);
+					$scope.selected = item.partner;
+					$scope.partChange(item.partner.id);
+				     $scope.protocolList();
+					
+					
+					$scope.serviceId(item.serviceCategory.id,item);
+					//$scope.disableServiceC(item.serviceCategory.id);
+					
+                     
+					$scope.scname = item.serviceCategory.id;
+					
+					$scope.bsList(item.serviceCategory.id);
+					
+				//$scope.serviceCategory = item.serviceCategory.id;
+				
+					angular.forEach(item.services, function (data) {
+						 
+						 var serviceobj={
+								 
+								services:{ lightWellPartner:{},
+									},
+								
+								 businessServices:[],
+								 }
+						serviceobj.id=data.id;
+						
+						
+						 if(data.tpp !=null){
+						 serviceobj.services.tpp = data.tpp.name;
+						 }
+						 
+						 
+						 serviceobj.services.segmentDelimiter = data.segmentDelimiter.delimiter;
+						 serviceobj.services.elementDelimiter = data.elementDelimiter.delimiter;
+						 serviceobj.services.compositeElementDelimiter = data.compositeElementDelimiter.delimiter;
+						 serviceobj.services.repeatDelimiter = data.repeatDelimiter.delimiter;
+						 serviceobj.services.lightWellPartner.testIsaID = data.lightWellPartner.testIsaID;
+						 serviceobj.services.lightWellPartner.testIsaQualifier = data.lightWellPartner.testIsaQualifier;
+						 serviceobj.services.lightWellPartner.testGsId = data.lightWellPartner.testGsId;
+						 serviceobj.services.lightWellPartner.productionIsaID= data.lightWellPartner.productionIsaID;
+						 serviceobj.services.lightWellPartner.productionIsaQualifier = data.lightWellPartner.productionIsaQualifier;
+						 serviceobj.services.lightWellPartner.productionGsId = data.lightWellPartner.productionGsId;
+
+						 angular.forEach(data.businessServices, function (temp) {
+							 
+							 var protocolobj =  angular.copy(temp.protocol);
+							 var versionobj =  angular.copy(temp.version);
+							 var  businessServiceobj =  angular.copy(temp.serviceType);
+							var lightWellPartnerobj = angular.copy(temp.lightWellPartner);
+							 var ack = angular.copy(temp.ack);
+							 var ackPeriod = angular.copy(temp.ackPeriod);
+                         //  var businessServiceobj = {};
+                          //  businessServiceobj.businessServiceName = temp.serviceType.businessServiceName;
+						 var finalobj = {
+                                   id:temp.id,								 
+								 businessService:businessServiceobj,
+								 version:versionobj,
+								 protocol:protocolobj,
+								 lightWellPartner:lightWellPartnerobj,
+								 ack : ack,
+								 ackPeriod : ackPeriod
+						 }
+								 
+						serviceobj.businessServices.push(finalobj);
+						 });
+						//serviceobj.businessServices.push(item);
+						 $scope.ServiceobjList.push(serviceobj);
+					//	 
+						 console.log(JSON.stringify($scope.ServiceobjList));
+					 });
+					
+					$scope.getforDB($scope.ServiceobjList);
+					// $scope.shwdtDisable=false;
+
+					 
+				
+					 };
+					 
+					 
+					 $scope.shwdtDisable=false;
+					 
+					 $scope.user={del:false,edit:false};
+						$scope.deleteService=function()
+						{
+							$scope.user.del=true;
+							$scope.user.edit=false;
+							  $scope.onlyNew=false;
+							 $scope.clickModal();
+							 
+
+						}
+						$scope.userData = [
+					        {
+					            name: 'John Doe',
+					            selectedProducts: [
+					                'coffee',
+					                'beer',
+					                'wine']
+					        },
+					        {
+					            name: 'Jane Doe',
+					            selectedProducts: [
+					                'coffee',
+					                'tea']
+					        }
+					    ];
+					  $scope.products = ['coffee', 'beer', 'wine', 'tea', 'milk'];
+					  $scope.onlyNew=false;
+					
+					$scope.clickModal=function()
+					{
+						var txt="hello";
+						if($scope.onlyNew)
+							{
+						$scope.user.msg=$scope.selected.partnerName +" has been subscribed";
+						$scope.user.del=false;
+						$scope.user.edit=false;
+							}
+						else 
+							{
+							$scope.user.msg=$scope.selected.partnerName +" subscription has been updated";
+							}
+						if($scope.user.del)
+						{
+							$scope.user.msg="Are you sure to delete the "+$scope.selected.partnerName+" Partner ?";	
+						}
+						if($scope.user.edit)
+						{
+							$scope.user.msg="Are you sure to delete ?";	
+						}
+						
+						var modalInstance = $modal.open({
+				            templateUrl: 'myModalContent.html',
+				            controller: 'ModalInstanceCtrl',
+				            size: 'sm',
+				        
+				            
+				            //size: size,
+				            resolve: {
+				                user: function() {
+				                    return $scope.user;
+				                },
+				                
+				                selectedProducts: function() {
+				                    return $scope.userData.selectedProducts;
+				                },
+				                products: function () {
+				                    //console.log($scope.selectedProducts);
+				                    return $scope.products; // get all available products
+				                }
+				            }
+				        });
+				        
+				        modalInstance.result.then(function (selectedItems) {
+				        	if(selectedItems=="delete")
+				        		{
+				        	 console.log('eventX found on Controller1 $scope');
+				             $http.delete('/TPIAdmin/app/serviceSubscriptions/' + $scope.deleteId.id)
+				             .success(function (data, status, headers) {
+				            	 location.reload();
+				             })
+				             .error(function (data, status, header, config) {
+				                 $scope.ServerResponse = htmlDecode("Data: " + data +
+				                     "\n\n\n\nstatus: " + status +
+				                     "\n\n\n\nheaders: " + header +
+				                     "\n\n\n\nconfig: " + config);
+				             });
+				        		}
+				        	else	if(selectedItems=="edit")
+				    		{
+				        		var index = delsertempobjList.businessServices.indexOf(delsertempobj);
+				        		delsertempobjList.businessServices.splice(index, 1);
+				        		$scope.getforDB($scope.ServiceobjList);
+				    		}
+				        	
+				        }, function () {
+				         
+				        });
+					};
+					
+					
+					
+				   
+					
+					
+				
+	
+			 var self = this,  j= 0, counter = 0;
+	            self.modes = [ ];
+	            self.activated = true;
+	            self.determinateValue = 30;
+	            self.toggleActivation = function() {
+	               if ( !self.activated ) self.modes = [ ];
+	               if (  self.activated ) j = counter = 0;
+	            };
+	            
+	            $interval(function() {
+	               self.determinateValue += 1;
+	               if (self.determinateValue > 100) {
+	                  self.determinateValue = 30;
+	               }
+	               if ( (j < 5) && !self.modes[j] && self.activated ) {
+	                  self.modes[j] = 'indeterminate';
+	               }
+	               if ( counter++ % 4 == 0 ) j++;
+	            }, 100, 0, true);
+						
+});

@@ -1,0 +1,350 @@
+package com.abc.tpi.service;
+
+import java.util.Collection;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.abc.tpi.domain.core.Company;
+import com.abc.tpi.domain.core.PartnerType;
+import com.abc.tpi.model.master.Ack;
+import com.abc.tpi.model.master.Delimiter;
+import com.abc.tpi.model.master.Direction;
+import com.abc.tpi.model.master.Document;
+import com.abc.tpi.model.master.Map;
+import com.abc.tpi.model.master.MapForDropDownProjection;
+import com.abc.tpi.model.master.Protocol;
+import com.abc.tpi.model.master.TppType;
+import com.abc.tpi.model.master.Version;
+import com.abc.tpi.model.sd.BusinessUnit;
+import com.abc.tpi.model.sd.ServiceCategories;
+import com.abc.tpi.model.service.ServiceType;
+import com.abc.tpi.model.tpp.LightWellPartner;
+import com.abc.tpi.repository.AckRepository;
+import com.abc.tpi.repository.DelimiterRepository;
+import com.abc.tpi.repository.DirectionRepository;
+import com.abc.tpi.repository.DocumentRepository;
+import com.abc.tpi.repository.LightWellPartnerRepository;
+import com.abc.tpi.repository.MapRepository;
+import com.abc.tpi.repository.ProtocolRepository;
+import com.abc.tpi.repository.SDBusinessUnitRepository;
+import com.abc.tpi.repository.SDServiceCategoryRepository;
+import com.abc.tpi.repository.TppTypeRepository;
+import com.abc.tpi.repository.VersionRepository;
+
+@Service
+public class MasterDataServiceImpl implements MasterDataService {
+
+	public static final int DELIMITER_SEGMENT = 1;  	// Binary 00001
+	public static final int DELIMITER_ELEMENT = 2;  	// Binary 00010
+	public static final int DELIMITER_COMPOSITE = 4;  	// Binary 00100
+	
+	@Autowired
+	private DocumentRepository documentRepository;
+
+	@Autowired
+	private ProtocolRepository protocolRepository;
+
+	@Autowired
+	private TppTypeRepository tppTypeRepository;
+
+	@Autowired
+	private VersionRepository versionRepository;
+	
+	@Autowired
+	private DirectionRepository directionRepository;
+	
+	@Autowired
+	private SDBusinessUnitRepository sDBusinessUnitRepository;
+	
+	@Autowired
+	private SDServiceCategoryRepository sDServiceCategoryRepository;
+	
+	@Autowired
+	private LightWellPartnerRepository lightWellPartnerRepository;
+	
+	@Autowired
+	private DelimiterRepository delimiterRepository;
+	
+	@Autowired 
+	AckRepository ackRepository;
+	
+	@Autowired
+	MapRepository mapRepository;
+
+	@Transactional
+	public TppType saveTppType(TppType tppType) {
+
+		return tppTypeRepository.save(tppType);
+	}
+
+	@Transactional
+	public Protocol saveProtocol(Protocol protocol) {
+
+		return protocolRepository.save(protocol);
+	}
+
+	@Transactional
+	public void deleteTppType(TppType tppType) {
+		
+		tppTypeRepository.delete(tppType);
+	}
+
+	@Transactional
+	public void deleteDocumentType(Document docType) {
+		
+		documentRepository.delete(docType);
+	}
+
+	@Transactional
+	public void deleteVersion(Version version) {
+		
+		versionRepository.delete(version);
+	}
+
+	@Transactional
+	public void deleteProtocol(Protocol protocol) {
+
+		protocolRepository.delete(protocol);
+	}
+
+	public List<TppType> findAllTppTypes() {
+		
+		return tppTypeRepository.findAll(new Sort(Sort.Direction.ASC,"typeCode"));
+	}
+
+	public List<Document> findAllDocumentTypes() {
+
+		return documentRepository.findAll(new Sort(Sort.Direction.ASC,"documentType"));
+	}
+
+	public List<Version> findAllVersions() {
+
+		return versionRepository.findAll(new Sort(Sort.Direction.ASC, "versionNumber"));
+	}
+
+	public List<Protocol> findAllProtocols() {
+
+		return protocolRepository.findAll(new Sort(Sort.Direction.ASC, "protocolType"));
+	}
+
+	public TppType findTppTypeById(long Id) {
+
+		return tppTypeRepository.findOne(Id);
+	}
+
+	public Document findDocumentTypeById(long id) {
+		
+		return documentRepository.findOne(id);
+	}
+
+	public Version findVersionById(long id) {
+		
+		return versionRepository.findOne(id);
+	}
+
+	public Protocol findProtocolById(long id) {
+
+		return protocolRepository.findOne(id);
+	}
+
+	@Override
+	public TppType findTppTypeByTypeCode(short typeCode) {
+		TppType result = tppTypeRepository.findOneByTypeCode((Short) typeCode);
+		return result;
+	}
+
+	@Override
+	public Document findDocumentTypeByDocumentType(int documentType) {
+		Document result = documentRepository.findOneByDocumentType(documentType);
+		return result;
+	}
+
+	@Override
+	public Version findVersionByVersionNumber(int versionNumber) {
+		Version version = versionRepository.findOneByVersionNumber((Integer) versionNumber);
+		return version;
+	}
+
+	@Override
+	public Protocol findProtocolByProtocolType(String protocolType) {
+		Protocol protocol = protocolRepository.findOneByProtocolTypeIgnoreCase(protocolType);
+		return protocol;
+	}
+
+	@Override
+	public Direction findDirectionById(long id) {
+		
+		return directionRepository.findOne(id);
+	}
+
+	@Override
+	public Direction findDirectionByName(String name) {
+		return directionRepository.findOneByDirectionCodeIgnoreCase(name);
+	}
+
+	@Transactional
+	public Direction saveDirection(Direction direction) {
+		return directionRepository.save(direction);
+	}
+
+	@Transactional
+	public void deleteDirection(Direction direction) {
+		directionRepository.delete(direction);
+	}
+
+	@Override
+	public LightWellPartner findLWPartnerById(long id) {
+		return lightWellPartnerRepository.findOne(id);
+	}
+
+	@Override
+	public Delimiter saveDelimiter(Delimiter delimiter) {
+		return delimiterRepository.save(delimiter);
+	}
+
+	@Override
+	public List<Delimiter> findAllDelimiters() {
+		return delimiterRepository.findAll();
+	}
+	
+	@Override
+	public List<BusinessUnit> findAllBusinessUnit() {
+		// TODO Auto-generated method stub
+		return sDBusinessUnitRepository.findAll();
+	}
+
+	@Override
+	public List<Direction> findAllDirections() {		
+		return directionRepository.findAll(new Sort(Sort.Direction.ASC,"directionCode"));
+	}
+
+	@Override
+	public Delimiter findDelimiterByCode(String code) {
+		
+		return delimiterRepository.findOneByDelimiter(code);
+	}
+
+	@Override
+	public Ack findAckByCode(String ackValue) {
+		return ackRepository.findOneByAckValue(ackValue);
+	}
+
+	@Override
+	public Ack saveAck(Ack ack) {
+		return ackRepository.save(ack);
+	}
+
+	@Override
+	public Document saveDocument(Document document) {
+		return documentRepository.save(document);
+	}
+
+	@Override
+	public Version saveVersion(Version version) {
+		return versionRepository.save(version);
+	}
+
+	
+	@Override
+	public BusinessUnit saveBussiness(BusinessUnit bussinessUnit) {
+		return sDBusinessUnitRepository.save(bussinessUnit);
+	}
+	
+	@Override
+	public List<Delimiter> getSegmentDelimiters() {		
+		return delimiterRepository.findAllByIsSegmentTrueOrderByDelimiter();
+	}
+
+	@Override
+	public List<Delimiter> getElementDelimiters() {		
+		return delimiterRepository.findAllByIsElementTrueOrderByDelimiter();
+	}
+
+	@Override
+	public List<Delimiter> getCompositeDelimiters() {
+		return delimiterRepository.findAllByIsCompositeTrueOrderByDelimiter();
+	}
+
+	@Override
+
+	public List<Delimiter> getRepeatDeleimiters() {
+		return delimiterRepository.findAllByIsRepeatTrueOrderByDelimiter();
+	}
+
+	@Override
+	public Map findMap(Company company, PartnerType partner, Document document, Direction direction) 
+	{
+		return mapRepository.findOneByCompanyAndPartnerTypeAndDocumentAndDirection(company, partner, document, direction);
+	}
+
+	@Override
+	public Map findMap(Document document, Direction direction) {
+		Company company = Company.ABDC;
+		PartnerType partnerType = PartnerType.SUPPLIER;
+		return findMap(company,partnerType,document,direction);
+	}
+
+	@Override
+	public Map saveMap(Map map) {
+		return mapRepository.save(map);
+	}
+
+	@Override
+	public List<MapForDropDownProjection> findMapForServiceType(long serviceTypeId) {
+		return mapRepository.namedFindMapByServiceTypeId(serviceTypeId);
+	}
+
+	@Override
+	public List<MapForDropDownProjection> findMapForServiceType(ServiceType serviceType) {
+		
+		List<MapForDropDownProjection> result = null;
+		
+		if (serviceType!=null)
+		{
+			result=findMapForServiceType(serviceType.getId());
+		}
+		
+		return result;
+	}
+
+
+	@Override
+	public List<Map> getAllMaps() {		
+		return mapRepository.findAll(new Sort(Sort.Direction.ASC,"mapName"));
+	}
+
+	@Override
+	public List<MapForDropDownProjection> getAllMapsProjections() {
+		return mapRepository.findAllByOrderByMapName();
+	}
+
+	@Override
+	public Map findMapById(long id) {
+		return mapRepository.findOneById(id);
+	}
+
+	@Override
+	public MapForDropDownProjection findMapByIdProjection(long id) {
+		return mapRepository.findAllById(id);
+	}
+
+	@Override
+	public Map findMapByName(String name) {
+		return mapRepository.findOneByMapName(name);
+	}
+
+	@Override
+	public Collection<ServiceCategories> findAllSDServiceCategory() {
+		// TODO Auto-generated method stub
+		return sDServiceCategoryRepository.findAll();
+	}
+
+	
+	
+	
+
+}

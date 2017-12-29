@@ -1,0 +1,22 @@
+package com.abc.tpi.repository;
+
+import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.query.Param;
+
+import com.abc.tpi.domain.core.Company;
+import com.abc.tpi.domain.core.PartnerType;
+import com.abc.tpi.model.master.Direction;
+import com.abc.tpi.model.master.Document;
+import com.abc.tpi.model.master.Map;
+import com.abc.tpi.model.master.MapForDropDownProjection;
+
+public interface MapRepository extends JpaRepository<Map, Long> {
+	Map findOneByCompanyAndPartnerTypeAndDocumentAndDirection(Company company,PartnerType partner, Document document, Direction direction);	
+	List<MapForDropDownProjection> namedFindMapByServiceTypeId(@Param("serviceTypeId") long serviceId);
+	List<MapForDropDownProjection> findAllByOrderByMapName();
+	Map findOneById(long id);
+	MapForDropDownProjection findAllById(long id);
+	Map findOneByMapName(String name);
+} 

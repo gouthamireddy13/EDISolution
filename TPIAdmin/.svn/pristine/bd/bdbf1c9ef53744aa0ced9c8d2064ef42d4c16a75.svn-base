@@ -1,0 +1,243 @@
+<div  >
+<div class="dashboard-wrap">
+<div class="breadcrumbs">
+	
+	<h2>ABC ID Maintenance</h2>	
+</div>
+</div>	
+<style>input:required:invalid {
+    outline: none;
+}
+</style>
+ <div style="width:95%;" >
+ <div class="panel panel-default" style="background-color: #404951;" >
+ <div style="padding-top:20px;padding-left:20px;" ng-init="initSC();">
+      <div class="panel-heading" >SERVICE CATEGORY</div>
+      </div>
+      <div class="panel-body " style="padding-top:0px; padding-left:20px" >
+      	
+		
+		<input class="form-control"  id="panelsearch" type="text" name="search"  ng-model="search.partnerName"> 
+      
+      </div>
+      <div class=" panel-body pull-right col-sm-12" style=" background-color:#59626b ;">	
+
+  
+		  <!-- Trigger the modal with a button -->
+		  <button type="button" class="btn btn-primary pull-right"   data-toggle="modal" data-target="#myModal" ng-click="clearContact();" id="panelbtn"><img src="assets/AddPartner.png" id="panellogo">&nbsp;&nbsp;&nbsp; NEW ABC ID</button>
+
+</div>
+</div>
+
+<table class="table table-striped">
+
+	        <thead id="partnerhead">
+	        <tr>
+	            
+	            <th id="partnerrow"> <a id="sortlink"
+	             ng-click="sortType = 'partnerName'; sortReverse = !sortReverse">SERVICE CATEGORY
+            
+            <span ng-show="sortType == 'partnerName' && !sortReverse" ><img src="assets/up.png" id="sort"></span>
+            <span ng-show="sortType == 'partnerName' && sortReverse" ><img src="assets/down.png" id="sort"></span></a>
+	             </th>
+	           
+	            <th id="partnerrow"><a id="sortlink"
+	             ng-click="sortType = 'group'; sortReverse = !sortReverse">
+           
+         ISA ID     <span ng-show="sortType == 'group' && !sortReverse" ><img src="assets/up.png" id="sort"></span>
+            <span ng-show="sortType == 'group' && sortReverse" ><img src="assets/down.png" id="sort"></span></a>
+	            </th>
+	           <!--  <th id="partnerrow"> <a id="sortlink"
+	            ng-click="sortType = 'subGroup'; sortReverse = !sortReverse">ISA QUAL ID PROD
+           
+            <span ng-show="sortType == 'subGroup' && !sortReverse"><img src="assets/up.png" id="sort"></span>
+            <span ng-show="sortType == 'subGroup' && sortReverse" ><img src="assets/down.png" id="sort"></span></a>
+	            </th> --> 
+	               
+	           <th id="partnerrow"> <a id="sortlink"
+	            ng-click="sortType = 'subGroup'; sortReverse = !sortReverse">GS ID
+           
+            <span ng-show="sortType == 'subGroup' && !sortReverse"><img src="assets/up.png" id="sort"></span>
+            <span ng-show="sortType == 'subGroup' && sortReverse" ><img src="assets/down.png" id="sort"></span></a>
+	            </th> 
+	           
+	        </tr>
+	        </thead>
+	        <tbody>
+	        
+	        <tr ng-repeat="item in items  | orderBy:sortType:sortReverse  | filter:search" ng-click="showData(item.data)" data-toggle="modal" data-target="#myModal">
+	       
+	          <td id="partnerrow"></td>
+	          
+	          <td id="partnerrow"></td>
+	          <td id="partnerrow"></td>
+	          <td id="partnerrow"></td>
+	        
+	        </tr>
+	        </tbody>
+	      </table>
+	      
+	      </div>
+
+
+		  <!-- Modal -->
+		  <div class="modal fade" id="myModal" role="dialog"  data-backdrop="static" >
+		    <div class="modal-dialog modal-megamenu" >
+		    
+		    <div class="centeredabc">
+		    
+		      <!-- Modal content-->
+		      <div class="modal-content" style="background-color: rgb(240, 240, 240);">
+		        <div class="modal-header" style="background-color:#004c75;">
+		         <!-- <button type="button" class="close" data-dismiss="modal">&times;</button>-->
+				 <h1 class="modal-title" id="modtitle">ABC ID - New ID
+				  <button type="button" class="close" id="close1" ng-click="clearabc();" data-dismiss="modal">&times;</button> </h1>
+				 
+		        </div>
+		        <div  class="extraM">
+		        <div class="modal-wrap"style="margin-top:20px;background-color:#fff;">
+		        <form name="abcDetails" class="form-horizontal">
+		        <div class="modal-body" style="text-align:left">
+		          
+                     <div class="form-group">
+					      <label class="control-label col-sm-4"  id="contactfields" for="group">Service Category<font color="red">*</font>: </label>
+					      <div class="col-sm-8">
+							<select class="form-control" style="width: 250px;" ng-disabled="hideEdit"  ng-options="item.category as item.category for item in scList" name="serviceCategory" ng-model="serviceCategory" ng-change="" onmousedown="if(this.options.length>7){this.size=7;}"  onchange='this.size=0;' onblur="this.size=0;" required>
+							<option value="">Please Select Group</option>
+							</select>
+					         <span><font color="red"  ng-show="ErrorMsg&&abcDetails.serviceCategory.$error.required">Service Category is Required</font></span>
+					      </div>
+					    </div>
+                     
+					<!--     <div class="form-group" >
+					      <label class="control-label col-sm-4" id="contactfields" for="partnerName" >Partner Name<font color="red">*</font>:</label>
+					      <div class="col-sm-8">
+					        <input style="width: 250px;" class="form-control" id="partnerName"  name="partnerName" ng-disabled="hideEdit" ng-model="partnerName" required > 
+					        <span><font color="red"  ng-show="ErrorMsg&&abcDetails.partnerName.$error.required">Partner Name is Required</font></span>
+					         
+					      </div>
+					     </div>
+					     <div class="form-group" >
+					      <label class="control-label col-sm-4" id="contactfields"  >Name<font color="red">*</font>:</label>
+					      <div class="col-sm-8">
+					        <input style="width: 250px;" class="form-control" id="partnerName"  name="name" ng-disabled="hideEdit" ng-model="name" required > 
+					        <span><font color="red"  ng-show="ErrorMsg&&abcDetails.name.$error.required">Name is Required</font></span>
+					         
+					      </div>
+					     </div> --> 
+					 <div class="titlehead" > ABC IDs  </div>
+				
+				
+				<div class="row" id="row2">
+					
+					    <div class="form-group" >
+					 <div class = "col-sm-5 col-md-6 " id="test"><b>Test</b></div>
+					 <div class = "col-sm-5 col-md-6" id="test"><b>Production</b></div>
+					 <div class = "col-sm-5 col-md-6 " id="space">      
+					      <label class="control-label col-sm-4" id="contactfields1" >ISA ID<font color="red">*</font>:</label>
+					         <div class="col-sm-8">
+					         <input class="form-control"  id="isaidt" name="isaidt" ng-model="testIsaID" ng-disabled="hideEdit" required></input>
+					       <span><font color="red"  ng-show="ErrorMsg&&abcDetails.isaidt.$error.required">Test ISA ID is Required</font></span>
+					      </div>
+					      </div>
+					    
+ 
+					   <div class = "col-sm-5 col-md-6 " id="space">
+					      <label class="control-label col-sm-4" id="contactfields1" >ISA ID<font color="red">*</font>:</label>
+					        <div class="col-sm-8">        
+					        <input  class="form-control"  id="Cisaidp" name="isaidp" ng-model="productionIsaID" ng-disabled="hideEdit" required></input>
+					         <span><font color="red"  ng-show="ErrorMsg&&abcDetails.isaidp.$error.required">Production ISA ID is Required</font></span> 
+					      </div>
+					      </div>
+					      </div>
+					      <div class="form-group" >
+					      <div class = "col-sm-5 col-md-6 " id="space">      
+					      <label class="control-label col-sm-4" id="contactfields1" >ISA QUAL<font color="red">*</font>:</label>
+					         <div class="col-sm-8">
+					         <input class="form-control"  id="isaqualt" name="isaqualt" ng-model="testIsaQualifier" ng-disabled="hideEdit"  required></input>
+					     <span><font color="red"  ng-show="ErrorMsg&&abcDetails.isaqualt.$error.required">Test ISA QUAL is Required</font></span>
+					      </div>
+					      </div>
+					      
+					      <div class = "col-sm-5 col-md-6 " id="space">      
+					      <label class="control-label col-sm-4" id="contactfields1" >ISA QUAL<font color="red">*</font>:</label>
+					         <div class="col-sm-8">
+					         <input class="form-control"  id="isaqualp" name="isaqualp" ng-model="productionIsaQualifier" ng-disabled="hideEdit" required></input>
+					       <span><font color="red"  ng-show="ErrorMsg&&abcDetails.isaqualp.$error.required">Production ISA QUAL is Required</font></span>
+					      </div>
+					      </div>
+					      </div>
+					      
+					       <div class="form-group" >
+					      <div class = "col-sm-5 col-md-6 " id="space1">      
+					      <label class="control-label col-sm-4" id="contactfields1" >GS ID<font color="red">*</font>:</label>
+					         <div class="col-sm-8">
+					         <input class="form-control"  id="gsidt" name="gsidt" ng-model="testGsId" ng-disabled="hideEdit" required></input>
+					      <span><font color="red"  ng-show="ErrorMsg&&abcDetails.gsidt.$error.required">Test GS ID is Required</font></span>
+					      </div>
+					      </div>
+					      
+					      <div class = "col-sm-5 col-md-6 " id="space1">      
+					      <label class="control-label col-sm-4" id="contactfields1" >GS ID<font color="red">*</font>:</label>
+					         <div class="col-sm-8">
+					         <input class="form-control"  id="gsidp" name="gsidp" ng-model="productionGsId" ng-disabled="hideEdit" required></input>
+					      <span><font color="red"  ng-show="ErrorMsg&&abcDetails.gsidp.$error.required">Production GS ID is Required</font></span>
+					      </div>
+					      </div>
+					      </div>
+					     
+					      </div>
+					      </div>
+					      </form>
+					      </div> 
+					      </div>
+					      <div class="modal-footer" style="text-align:center;">
+		        	 <button type="button" class="btn btn-primary pull-left" id="primary"   ng-click="saveABC(abcDetails.$valid);">SAVE</button>
+		           <button type="button" class="btn btn-primary pull-left" id="primary" ng-show="hideEdit" ng-click="EditTppPartner();">EDIT</button>
+		        	<!--     <button type="button" class="btn btn-default"  ng-hide="onlyNew" id="warning" ng-click="deleteTpp();" >REMOVE</button> -->
+		          <button type="button" class="btn btn-default pull-right" id="warning" ng-click="clearabc();" data-dismiss="modal">CANCEL</button>
+		        </div>
+		      		      
+					      </div> 
+					    </div>
+						
+
+                        
+		    </div>
+		  </div>
+		 
+    <!-- Modal -->
+    <script type="text/ng-template" id="myModalContent.html">
+    
+   
+		   
+       
+            <div class="modal-content" style="background-color: #f0f0f0 ;height:auto;" >
+                <div class="modal-header" style="background-color:#004c75;">
+                    <h1 class="modal-title" id="modtitle"> ABC ID 
+                    <button type="button" class="close" data-dismiss="modal" ng-click="cancel()" style="color: #fff; font-weight: 400; font-size: 24px;" aria-hidden="true">&times;</button> </h1>
+                    
+                </div>
+               
+<div class="modal-body" style="border: 1px solid;margin:15px;background-color:#fff; text-align:center;  " >
+              <span style="font-family:arial;font-weight:700;"><b> {{user.msg}} </b> </span>
+ </div>
+
+               <div class="modal-footer">
+                       <button type="button" class="btn btn-primary pull-left"   id="primary" ng-click="cancel(user.del,user.edit)">OK</button>
+<button type="button" class="btn btn-default pull-right" ng-show="user.edit||user.del"   id="warning" ng-click="close(false)">CANCEL</button>
+
+   </div>     
+     
+            </div><!-- /.modal-content -->
+
+</script>  
+      </div>
+
+    
+
+
+	   
+   
+
+ 

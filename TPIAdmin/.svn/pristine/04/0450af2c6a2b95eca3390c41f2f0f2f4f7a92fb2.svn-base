@@ -1,0 +1,9 @@
+package com.abc.tpi.service;
+
+import java.util.List;
+
+import com.abc.tpi.model.migrator.ObjectTracker;
+
+public interface MigratorDataService {
+	List<ObjectTracker> getDataForSrId(String srId);
+}

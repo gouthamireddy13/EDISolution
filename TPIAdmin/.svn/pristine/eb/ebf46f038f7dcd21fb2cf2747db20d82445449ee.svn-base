@@ -1,0 +1,145 @@
+package com.abc.tpi.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.abc.tpi.model.Document;
+import com.abc.tpi.model.Protocol;
+import com.abc.tpi.model.TppType;
+import com.abc.tpi.model.Version;
+import com.abc.tpi.repository.DocumentRepository;
+import com.abc.tpi.repository.ProtocolRepository;
+import com.abc.tpi.repository.TppTypeRepository;
+import com.abc.tpi.repository.VersionRepository;
+
+@Service
+public class MasterDataServiceImpl implements MasterDataService {
+
+	@Autowired
+	private DocumentRepository documentRepository;
+
+	@Autowired
+	private ProtocolRepository protocolRepository;
+
+	@Autowired
+	private TppTypeRepository tppTypeRepository;
+
+	@Autowired
+	private VersionRepository versionRepository;
+
+	@Transactional
+	public TppType addTppType(TppType tppType) {
+
+		return tppTypeRepository.save(tppType);
+	}
+
+	@Transactional
+	public Document addDocumentType(Document docType) {
+
+		return documentRepository.save(docType);
+	}
+
+	@Transactional
+	public Version addVersion(Version version) {
+
+		return versionRepository.save(version);
+	}
+
+	@Transactional
+	public Protocol addProtocol(Protocol protocol) {
+
+		return protocolRepository.save(protocol);
+	}
+
+	@Transactional
+	public void deleteTppType(TppType tppType) {
+		
+		tppTypeRepository.delete(tppType);
+	}
+
+	@Transactional
+	public void deleteDocumentType(Document docType) {
+		
+		documentRepository.delete(docType);
+	}
+
+	@Transactional
+	public void deleteVersion(Version version) {
+		
+		versionRepository.delete(version);
+	}
+
+	@Transactional
+	public void deleteProtocol(Protocol protocol) {
+
+		protocolRepository.delete(protocol);
+	}
+
+	public List<TppType> findAllTppTypes() {
+		
+		return tppTypeRepository.findAll();
+	}
+
+	public List<Document> findAllDocumentTypes() {
+
+		return documentRepository.findAll();
+	}
+
+	public List<Version> findAllVersions() {
+
+		return versionRepository.findAll();
+	}
+
+	public List<Protocol> findAllProtocols() {
+
+		return protocolRepository.findAll();
+	}
+
+	public TppType findTppTypeById(long Id) {
+
+		return tppTypeRepository.findOne(Id);
+	}
+
+	public Document findDocumentTypeById(long id) {
+		
+		return documentRepository.findOne(id);
+	}
+
+	public Version findVersionById(long id) {
+		
+		return versionRepository.findOne(id);
+	}
+
+	public Protocol findProtocolById(long id) {
+
+		return protocolRepository.findOne(id);
+	}
+
+	@Override
+	public TppType findTppTypeByTypeCode(short typeCode) {
+		TppType result = tppTypeRepository.findOneByTypeCode((Short) typeCode);
+		return result;
+	}
+
+	@Override
+	public Document findDocumentTypeByDocumentType(int documentType) {
+		Document result = documentRepository.findOneByDocumentType(documentType);
+		return result;
+	}
+
+	@Override
+	public Version findVersionByVersionNumber(int versionNumber) {
+		Version version = versionRepository.findOneByVersionNumber((Integer) versionNumber);
+		return version;
+	}
+
+	@Override
+	public Protocol findProtocolByProtocolType(String protocolType) {
+		Protocol protocol = protocolRepository.findOneByProtocolTypeIgnoreCase(protocolType);
+		return protocol;
+	}
+
+}

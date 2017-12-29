@@ -1,0 +1,11 @@
+package com.abc.tpi.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.abc.dashboard.model.SdServiceAccess;
+
+
+public interface SDBusinessUnitRepository extends JpaRepository<SdServiceAccess, Long> {
+
+	SdServiceAccess findOneByBusinessUnitIgnoreCase(String businessUnit);
+}

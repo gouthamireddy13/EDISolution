@@ -1,0 +1,85 @@
+package com.abc.tpi.db;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import com.abc.tpi.domain.TpiDirection;
+import com.abc.tpi.model.Document;
+import com.abc.tpi.model.Transaction;
+import com.abc.tpi.model.Version;
+import com.abc.tpi.repository.TransactionRepository;
+import com.abc.tpi.service.MasterDataService;
+
+@ContextConfiguration(locations={"classpath:com/abc/tpi/db/application-contexttest.xml"})
+@RunWith(SpringJUnit4ClassRunner.class)
+public class TppTransactionTest {
+	
+	@Autowired
+	MasterDataService masterDataService;
+	
+	@Autowired
+	TransactionRepository transactionRepository;
+	
+	@Test
+	public void testAddTransaction1()
+	{
+		Transaction transaction = new Transaction();
+		transaction.setDirection(TpiDirection.INBOUND);
+		
+		transactionRepository.save(transaction);
+	}
+
+	@Test
+	public void testAddTransaction2()
+	{
+		Transaction transaction = new Transaction();
+		transaction.setDirection(TpiDirection.OUTBOUND);
+
+		Document doc = new Document();
+		doc.setDocumentCode("888");
+		doc.setDocumentType((Integer) 888);
+		transaction.setDocument(doc);
+		transactionRepository.save(transaction);
+	}
+	
+	@Test
+	public void testAddTransaction3()
+	{
+		Transaction transaction = new Transaction();
+		transaction.setDirection(TpiDirection.OUTBOUND);
+		Document doc = masterDataService.findDocumentTypeByDocumentType(850);
+		transaction.setDocument(doc);
+		System.out.println(doc);
+		transaction.setDocument(doc);
+		transactionRepository.save(transaction);
+	}
+	
+	@Test
+	public void testAddTransaction4()
+	{
+		Transaction transaction = new Transaction();
+		transaction.setDirection(TpiDirection.OUTBOUND);
+		
+		Version version = new Version();
+		version.setVersionNumber(999);
+		transaction.setVersion(version);
+		
+		transactionRepository.save(transaction);
+	}
+	
+	
+	@Test
+	public void testAddTransaction5()
+	{
+		Transaction transaction = new Transaction();
+		transaction.setDirection(TpiDirection.OUTBOUND);
+		Version version = masterDataService.findVersionByVersionNumber(3010);
+		transaction.setVersion(version);		
+		
+		transactionRepository.save(transaction);
+	}
+	
+}

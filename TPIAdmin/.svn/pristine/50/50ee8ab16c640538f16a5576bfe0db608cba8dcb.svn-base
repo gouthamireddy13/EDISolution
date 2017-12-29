@@ -1,0 +1,26 @@
+package com.abc.tpi.domain.soap;
+
+public class Transaction {
+	String direction;
+	String type;
+	String version;
+	
+	public String getDirection() {
+		return direction;
+	}
+	public String getType() {
+		return type;
+	}
+	public String getVersion() {
+		return version;
+	}
+	public void setDirection(String direction) {
+		this.direction = direction;
+	}
+	public void setType(String type) {
+		this.type = type;
+	}
+	public void setVersion(String version) {
+		this.version = version;
+	}
+}

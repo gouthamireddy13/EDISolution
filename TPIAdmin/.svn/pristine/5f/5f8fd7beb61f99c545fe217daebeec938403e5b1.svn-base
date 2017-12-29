@@ -1,0 +1,29 @@
+package com.abc.tpi.model.poc;
+
+import javax.persistence.AssociationOverride;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.Table;
+
+import org.hibernate.envers.AuditOverride;
+import org.hibernate.envers.Audited;
+
+@Audited
+@Entity
+@AuditOverride(forClass=com.abc.tpi.model.poc.PocParent.class,isAudited=true)
+
+@AssociationOverride(
+        name="pocs",
+        joinTable=@JoinTable(
+           name="ABC_POC_PARENT_CHILD",
+           joinColumns=@JoinColumn(name="PARENT_ID"),
+           inverseJoinColumns=@JoinColumn(name="POC_ID")
+        )
+      )
+
+@Table(name="ABC_TPI_POC_PARENT")
+public class PocParent extends PocParentEntity<Poc> 
+{
+
+}

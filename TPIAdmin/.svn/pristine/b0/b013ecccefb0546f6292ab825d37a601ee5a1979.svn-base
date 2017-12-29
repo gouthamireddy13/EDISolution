@@ -1,0 +1,629 @@
+package com.abc.tpi.db;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.abc.tpi.model.master.Delimiter;
+import com.abc.tpi.model.master.Direction;
+import com.abc.tpi.model.master.Document;
+import com.abc.tpi.model.master.Protocol;
+import com.abc.tpi.model.master.TpiMap;
+import com.abc.tpi.model.master.Version;
+import com.abc.tpi.model.service.BusinessService;
+import com.abc.tpi.model.service.CompanyEnum;
+import com.abc.tpi.model.service.PartnerCategoryEnum;
+import com.abc.tpi.model.service.Service;
+import com.abc.tpi.model.service.ServiceCategory;
+import com.abc.tpi.model.service.ServiceSubscription;
+import com.abc.tpi.model.service.ServiceType;
+import com.abc.tpi.model.tpp.LightWellPartner;
+import com.abc.tpi.service.ServiceSubscriptionService;
+
+import junit.framework.Assert;
+
+@ContextConfiguration(locations={"classpath:application-contexttest.xml"})
+@RunWith(SpringJUnit4ClassRunner.class)
+
+public class TestTpiCloning {
+
+	@Autowired
+	ServiceSubscriptionService subscriptionService;
+	
+	@Test
+	@Transactional
+	public void testServiceSubscriptionCloning()
+	{
+		long ssId = 192;
+		ServiceSubscription ss = subscriptionService.getServiceSubscription(ssId);
+		
+		ServiceSubscription ssCopy = ServiceSubscription.newInstance(ss);
+		
+		Assert.assertEquals(ss, ssCopy);
+		
+		for (Service service: ss.getServices())
+		{
+			
+			Service copyService = Service.newInstance(service);
+			Assert.assertEquals(service, copyService);
+			
+			for (BusinessService bs: service.getBusinessServices())
+			{
+				System.out.println(bs.getServiceType().getBusinessServiceName());
+				BusinessService copyBs = BusinessService.newInstance(bs);
+				Assert.assertEquals(bs,copyBs);
+			}
+		}
+		
+		//System.out.println(ssCopy.getId());
+		System.out.println(ssCopy.getServiceCategory().getName());
+	}
+	
+	private TpiMap createMap(int id)
+	{
+		TpiMap map = new TpiMap();
+		map.setMapName("map "+ id);
+		map.setMapDescription("description " + id);
+		return map;
+	}
+	
+	private LightWellPartner createLWPartner(int id)
+	{
+		LightWellPartner lw1 = new LightWellPartner();
+		String orgName = "partner " + id;
+		
+		lw1.setActive(false);
+		lw1.setNotes("notes1");
+		lw1.setOrganizationName(orgName);
+		lw1.setProductionGsId("pGsId1");
+		lw1.setProductionIsaID("pIsaId1");
+		lw1.setProductionIsaQualifier("pQualId1");
+		lw1.setTestGsId("tGsId1");
+		lw1.setTestIsaID("tIsId");
+		lw1.setTestIsaQualifier("tQal1");
+		
+		return lw1;
+	}
+
+	private Direction createDirection(int id)
+	{
+		Direction dir = new Direction();
+		dir.setDirectionCode(String.valueOf(id));
+		dir.setDirectionDescription("direction " + id);
+		return dir;
+	}
+	
+	private Protocol createProtocol(int id)
+	{
+		Protocol p = new Protocol();
+		p.setProtocolType(String.valueOf(id));
+		p.setProtocolDescription("protocol " + id);
+		return p;
+	}
+	
+	private Version createVersion(int id)
+	{
+		Version v = new Version();
+		v.setVersionNumber(id);
+		v.setVersionDescription("version "+ id);
+		return v;
+	}
+	
+	private Document createDocument(int id)
+	{
+		Document doc = new Document();
+		doc.setDocumentType(id);
+		doc.setDocumentDescription("document " + id);
+		return doc;
+	}
+	
+	private ServiceCategory createServiceCategory(int seedId)
+	{
+		
+		ServiceCategory sc1 = new ServiceCategory();
+		
+		LightWellPartner lw1 = new LightWellPartner();
+		LightWellPartner lw2 = new LightWellPartner();
+		
+		lw1=createLWPartner(1+seedId);
+		lw2=createLWPartner(2+seedId);
+		
+		sc1.setName("sc" + seedId);;
+		sc1.addLightWellPartner(lw1);
+		sc1.addLightWellPartner(lw2);
+		
+		return sc1;
+	}
+	
+	private ServiceType createServiceType(int seedId, CompanyEnum comp, PartnerCategoryEnum partnerCat)
+	{
+		ServiceType st1 = new ServiceType();
+		
+		st1.setBusinessServiceName("service name "+ seedId);
+		st1.setCompany(comp);
+		st1.setDirection(this.createDirection(seedId));
+		st1.setDocument(this.createDocument(seedId));
+		st1.setPartnerCategory(partnerCat);
+		st1.setServiceCategory(this.createServiceCategory(seedId));
+		st1.addMap(this.createMap(seedId+1));
+		st1.addMap(this.createMap(seedId+2));
+		
+		return st1;
+	}
+	
+	private ServiceType createServiceTypeNoMaps(int seedId, CompanyEnum comp, PartnerCategoryEnum partnerCat)
+	{
+		ServiceType st1 = new ServiceType();
+		
+		st1.setBusinessServiceName("service name "+ seedId);
+		st1.setCompany(comp);
+		st1.setDirection(this.createDirection(seedId));
+		st1.setDocument(this.createDocument(seedId));
+		st1.setPartnerCategory(partnerCat);
+		st1.setServiceCategory(this.createServiceCategory(seedId));
+		//st1.addMap(this.createMap(seedId+1));
+		//st1.addMap(this.createMap(seedId+2));
+		
+		return st1;
+	}
+	
+	private BusinessService createBusinessServiceI(int id, boolean ack, int ackPeriod, 
+							boolean complianceCheck, LightWellPartner lw, 
+							TpiMap map, Protocol protocol, ServiceType serviceType, Version version )
+	{
+		BusinessService bs = new BusinessService();
+
+		
+		bs.setAck(ack);
+		bs.setAckPeriod(ackPeriod);
+		bs.setComplianceCheck(complianceCheck);
+		bs.setLightWellPartner(lw);
+		bs.setMap(map);
+		bs.setNotes("notes " + id);
+		bs.setProtocol(protocol);
+		bs.setServiceType(serviceType);
+		bs.setSrId("srid" + id);
+		bs.setVersion(version);
+		
+		return bs;
+	}
+	
+	@Test
+	public void testCompareDirectionEquals()
+	{
+		Direction dir1 = new Direction();
+		Direction dir2 = new Direction();
+		
+		dir1.setDirectionCode("Outbound");
+		dir2.setDirectionCode("Outbound");
+		
+		dir1.setDirectionDescription("Direction 1");
+		dir2.setDirectionDescription("Direction 2");
+		
+		Assert.assertEquals(dir1, dir2);		
+	}
+	
+	@Test
+	public void testCompareDirectionNotEquals()
+	{
+		Direction dir1 = new Direction();
+		Direction dir2 = new Direction();
+		
+		dir1.setDirectionCode("Outbound");
+		dir2.setDirectionCode("Inbound");
+		
+		dir1.setDirectionDescription("Direction test");
+		dir2.setDirectionDescription("Direction test");
+		
+		Assert.assertFalse(dir1.equals(dir2));
+	}
+	
+	@Test
+	public void testCompareDelimiterEquals()
+	{
+		Delimiter del1 = new Delimiter();
+		Delimiter del2 = new Delimiter();
+		
+		del1.setComposite(true);
+		del1.setDelimiter(",");
+		del1.setDescription("Delimiter 1");
+		del1.setElement(true);
+		del1.setRepeat(false);
+		del1.setSegment(false);
+
+		del2.setComposite(true);
+		del2.setDelimiter(",");
+		del2.setDescription("Delimiter 2");
+		del2.setElement(true);
+		del2.setRepeat(false);
+		del2.setSegment(false);
+		
+		Assert.assertEquals(del1, del2);
+	}
+	
+	@Test
+	public void testCompareDelimiterNotEquals()
+	{
+		Delimiter del1 = new Delimiter();
+		Delimiter del2 = new Delimiter();
+		
+		del1.setComposite(false);
+		del1.setDelimiter(",");
+		del1.setDescription("Delimiter 1");
+		del1.setElement(false);
+		del1.setRepeat(false);
+		del1.setSegment(false);
+
+		del2.setComposite(false);
+		del2.setDelimiter(";");
+		del2.setDescription("Delimiter 2");
+		del2.setElement(false);
+		del2.setRepeat(false);
+		del2.setSegment(false);
+		
+		Assert.assertFalse(del1.equals(del2));
+	}
+	
+	@Test
+	public void testVersionEquals()
+	{
+		Version ver1 = new Version();
+		Version ver2 = new Version();
+		
+		ver1.setVersionNumber(1);
+		ver2.setVersionNumber(1);
+		
+		ver1.setVersionDescription("Version 1");
+		ver2.setVersionDescription("Version 2");
+		
+		Assert.assertEquals(ver1, ver2);
+	}
+	
+	@Test
+	public void testVersionNotEqual()
+	{
+		Version ver1 = new Version();
+		Version ver2 = new Version();
+		
+		ver1.setVersionNumber(1);
+		ver2.setVersionNumber(2);
+		
+		ver1.setVersionDescription("Version 1");
+		ver2.setVersionDescription("Version 2");
+		
+		Assert.assertFalse(ver1.equals(ver2));
+	}
+	
+	@Test
+	public void testProtocolEquals()
+	{
+		Protocol prot1 = new Protocol();
+		Protocol prot2 = new Protocol();
+		
+		prot1.setProtocolType("type1");
+		prot2.setProtocolType("type1");
+		
+		prot1.setProtocolDescription("protocol 1");
+		prot2.setProtocolDescription("protocol 2");
+		
+		Assert.assertEquals(prot1, prot2);
+		Assert.assertTrue(prot1.equals(prot2));
+		
+	}
+	
+	@Test
+	public void testProtocolNotEquals()
+	{
+		Protocol prot1 = new Protocol();
+		Protocol prot2 = new Protocol();
+		
+		prot1.setProtocolType("type1");
+		prot2.setProtocolType("type2");
+		
+		prot1.setProtocolDescription("protocol 1");
+		prot2.setProtocolDescription("protocol 2");
+		
+		Assert.assertFalse(prot1.equals(prot2));
+		
+	}
+	
+	@Test
+	public void testLWEquals()
+	{
+		LightWellPartner lw1 = new LightWellPartner();
+		LightWellPartner lw2 = new LightWellPartner();
+		
+		lw1=createLWPartner(1);
+		lw2=createLWPartner(1);
+		
+		Assert.assertEquals(lw1, lw2);
+		Assert.assertTrue(lw1.equals(lw2));
+		
+	}
+	
+	@Test
+	public void testLWNotEquals()
+	{
+		LightWellPartner lw1 = new LightWellPartner();
+		LightWellPartner lw2 = new LightWellPartner();
+		
+		lw1=createLWPartner(1);
+		lw2=createLWPartner(2);
+				
+		Assert.assertFalse(lw1.equals(lw2));
+		
+	}
+	
+	@Test
+	public void testServiceCategoryEquals()
+	{
+		ServiceCategory sc1 = new ServiceCategory();
+		ServiceCategory sc2 = new ServiceCategory();
+		
+		LightWellPartner lw1 = new LightWellPartner();
+		LightWellPartner lw2 = new LightWellPartner();
+		
+		lw1=createLWPartner(1);
+		lw2=createLWPartner(2);
+		
+		sc1.setName("sc1");;
+		sc1.addLightWellPartner(lw1);
+		sc1.addLightWellPartner(lw2);
+		
+		lw1=createLWPartner(1);
+		lw2=createLWPartner(2);
+		
+		sc2.setName("sc1");;
+		sc2.addLightWellPartner(lw1);
+		sc2.addLightWellPartner(lw2);		
+		
+		Assert.assertEquals(sc1,sc2);
+		
+	}
+	
+	@Test
+	public void testServiceCategoryNotEquals1()
+	{
+		ServiceCategory sc1 = new ServiceCategory();
+		ServiceCategory sc2 = new ServiceCategory();
+		
+		LightWellPartner lw1 = new LightWellPartner();
+		LightWellPartner lw2 = new LightWellPartner();
+		
+		lw1=createLWPartner(1);
+		lw2=createLWPartner(2);
+		
+		sc1.setName("sc1");;
+		sc1.addLightWellPartner(lw1);
+		sc1.addLightWellPartner(lw2);
+		
+		lw1=createLWPartner(1);
+		lw2=createLWPartner(2);
+		
+		sc2.setName("sc2");;
+		sc2.addLightWellPartner(lw1);
+		sc2.addLightWellPartner(lw2);		
+		
+		Assert.assertFalse(sc1.equals(sc2));
+		
+	}
+	
+	@Test
+	public void testServiceCategoryNotEquals2()
+	{
+		ServiceCategory sc1 = new ServiceCategory();
+		ServiceCategory sc2 = new ServiceCategory();
+		
+		LightWellPartner lw1 = new LightWellPartner();
+		LightWellPartner lw2 = new LightWellPartner();
+		
+		lw1=createLWPartner(1);
+		lw2=createLWPartner(2);
+		
+		sc1.setName("sc1");;
+		sc1.addLightWellPartner(lw1);
+		sc1.addLightWellPartner(lw2);
+		
+		lw1=createLWPartner(1);
+		lw2=createLWPartner(2);
+		
+		sc2.setName("sc1");;
+		sc2.addLightWellPartner(lw1);
+		//sc2.addLightWellPartner(lw2);		
+		
+		Assert.assertFalse(sc1.equals(sc2));
+		
+	}
+	
+	@Test
+	public void testServiceCategoryNotEquals3()
+	{
+		ServiceCategory sc1 = new ServiceCategory();
+		ServiceCategory sc2 = new ServiceCategory();
+		
+		LightWellPartner lw1 = new LightWellPartner();
+		LightWellPartner lw2 = new LightWellPartner();
+		
+		lw1=createLWPartner(1);
+		//different value for 2nd LW
+		lw2=createLWPartner(2);
+		
+		sc1.setName("sc1");;
+		sc1.addLightWellPartner(lw1);
+		sc1.addLightWellPartner(lw2);
+		
+		lw1=createLWPartner(1);
+		//different value for 2nd LW
+		lw2=createLWPartner(3);
+		
+		sc2.setName("sc1");;
+		sc2.addLightWellPartner(lw1);
+		sc2.addLightWellPartner(lw2);
+		
+		Assert.assertFalse(sc1.equals(sc2));
+		
+	}
+	
+	@Test
+	public void testDocumentEquals()
+	{
+		Document doc1 = new Document();
+		Document doc2 = new Document();
+		
+		doc1.setDocumentType(1);
+		doc2.setDocumentType(1);
+		
+		doc1.setDocumentDescription("doc1");
+		doc2.setDocumentDescription("doc2");
+		
+		Assert.assertEquals(doc1, doc2);
+	}
+	
+	@Test
+	public void testDocumentNotEquals()
+	{
+		Document doc1 = new Document();
+		Document doc2 = new Document();
+		
+		doc1.setDocumentType(1);
+		doc2.setDocumentType(2);
+		
+		doc1.setDocumentDescription("doc1");
+		doc2.setDocumentDescription("doc2");
+		
+		Assert.assertFalse(doc1.equals(doc2));
+	}
+	
+	@Test
+	public void testServiceTypeEquals()
+	{
+		ServiceType st1 = new ServiceType();
+		ServiceType st2 = new ServiceType();
+		
+		st1 = createServiceType(1,CompanyEnum.ABDC,PartnerCategoryEnum.Customer);
+		st2 = createServiceType(1,CompanyEnum.ABDC,PartnerCategoryEnum.Customer);		
+		Assert.assertEquals(st1,st2);
+		
+		st1 = createServiceTypeNoMaps(1,CompanyEnum.ABDC,PartnerCategoryEnum.Customer);
+		st2 = createServiceTypeNoMaps(1,CompanyEnum.ABDC,PartnerCategoryEnum.Customer);		
+		Assert.assertEquals(st1,st2);
+		
+	}
+	
+	@Test
+	public void testServiceTypeNotEquals1()
+	{
+		ServiceType st1 = new ServiceType();
+		ServiceType st2 = new ServiceType();
+		
+		st1 = createServiceType(1,CompanyEnum.ABDC,PartnerCategoryEnum.Customer);
+		st2 = createServiceType(1,CompanyEnum.ABSG,PartnerCategoryEnum.Customer);
+		
+		Assert.assertFalse(st1.equals(st2));		
+	}
+	
+	@Test
+	public void testServiceTypeNotEquals2()
+	{
+		ServiceType st1 = new ServiceType();
+		ServiceType st2 = new ServiceType();
+		
+		st1 = createServiceType(1,CompanyEnum.ABDC,PartnerCategoryEnum.Customer);
+		st2 = createServiceType(1,CompanyEnum.ABDC,PartnerCategoryEnum.Supplier);
+		
+		Assert.assertFalse(st1.equals(st2));		
+	}
+	
+	@Test
+	public void testServiceTypeNotEquals3()
+	{
+		ServiceType st1 = new ServiceType();
+		ServiceType st2 = new ServiceType();
+		
+		st1 = createServiceType(1,CompanyEnum.ABDC,PartnerCategoryEnum.Customer);
+		st2 = createServiceType(2,CompanyEnum.ABDC,PartnerCategoryEnum.Customer);
+		
+		Assert.assertFalse(st1.equals(st2));
+	}
+	
+	
+	@Test
+	public void testServiceTypeNotEquals4()
+	{
+		ServiceType st1 = new ServiceType();
+		ServiceType st2 = new ServiceType();
+		
+		st1 = createServiceTypeNoMaps(1,CompanyEnum.ABDC,PartnerCategoryEnum.Customer);
+		st2 = createServiceType(1,CompanyEnum.ABDC,PartnerCategoryEnum.Customer);		
+		Assert.assertFalse(st1.equals(st2));
+		
+		st1 = createServiceType(1,CompanyEnum.ABDC,PartnerCategoryEnum.Customer);
+		st2 = createServiceTypeNoMaps(1,CompanyEnum.ABDC,PartnerCategoryEnum.Customer);		
+		Assert.assertFalse(st1.equals(st2));
+	}
+	
+	@Test
+	public void testBusinessServiceEquals()
+	{
+		int id = 1;
+		boolean ack = true;
+		int ackPeriod = 90;
+		boolean complianceCheck = true;
+		
+		LightWellPartner lw = this.createLWPartner(1);		
+		TpiMap map = this.createMap(1);		
+		Protocol protocol = this.createProtocol(id);
+		ServiceType serviceType = this.createServiceType(1,CompanyEnum.ABDC,PartnerCategoryEnum.Customer);
+		Version version = this.createVersion(1);
+		
+		LightWellPartner lw2 = this.createLWPartner(1);		
+		TpiMap map2 = this.createMap(1);		
+		Protocol protocol2 = this.createProtocol(id);
+		ServiceType serviceType2 = this.createServiceType(1,CompanyEnum.ABDC,PartnerCategoryEnum.Customer);
+		Version version2 = this.createVersion(1);
+		
+		BusinessService bs1 = this.createBusinessServiceI(id, ack, ackPeriod, complianceCheck, lw, map, protocol, serviceType, version);			
+		BusinessService bs2 = this.createBusinessServiceI(id, ack, ackPeriod, complianceCheck, lw2, map2, protocol2, serviceType2, version2);
+		
+		Assert.assertTrue(bs1.equals(bs2));
+		Assert.assertEquals(bs1,bs2);
+	}
+	
+	@Test
+	public void testBusinessServiceNotEquals()
+	{
+				
+		
+		int id = 1;
+		boolean ack = true;
+		int ackPeriod = 90;
+		boolean complianceCheck = true;
+		
+		LightWellPartner lw = this.createLWPartner(1);		
+		TpiMap map = this.createMap(1);		
+		Protocol protocol = this.createProtocol(id);
+		ServiceType serviceType = this.createServiceType(1,CompanyEnum.ABDC,PartnerCategoryEnum.Customer);
+		Version version = this.createVersion(1);
+		
+		
+		int id2= 2;
+		boolean ack2 = true;
+		int ackPeriod2 = 90;
+		boolean complianceCheck2 = true;
+		
+		LightWellPartner lw2 = this.createLWPartner(1);		
+		TpiMap map2 = this.createMap(1);		
+		Protocol protocol2 = this.createProtocol(id);
+		ServiceType serviceType2 = this.createServiceType(1,CompanyEnum.ABDC,PartnerCategoryEnum.Customer);
+		Version version2 = this.createVersion(1);
+		
+		BusinessService bs1 = this.createBusinessServiceI(id, ack, ackPeriod, complianceCheck, lw, map, protocol, serviceType, version);			
+		BusinessService bs2 = this.createBusinessServiceI(id2, ack2, ackPeriod2, complianceCheck2, lw2, map2, protocol2, serviceType2, version2);
+		
+		Assert.assertFalse(bs1.equals(bs2));		
+	}
+	
+}

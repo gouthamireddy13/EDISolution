@@ -1,0 +1,185 @@
+package com.abc.tpi.model.service;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToOne;
+import javax.persistence.MappedSuperclass;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.OrderColumn;
+import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+
+import org.hibernate.annotations.Fetch;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
+import org.hibernate.envers.RelationTargetAuditMode;
+
+import com.abc.tpi.model.master.Delimiter;
+import com.abc.tpi.model.poc.TpiManagedEntity;
+import com.abc.tpi.model.tpp.LightWellPartner;
+import com.abc.tpi.model.tpp.Tpp;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@MappedSuperclass
+@AttributeOverrides
+({
+	@AttributeOverride(name="id",column=@Column(name="SERVICE_ID"))
+})
+@JsonIgnoreProperties(ignoreUnknown=true,value={"createdDate","lastModifiedDate","serviceSubscription"})
+
+@Table(name="ABC_TPI_SERVICE")
+public abstract class ServiceEntity extends TpiManagedEntity {
+	
+	@ManyToOne(fetch=FetchType.EAGER)
+	@JoinColumn(name="TPP_ID", nullable=true)
+	@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+	private Tpp tpp;
+	
+	@NotNull
+	@OneToOne(cascade=CascadeType.ALL,fetch=FetchType.EAGER)
+	@JoinColumn(name="LW_ID", nullable=false)
+	@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+	private LightWellPartner lightWellPartner;
+	
+	@NotNull
+	@ManyToOne
+	@JoinColumn(name="SEGMENT_DELIM", nullable=false)
+	@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+	private Delimiter segmentDelimiter;
+	
+	@NotNull
+	@ManyToOne
+	@JoinColumn(name="ELEMENT_DELIM")
+	@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+	private Delimiter elementDelimiter;
+	
+	@NotNull
+	@ManyToOne
+	@JoinColumn(name="COMPOSITE_DELIM")
+	@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+	private Delimiter compositeElementDelimiter;
+	
+	@ManyToOne
+	@JoinColumn(name="REPEAT_DELIM")
+	@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+	private Delimiter repeatDelimiter;
+	
+	@OneToMany(fetch=FetchType.LAZY, cascade=CascadeType.ALL,orphanRemoval=true)
+	@JoinTable(name="ABC_TPI_SRVC_BSNS_SRVC",
+			joinColumns=@JoinColumn(name="SERVICE_ID"),
+			inverseJoinColumns=@JoinColumn(name="BUSINESS_SERVICE_ID"))
+	@OrderColumn(name = "ORDER_SEQ")
+	@Audited
+	private Set<BusinessService> businessServices;
+	
+	@Audited
+	@Column(name="SR_ID")
+	private String srId;
+	
+	@Audited
+	@Column(name="NOTES")
+	private String notes;
+	
+	@ManyToOne(fetch=FetchType.LAZY)
+	@JoinTable(name="ABC_TPI_PARTNER_SERVICE",
+	joinColumns=@JoinColumn(name="SERVICE_ID",insertable=false,updatable=false),
+	inverseJoinColumns=@JoinColumn(name="SUBSCRIPTION_ID",insertable=false,updatable=false))
+	@NotAudited
+	private ServiceSubscription serviceSubscription;
+	
+	public void addBusinessService(BusinessService businessService)
+	{
+		if (businessServices==null)
+		{
+			businessServices = new HashSet<BusinessService>();
+		}
+		
+		businessServices.add(businessService);
+	}
+
+	public Set<BusinessService> getBusinessServices() {
+		return businessServices;
+	}
+
+	public Delimiter getCompositeElementDelimiter() {
+		return compositeElementDelimiter;
+	}
+
+	public Delimiter getElementDelimiter() {
+		return elementDelimiter;
+	}
+
+	public LightWellPartner getLightWellPartner() {
+		return lightWellPartner;
+	}
+
+	public String getNotes() {
+		return notes;
+	}
+
+	public Delimiter getRepeatDelimiter() {
+		return repeatDelimiter;
+	}
+
+	public Delimiter getSegmentDelimiter() {
+		return segmentDelimiter;
+	}
+
+	public ServiceSubscription getServiceSubscription() {
+		return serviceSubscription;
+	}
+
+	public String getSrId() {
+		return srId;
+	}
+
+	public Tpp getTpp() {
+		return tpp;
+	}
+
+	public void setCompositeElementDelimiter(Delimiter compositeElementDelimiter) {
+		this.compositeElementDelimiter = compositeElementDelimiter;
+	}
+
+	public void setElementDelimiter(Delimiter elementDelimiter) {
+		this.elementDelimiter = elementDelimiter;
+	}
+
+	public void setLightWellPartner(LightWellPartner lightWellPartner) {
+		this.lightWellPartner = lightWellPartner;
+	}
+
+	public void setNotes(String notes) {
+		this.notes = notes;
+	}
+
+	public void setRepeatDelimiter(Delimiter repeatDelimiter) {
+		this.repeatDelimiter = repeatDelimiter;
+	}
+
+	public void setSegmentDelimiter(Delimiter segtmentDelimiter) {
+		this.segmentDelimiter = segtmentDelimiter;
+	}
+
+	public void setServiceSubscription(ServiceSubscription serviceSubscription) {
+		this.serviceSubscription = serviceSubscription;
+	}
+
+	public void setSrId(String srId) {
+		this.srId = srId;
+	}
+
+	public void setTpp(Tpp tpp) {
+		this.tpp = tpp;
+	}
+	
+}

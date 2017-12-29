@@ -1,0 +1,455 @@
+package com.abc.dashboard.service;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Arrays;
+import java.util.List;
+
+import javax.transaction.Transactional;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.abc.dashboard.domain.SdConstants;
+import com.abc.dashboard.domain.SdDataLoadResult;
+import com.abc.dashboard.model.SdBusinessService;
+import com.abc.dashboard.model.SdBusinessSubUnit;
+import com.abc.dashboard.model.SdBusinessUnit;
+import com.abc.dashboard.model.SdServiceCategoryDef;
+import com.abc.dashboard.model.SdServiceType;
+import com.abc.dashboard.model.SdYesNo;
+import com.abc.tpi.common.exceptions.TpiValidationException;
+import com.abc.tpi.model.master.Direction;
+import com.abc.tpi.model.master.Document;
+import com.abc.tpi.model.service.ServiceCategory;
+import com.abc.tpi.service.MasterDataService;
+import com.abc.tpi.service.SeedDataLoadService;
+import com.abc.tpi.service.ServiceSubscriptionService;
+import com.abc.tpi.utils.SeedDataInsertStatMsg;
+
+@Service("sdSeedDataService")
+public class SdSeedDataServiceImpl implements SdSeedDataService {
+
+	private static final Logger logger = LogManager.getLogger(SdSeedDataServiceImpl.class);
+	
+	@Autowired
+	SeedDataLoadService seedDataService;
+
+	@Autowired
+	MasterDataService masterDataService;
+	
+	@Autowired
+	SdServiceCategoryService sdServiceCategoryService;
+	
+	@Autowired
+	ServiceSubscriptionService serviceSubscriptionService;
+	
+	@Autowired
+	com.abc.dashboard.service.SdMasterDataService sdMasterDataService;
+
+	
+	@Override
+	public SdDataLoadResult processSeedDataCSVFile(MultipartFile file, String entityName) {
+
+		SdDataLoadResult result = new SdDataLoadResult();
+		int currentLine = 1;
+		int errorLines = 0;
+		
+		boolean isValidEntity = true;
+		if (file != null && entityName != null && !file.isEmpty()) {
+			try {
+				logger.debug("Opening file " + file.getName() + " for import of " + entityName);
+				
+				BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()));
+				
+				while (reader.ready() && isValidEntity) {
+
+					logger.debug("Processing line #" + currentLine);					
+					String line = reader.readLine();
+					logger.debug(line);
+					
+					try
+					{
+						switch (entityName) 
+						{
+						
+							case SdConstants.SD_BUSINESS_SERVICE_ENTITY:
+								boolean b = loadSdServiceCategory(line);
+								break;
+							case SdConstants.SD_SERVICE_CATEGORY_ENTITY:
+								boolean bl = loadSdBusinessService(line);
+								break;
+
+							default:
+								result.getMessages().add(entityName + " is not a valid entity for data import");
+								isValidEntity = false;
+								break;
+						}
+					}
+					catch (Exception ex)
+					{
+						logger.debug(ex);
+						result.getMessages().add("Failed to load data from line #" + currentLine + ". Error: " + ex.getMessage());
+						errorLines++;
+					}
+
+					currentLine++;
+				}
+			} catch (IOException ex) {
+				result.getMessages().add("IO Exception " + ex.getMessage());
+				logger.debug(ex);
+
+			} catch (Exception ex) {
+				result.getMessages().add("Unexpected exception " + ex.getMessage());
+				logger.debug(ex);
+			}
+		} else {
+			result.getMessages().add("Invalid file");
+		}
+		
+		result.setLinesProcessed(currentLine-1);
+		result.setLinesFailed(errorLines);
+		
+		return result;
+	}
+	
+
+	public boolean loadSdBusinessService(String csvString) throws TpiValidationException
+	{
+		List<String> items = Arrays.asList(csvString.split("\\s*,\\s*"));
+		boolean isNew = true;
+		this.validateSdServiceCategoryInput(items);
+		
+		String serviceCategory = items.get(0).trim();
+		
+		int categoryId = Integer.valueOf(items.get(1));
+		
+		
+		String businessUnit = items.get(2).trim();
+		String businessSubUnit = items.get(3).trim();
+		String externalPartnerSubscription = items.get(4).trim();
+		String notes = "";
+		if (items.size()>5)
+		{
+			notes = items.get(5).trim();
+		}
+		
+		SdServiceCategoryDef serviceCategoryDef = null;		
+
+		serviceCategoryDef = sdServiceCategoryService.findSdServiceCategoryByName(serviceCategory, SdServiceCategoryDef.class);
+		
+		if (serviceCategoryDef==null)
+		{
+			serviceCategoryDef = new SdServiceCategoryDef();
+			ServiceCategory sc = serviceSubscriptionService.findServiceCategoryByNameIgnoreCase(serviceCategory);
+			serviceCategoryDef.setCategoryID(categoryId);
+
+			if (sc==null)
+			{
+				sc = new ServiceCategory();
+				sc.setName(serviceCategory);
+				sc = serviceSubscriptionService.saveServiceCategory(sc);				
+			}
+
+			serviceCategoryDef.setServiceCategory(sc);
+
+			SdBusinessUnit bu = sdMasterDataService.findSdBusinessUnitByName(businessUnit);
+
+			if (bu==null)
+			{
+				bu = new SdBusinessUnit();
+				bu.setName(businessUnit);
+				SdBusinessSubUnit bsu = new SdBusinessSubUnit();
+				bsu.setSubUnitName(businessSubUnit);
+				bu.addSubUnit(bsu);
+				bu = sdMasterDataService.saveSdBusinessUnit(bu);
+				serviceCategoryDef.setBusinessUnit(bu);
+				serviceCategoryDef.setBusinessSubUnit(bsu);
+			}
+			else
+			{
+				if (bu.getSubUnits()!=null)
+				{
+					for (SdBusinessSubUnit bsu: bu.getSubUnits())
+						if (bsu.getSubUnitName().equalsIgnoreCase(businessSubUnit))
+						{	
+							serviceCategoryDef.setBusinessSubUnit(bsu);
+							break;
+						}
+					if (serviceCategoryDef.getBusinessSubUnit()==null)
+					{
+						SdBusinessSubUnit bsu = new SdBusinessSubUnit();
+						bsu.setSubUnitName(businessSubUnit);
+						bu.addSubUnit(bsu);
+						bu = sdMasterDataService.saveSdBusinessUnit(bu);
+						serviceCategoryDef.setBusinessUnit(bu);
+						for (SdBusinessSubUnit newBsu: bu.getSubUnits())
+						{
+							if (newBsu.getSubUnitName().equalsIgnoreCase(businessSubUnit))
+							{
+								serviceCategoryDef.setBusinessSubUnit(newBsu);
+								break;
+							}
+						}
+
+					}
+					else
+					{
+						serviceCategoryDef.setBusinessUnit(bu);
+					}
+				}
+
+			}
+			
+			if (externalPartnerSubscription.equalsIgnoreCase(SdYesNo.Y.toString()))
+				serviceCategoryDef.setPartnerSubscription(SdYesNo.Y);
+			else
+				serviceCategoryDef.setPartnerSubscription(SdYesNo.N);
+			
+			serviceCategoryDef.setNotes(notes);
+			
+			sdServiceCategoryService.saveSdServiceCategoryDef(serviceCategoryDef);
+			isNew = true;
+		}else {
+			isNew = false;
+		}
+		return isNew;
+	}
+	@Override
+	@Transactional
+	public boolean loadSdServiceCategory(String line) throws TpiValidationException
+	{
+
+		boolean isNew = true;
+		List<String> items = Arrays.asList(line.split("\\s*,\\s*"));
+		SeedDataInsertStatMsg seedDataInsertStatMsg = new SeedDataInsertStatMsg();
+		this.validateSdBusinessServiceCategoryInput(items);
+
+		String serviceKey = items.get(0).trim();
+		String serviceCategory = items.get(1).trim();
+		int categoryId = Integer.valueOf(items.get(2));
+		String serviceLevel = items.get(3).trim();
+		String serviceLevelId = items.get(4).trim();
+		String businessUnit = items.get(5).trim();
+		String businessSubUnit = items.get(6).trim();
+		String servicePreamble = items.get(7).trim();
+		String transactionType = items.get(8).trim();
+		String direction = items.get(9).trim();
+		String serviceType = items.get(10).trim();
+		String interCo = items.get(11).trim();
+		String serviceDescription = items.get(12).trim();
+		int transactionCode = 0;
+
+		SdBusinessService businessService = null;
+
+		businessService = sdServiceCategoryService.findBusinessServiceByServiceKey(serviceKey, SdBusinessService.class);
+
+		if (businessService==null)
+		{
+			businessService = new SdBusinessService();
+			businessService.setServiceKey(serviceKey);
+			isNew = true;
+		}else{
+			isNew = false;
+		}
+
+
+
+		Document doc = masterDataService.findDocumentTypeByDocumentType(transactionType);	
+
+		if (doc!=null)
+		{
+			businessService.setDocument(doc);
+		}
+		else
+		{
+			throw new TpiValidationException("Transaction " + transactionType + " not found. Add new Transaction code before retrying again");
+		}
+
+		if (direction.equalsIgnoreCase("I"))
+		{
+			direction = "INBOUND";
+		}
+		else if(direction.equalsIgnoreCase("O"))
+		{
+			direction = "OUTBOUND";
+		}
+
+		Direction directionType = masterDataService.findDirectionByName(direction);
+
+		if (directionType==null)
+		{
+			throw new TpiValidationException("Direction " + direction + " not found. Add new Direction code before retrying again");
+		}
+
+		businessService.setDirection(directionType);
+		businessService.setInterCoSendToBU(interCo);
+		businessService.setServiceLevel(serviceLevel);
+		businessService.setServiceLevelId(serviceLevelId);
+		businessService.setServicePreamble(servicePreamble);
+		businessService.setServiceDescription(serviceDescription);
+
+
+		SdServiceCategoryDef serviceCategoryDef = null;		
+
+		serviceCategoryDef = sdServiceCategoryService.findSdServiceCategoryByName(serviceCategory, SdServiceCategoryDef.class);
+
+		if (serviceCategoryDef==null)
+		{
+			serviceCategoryDef = new SdServiceCategoryDef();
+			ServiceCategory sc = serviceSubscriptionService.findServiceCategoryByNameIgnoreCase(serviceCategory);
+			serviceCategoryDef.setCategoryID(categoryId);
+
+			if (sc==null)
+			{
+				sc = new ServiceCategory();
+				sc.setName(serviceCategory);
+				sc = serviceSubscriptionService.saveServiceCategory(sc);				
+			}
+
+			serviceCategoryDef.setServiceCategory(sc);
+
+			SdBusinessUnit bu = sdMasterDataService.findSdBusinessUnitByName(businessUnit);
+
+			if (bu==null)
+			{
+				bu = new SdBusinessUnit();
+				bu.setName(businessUnit);
+				SdBusinessSubUnit bsu = new SdBusinessSubUnit();
+				bsu.setSubUnitName(businessSubUnit);
+				bu.addSubUnit(bsu);
+				bu = sdMasterDataService.saveSdBusinessUnit(bu);
+				serviceCategoryDef.setBusinessUnit(bu);
+				serviceCategoryDef.setBusinessSubUnit(bsu);
+			}
+			else
+			{
+				if (bu.getSubUnits()!=null)
+				{
+					for (SdBusinessSubUnit bsu: bu.getSubUnits())
+						if (bsu.getSubUnitName().equalsIgnoreCase(businessSubUnit))
+						{	
+							serviceCategoryDef.setBusinessSubUnit(bsu);
+							break;
+						}
+					if (serviceCategoryDef.getBusinessSubUnit()==null)
+					{
+						SdBusinessSubUnit bsu = new SdBusinessSubUnit();
+						bsu.setSubUnitName(businessSubUnit);
+						bu.addSubUnit(bsu);
+						bu = sdMasterDataService.saveSdBusinessUnit(bu);
+						serviceCategoryDef.setBusinessUnit(bu);
+						for (SdBusinessSubUnit newBsu: bu.getSubUnits())
+						{
+							if (newBsu.getSubUnitName().equalsIgnoreCase(businessSubUnit))
+							{
+								serviceCategoryDef.setBusinessSubUnit(newBsu);
+								break;
+							}
+						}
+
+					}
+					else
+					{
+						serviceCategoryDef.setBusinessUnit(bu);
+					}
+				}
+
+			}
+			serviceCategoryDef.setPartnerSubscription(SdYesNo.Y);
+			sdServiceCategoryService.saveSdServiceCategoryDef(serviceCategoryDef);
+		}
+
+		businessService.setServiceCategory(serviceCategoryDef);
+
+		SdServiceType serviceTypeEntity = sdMasterDataService.findServiceTypeByName(serviceType);
+		if (serviceTypeEntity==null)
+		{
+			serviceTypeEntity = new SdServiceType();
+			serviceTypeEntity.setName(serviceType);
+			serviceTypeEntity.setDescription(serviceType);
+			sdMasterDataService.saveServiceType(serviceTypeEntity);
+		}
+
+		businessService.setServiceType(serviceTypeEntity);
+		sdServiceCategoryService.saveSdBusinessService(businessService);
+		seedDataInsertStatMsg.setSdBusinessService(businessService);
+		return isNew;
+	}
+
+	private void validateSdBusinessServiceCategoryInput(List<String> values) throws TpiValidationException
+	{
+		if (values.size()!=13) 
+		{
+			throw new TpiValidationException("SdServiceCategoryDef data file expects 13 values");
+		}
+
+		if (values.get(0)==null || values.get(0).isEmpty())
+		{
+			throw new TpiValidationException("SdServiceCategoryDef: Service Key cannot be empty");
+		}
+
+		if (values.get(1)==null || values.get(1).isEmpty())
+		{
+			throw new TpiValidationException("SdServiceCategoryDef: Service Category cannot be empty");
+		}
+
+		if (values.get(7)==null || values.get(7).isEmpty())
+		{
+			throw new TpiValidationException("SdServiceCategoryDef: Service Preamble cannot be empty");
+		}
+
+		if (values.get(8)==null || values.get(8).isEmpty())
+		{
+			throw new TpiValidationException("SdServiceCategoryDef: Transaction cannot be empty");
+		}
+
+		if (values.get(9)==null || values.get(9).isEmpty())
+		{
+			throw new TpiValidationException("SdServiceCategoryDef: Direction cannot be empty");
+		}
+
+		if (values.get(10)==null || values.get(10).isEmpty())
+		{
+			throw new TpiValidationException("SdServiceCategoryDef: Service Type cannot be empty");
+		}
+	}
+	
+	private void validateSdServiceCategoryInput(List<String> values) throws TpiValidationException
+	{
+
+		if (values.get(0)==null || values.get(0).isEmpty())
+		{
+			throw new TpiValidationException("SdServiceCategory: Service Category cannot be empty");
+		}
+		
+		if (values.get(1)==null || values.get(1).isEmpty())
+		{
+			throw new TpiValidationException("SdServiceCategory: Category ID cannot be empty");
+		}
+		
+		if (values.get(2)==null || values.get(2).isEmpty())
+		{
+			throw new TpiValidationException("SdServiceCategory: Business Unit cannot be empty");
+		}
+		
+		if (values.get(3)==null || values.get(3).isEmpty())
+		{
+			throw new TpiValidationException("SdServiceCategory: Business Sub Unit cannot be empty");
+		}
+		
+		if (values.get(4)==null || values.get(4).isEmpty())
+		{
+			throw new TpiValidationException("SdServiceCategory: External Partner Subscription cannot be empty");
+		}
+		
+		if (!values.get(4).trim().equalsIgnoreCase("Y") && !values.get(4).trim().equalsIgnoreCase("N"))
+		{
+			throw new TpiValidationException("SdServiceCategory: External Partner Subscription values must be 'Y' or 'N' only");
+		}
+	}
+}

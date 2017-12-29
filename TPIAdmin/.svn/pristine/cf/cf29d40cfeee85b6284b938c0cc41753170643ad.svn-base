@@ -1,0 +1,78 @@
+package com.abc.tpi.model.poc;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+
+import org.hibernate.annotations.Loader;
+import org.hibernate.annotations.ResultCheckStyle;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
+import org.hibernate.envers.AuditOverride;
+
+import com.abc.tpi.domain.core.Approvable;
+import com.abc.tpi.domain.core.ApprovableEntityEnum;
+
+@Entity
+@Table(name="ABC_TPI_POC_WIP")
+@AuditOverride(forClass=com.abc.tpi.model.poc.PocEntity.class,isAudited=false)
+@SQLDelete(sql="UPDATE ABC_TPI_POC_WIP SET DELETED = 1 WHERE POC_ID = ? and VERSION_NUM =? ",callable=false,check=ResultCheckStyle.NONE)
+@Where (clause = "DELETED = 0")
+@Loader(namedQuery="findPocWipById")
+@NamedQuery(name = "findPocWipById", query = "SELECT poc FROM PocWip poc WHERE poc.id = ?1 AND poc.deleted = false")
+public class PocWip extends PocEntity implements Approvable<Poc> {
+	
+	@Column(name="DELETED")
+	private boolean deleted = false;
+
+	@NotNull(message="State value is required")
+	@Column(name="STATE", nullable=false)
+	private ApprovableEntityEnum state = ApprovableEntityEnum.DRAFT;
+	
+	public boolean isDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
+	}
+
+	@Override
+	public Poc cloneToFInal() {
+		Poc finalPoc = new Poc();
+		finalPoc.setDelimiter(this.getDelimiter());
+		finalPoc.setDescription(this.getDescription());
+		finalPoc.setPocValue(this.getPocValue());
+		finalPoc.setVersionNum(this.getVersionNum());
+		return finalPoc;
+	}
+
+	@Override
+	public Poc updateFinal(Poc finalObject) {
+		finalObject.setDelimiter(this.getDelimiter());
+		finalObject.setDescription(this.getDescription());
+		finalObject.setPocValue(this.getPocValue());
+		finalObject.setVersionNum(this.getVersionNum());
+		return finalObject;
+	}
+
+	@Override
+	public ApprovableEntityEnum getState() {		
+		return this.state;
+	}
+
+	@Override
+	public void setState(ApprovableEntityEnum state) {
+		this.state = state;		
+	}
+
+	@Override
+	public boolean hasParent() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	
+
+}

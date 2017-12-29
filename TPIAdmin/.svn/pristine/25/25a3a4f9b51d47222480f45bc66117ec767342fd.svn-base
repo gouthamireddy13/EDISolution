@@ -1,0 +1,100 @@
+package com.abc.tpi.controller;
+
+import java.util.List;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.abc.tpi.common.exceptions.TpiRepositoryException;
+import com.abc.tpi.model.PartnerGroup;
+import com.abc.tpi.service.PartnerGroupService;
+
+@RestController
+public class PartnerGroupControllerRest {
+
+	private static final Logger logger = LogManager.getLogger(PartnerGroupControllerRest.class);
+	
+	@Autowired
+	PartnerGroupService partnerGroupService;
+
+	@RequestMapping(value = { "/partnerGroupNames" }, method = { RequestMethod.GET })
+	public ResponseEntity<List<String>> getPartnerGroupNames() throws TpiRepositoryException {
+
+		List<String> result = null;
+		try {
+			result = partnerGroupService.getDistinctPartnerGroupNamesForDropDown();
+			return ResponseEntity.status(HttpStatus.OK).body(result);
+		} catch (Exception ex) {
+			logger.error("Failed to Retrieve List of Partner Groups. ", ex);
+			throw new TpiRepositoryException("Failed to Retrieve List of Partner Groups.");
+		}
+	}
+	
+	@RequestMapping(value = { "/partnerGroups/{groupID}" }, method = { RequestMethod.GET })
+	public ResponseEntity<PartnerGroup> getPartnerGroup(@PathVariable("groupID") int groupID) throws TpiRepositoryException {
+
+		PartnerGroup partnerGroup = null;
+		try {
+			partnerGroup = partnerGroupService.getPartnerGroupById(groupID);
+			return ResponseEntity.status(HttpStatus.OK).body(partnerGroup);
+		} catch (Exception ex) {
+			logger.error("Failed to Retrieve Partner Group with GroupId: " + groupID, ex);
+			throw new TpiRepositoryException("Failed to Retrieve Partner Group with GroupId: " + groupID);
+		}
+	}
+	
+	@RequestMapping(value = { "/partnerGroups" }, method = { RequestMethod.GET })
+	public ResponseEntity<List<PartnerGroup>> getPartnerGroups() throws TpiRepositoryException {
+
+		List<PartnerGroup> partnerGroups = null;
+		try {
+			partnerGroups = partnerGroupService.getAllPartnerGroups();
+			return ResponseEntity.status(HttpStatus.OK).body(partnerGroups);
+		} catch (Exception ex) {
+			logger.error("Failed to Retrieve Partner Groups.", ex);
+			throw new TpiRepositoryException("Failed to Retrieve Partner Groups");
+		}
+	}
+	
+	@RequestMapping(value = { "/partnerGroups" }, method = { RequestMethod.POST })
+	public ResponseEntity<PartnerGroup> savePartnerGroups(@RequestBody PartnerGroup partnerGroup) throws TpiRepositoryException {
+
+		PartnerGroup result = null;
+		try {
+			result = partnerGroupService.savePartnerGroup(partnerGroup);
+			return ResponseEntity.status(HttpStatus.OK).body(result);
+		} catch (Exception ex) {
+			logger.error("Failed to Save Partner Group.", ex);
+			throw new TpiRepositoryException("Failed to Save Partner Group.");
+		}
+	}
+	
+	@RequestMapping(value = { "/partnerGroups/{groupID}" }, method = { RequestMethod.DELETE })
+	public void deletePartnerGroupByID(@PathVariable("groupID") int groupID) throws TpiRepositoryException {
+
+		Logger logger = LogManager.getLogger(PartnerGroupControllerRest.class);
+		logger.debug("Invoked PartnerController.deletePartnerGroupByID()");
+
+		try 
+		{
+				int id = groupID;
+				partnerGroupService.deletePartnerGroupByID(id);
+		} 
+		catch (Exception ex) {
+			logger.error("Failed to Delete Partner Group for ID " + groupID, ex);
+			throw new TpiRepositoryException("Failed to Delete Partner Group for ID " + groupID);
+		}
+
+
+	}
+	
+	
+}

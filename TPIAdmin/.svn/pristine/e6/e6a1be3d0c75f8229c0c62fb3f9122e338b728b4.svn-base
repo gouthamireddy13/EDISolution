@@ -1,0 +1,174 @@
+package com.abc.tpi.db;
+
+import java.util.List;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.abc.tpi.model.master.Delimiter;
+import com.abc.tpi.model.master.Document;
+import com.abc.tpi.model.master.Protocol;
+import com.abc.tpi.model.master.Version;
+import com.abc.tpi.model.partner.ContactDetail;
+import com.abc.tpi.model.tpp.LightWellPartner;
+import com.abc.tpi.model.tpp.Tpp;
+import com.abc.tpi.model.tpp.TppListViewProjection;
+import com.abc.tpi.model.tpp.Transaction;
+import com.abc.tpi.repository.DelimiterRepository;
+import com.abc.tpi.repository.DirectionRepository;
+import com.abc.tpi.repository.DocumentRepository;
+import com.abc.tpi.repository.ProtocolRepository;
+import com.abc.tpi.repository.TppTypeRepository;
+import com.abc.tpi.repository.VersionRepository;
+import com.abc.tpi.service.TppService;
+
+@ContextConfiguration(locations={"classpath:application-contexttest.xml"})
+@RunWith(SpringJUnit4ClassRunner.class)
+public class TestTppSeviceTest {
+	
+	@Autowired
+	TppService tppService;
+	
+	@Autowired 
+	ProtocolRepository protocolRepository;
+	
+	@Autowired
+	DocumentRepository documentRepository;
+	
+	@Autowired
+	VersionRepository versionRepository;
+	
+	@Autowired
+	TppTypeRepository tppTypeRepository;
+	
+	@Autowired
+	DelimiterRepository delimiterRepository;
+	
+	@Autowired
+	DirectionRepository directionRepository;
+	
+	@Test
+	@Transactional
+	@Rollback(false)
+	public void testSaveTPPEntity()
+	{
+		
+		Tpp tpp = new Tpp();
+		tpp.setName("Test TPP Four");
+		
+		tpp.setType(tppTypeRepository.findOneByTypeCode((short)1));
+		
+		ContactDetail tppContactDetail = new ContactDetail();
+		
+		Document document = documentRepository.findOneByDocumentType(810);
+		
+		
+		tppContactDetail.setContactName("Test Contact Four");
+		tppContactDetail.setContactEmail("Test Email One");
+		tppContactDetail.setContactTitle("Test Title One");
+		tppContactDetail.setBusinessPhone("1234567890");
+		tppContactDetail.setTransactionType(document);
+		//tpp.setContactDetails(new ArrayList<ContactDetail>());
+		
+		tpp.addContact(tppContactDetail);
+		
+		Protocol protocol = protocolRepository.findOneByProtocolTypeIgnoreCase("AS2/GHX");		
+		tpp.addProtocol(protocol);
+		protocol = protocolRepository.findOneByProtocolTypeIgnoreCase("AS2 Direct");
+		tpp.addProtocol(protocol);
+		
+		
+		Version version = versionRepository.findOneByVersionNumber(4010);
+		
+		Transaction trans = new Transaction();
+		trans.setDirection(directionRepository.findOneByDirectionCodeIgnoreCase("OUTBOUND"));
+		trans.setDocument(document);
+		trans.setVersion(version);
+		
+		
+		LightWellPartner lwPartner = new LightWellPartner();
+		lwPartner.setActive(true);
+		lwPartner.setNotes("Test Notes");
+		lwPartner.setOrganizationName("ABC");
+		lwPartner.setProductionGsId("123456");
+		lwPartner.setProductionIsaID("123456");
+		lwPartner.setProductionIsaQualifier("PROD");
+		lwPartner.setTestGsId("7890");
+		lwPartner.setTestIsaID("7890");
+		lwPartner.setTestIsaQualifier("TEST");
+		
+		tpp.addTransaction(trans);
+		tpp.setLightWellPartner(lwPartner);
+		
+		Delimiter d = delimiterRepository.findOneByDelimiter("#");
+		
+		tpp.setCompositeElementDelimiter(d);
+		tpp.setElementDelimiter(d);
+		tpp.setSegmentDelimiter(d);
+		
+		tppService.saveTpp(tpp);
+
+	}
+	
+	@Test
+	@Transactional
+	@Rollback(false)
+	public void testDeleteAllTPPs()
+	{
+		List<Tpp> results = tppService.findAllTpps();
+		
+		for (Tpp result : results)
+		{
+			tppService.deleteTpp(result);
+		}
+		
+	}
+	
+	@Test
+	public void testGetTppProjection()
+	{
+		List<TppListViewProjection> result = tppService.getTppProjectionForListView();
+		
+		for (TppListViewProjection projection : result)
+		{
+			System.out.println(projection.getName() + " ; " + projection.getType());
+		}
+	}
+	
+	@Test
+	public void testTppForABCId()
+	{
+		String testIsaId = "979788722";
+		String testGsId = "979788722";
+		String prodIsaId = "979788722";
+		String prodGsId = "979788722";
+		
+		List<Long> result = tppService.getTppsForAbcId(testIsaId, testGsId, prodIsaId, prodGsId);
+		
+		for (Long id : result)
+		{
+			System.out.println(id);
+		}
+	}
+	
+	
+	@Test
+	public void testTppForABCIdExists()
+	{
+		String testIsaId = "979788722";
+		String testGsId = "979788722";
+		String prodIsaId = "979788722";
+		String prodGsId = "979788722";
+		long tppId = 35;
+		
+		boolean result = tppService.isDuplicateTppForAbcId(testIsaId, testGsId, prodIsaId, prodGsId, tppId);
+
+			System.out.println(result);
+		
+	}
+}

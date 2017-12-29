@@ -1,0 +1,154 @@
+ /* Remove the navbar's default margin-bottom and rounded borders */ 
+    .navbar {
+      margin-bottom: 0;
+      border-radius: 0;
+    }
+    
+    /* Set height of the grid so .sidenav can be 100% (adjust as needed) */
+    .row.content {height: 1000px}
+    
+    /* Set gray background color and 100% height */
+    .sidenav {
+      padding-left: 50px;
+	  padding-top: 10px;
+    background-color: #313942;
+      height: 100%;
+	  margin: 0;
+    color: white;
+	font-size: 14px;
+    
+    line-height: 40px;
+	/*background-clip: content-box;
+	box-shadow: inset 0px 50px 50px 50px #004c75 ;*/
+	}
+	.divider{
+    width:5px;
+    height:auto;
+    display:inline-block;
+}
+	
+	
+	
+	
+	
+	h2{
+	color: #004c75;
+	font-size: 20px;
+	font-family: arial;
+	font-weight: normal;
+	}
+	/*a{
+	color: white;
+	font-size: 16px;
+	}*/
+    
+    /* Set black background color, white text and some padding */
+    /*footer {
+      background-color: #555;
+      color: white;
+      padding: 15px;
+    }
+    */
+    /* On small screens, set height to 'auto' for sidenav and grid */
+   /* @media screen and (max-width: 767px) {
+      .sidenav {
+        height: auto;
+        padding: 15px;
+      }
+      .row.content {height:auto;} 
+    }
+    img {
+    width:100%;
+	}
+  input[type=text] {
+    width: 130px;
+    box-sizing: border-box;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+    background-color: white;
+    background-image: url('searchicon.png');
+    background-position: 10px 10px; 
+    background-repeat: no-repeat;
+    padding: 12px 20px 12px 40px;
+    -webkit-transition: width 0.4s ease-in-out;
+    transition: width 0.4s ease-in-out;
+}
+
+input[type=text]:focus {
+    width: 100%;
+}
+table, th , td {
+  border: 1px solid grey;
+  border-collapse: collapse;
+  padding: 5px;
+}
+table tr:nth-child(odd) {
+  background-color: #f1f1f1;
+}
+table tr:nth-child(even) {
+  background-color: #ffffff;
+}
+*/
+/* Styles go here */
+
+/*table
+{
+    width: 100%;
+
+}
+table,th,td
+{
+    border: 1px solid black;
+}
+.color
+{
+    background-color: lightgray;
+}
+.color2
+{
+    background-color: white;
+}
+#heading
+{
+    background-color: black;
+    color: white;
+}
+tr:hover
+{
+
+    background-color:darkblue;
+    color: white;
+    font-weight: bold;
+}
+#images img
+{
+
+    margin-top: 10px;
+}
+#img1
+{
+    width: 33.4%;
+}
+#img2
+{
+    width: 66%;
+    height: 255px;
+}
+#table1
+{
+    margin-top: 10px;
+}
+label
+{
+    display: block;
+    margin-bottom: 5px;
+    margin-top: 5px;
+}
+button
+{
+    margin-top: 5px;
+    padding: 5px;
+}
+
+*/

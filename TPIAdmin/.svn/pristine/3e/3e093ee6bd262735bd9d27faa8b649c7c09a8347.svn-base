@@ -1,0 +1,35 @@
+package com.abc.tpi.service;
+
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
+import com.abc.tpi.common.exceptions.TpiRepositoryException;
+import com.abc.tpi.model.service.ServiceCategory;
+import com.abc.tpi.model.service.ServiceCategoryForDropDownProjection;
+import com.abc.tpi.model.service.ServiceSubscription;
+import com.abc.tpi.model.service.ServiceSubscriptionListViewProjection;
+import com.abc.tpi.model.service.ServiceType;
+import com.abc.tpi.model.tpp.LightWellPartner;
+@Service
+public interface ServiceSubscriptionService {
+
+	List<ServiceType> getBusinessServiceForTppAndServiceCat(long serviceCategoryId , long tppId) throws TpiRepositoryException;
+	ServiceSubscription saveServiceSubscription(ServiceSubscription serviceSubscription) throws TpiRepositoryException;
+	List<ServiceSubscription> getAllServiceSubscriptions();
+	List<ServiceType> getAllServiceTypes();
+	List<ServiceCategory> getAllServiceCategories();
+	List<ServiceCategory> getAllServiceCategoriesOrderByName();
+	List<ServiceCategory> findAllByCategoryName(String name);
+	ServiceCategory saveServiceCategory(ServiceCategory serviceCategory);
+	ServiceCategory findServiceCategoryById(long id);
+	ServiceCategory findServiceCategoryByNameIgnoreCase(String name);
+	ServiceType saveServiceType(ServiceType serviceType);
+	List<ServiceCategoryForDropDownProjection> getServiceCategoriesForDropDown();
+	List<ServiceSubscriptionListViewProjection> getServiceSubscriptionsListView();
+	ServiceSubscription getServiceSubscription(long id);
+	void deleteServiceSubscription(long id);
+	void deleteServiceSubscription(ServiceSubscription serviceSubscription);
+	void deleteServiceCategory(long id);
+	LightWellPartner findLightWellParnterByServiceCategoryLWid(long serviceCategoryId,long lightWellId);
+}

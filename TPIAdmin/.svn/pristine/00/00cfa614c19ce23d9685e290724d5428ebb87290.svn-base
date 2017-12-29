@@ -1,0 +1,1433 @@
+package com.abc.tpi.service;
+
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
+import javax.transaction.Transactional;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.abc.dashboard.model.SdBusinessService;
+import com.abc.dashboard.model.SdBusinessSubUnit;
+import com.abc.dashboard.model.SdBusinessUnit;
+import com.abc.dashboard.model.SdServiceCategoryDef;
+import com.abc.dashboard.model.SdServiceType;
+import com.abc.dashboard.model.SdYesNo;
+import com.abc.dashboard.service.SdServiceCategoryService;
+import com.abc.tpi.common.exceptions.TpiRepositoryException;
+import com.abc.tpi.common.exceptions.TpiValidationException;
+import com.abc.tpi.model.master.Ack;
+import com.abc.tpi.model.master.Delimiter;
+import com.abc.tpi.model.master.Direction;
+import com.abc.tpi.model.master.Document;
+import com.abc.tpi.model.master.PartnerType;
+import com.abc.tpi.model.master.Protocol;
+import com.abc.tpi.model.master.TpiMap;
+import com.abc.tpi.model.master.TppType;
+import com.abc.tpi.model.master.Version;
+import com.abc.tpi.model.partner.ContactDetail;
+import com.abc.tpi.model.partner.Partner;
+import com.abc.tpi.model.partner.PartnerGroup;
+import com.abc.tpi.model.service.CompanyEnum;
+import com.abc.tpi.model.service.PartnerCategoryEnum;
+import com.abc.tpi.model.service.ServiceCategory;
+import com.abc.tpi.model.service.ServiceType;
+import com.abc.tpi.model.tpp.LightWellPartner;
+import com.abc.tpi.repository.ServiceTypeRepository;
+import com.abc.tpi.repository.TpiMapRepository;
+import com.abc.tpi.utils.AppConstants;
+import com.abc.tpi.utils.SeedDataInsertStatMsg;
+import com.abc.tpi.utils.SeedDataRespMsg;
+
+@Service
+public class SeedDataLoadServiceImpl implements SeedDataLoadService {
+
+	private static final Logger logger = LogManager.getLogger(SeedDataLoadServiceImpl.class);
+
+	@Autowired
+	SeedDataLoadService seedDataService;
+
+	@Autowired
+	MasterDataService masterDataService;
+
+	@Autowired
+	PartnerGroupService partnerGroupService;
+
+	@Autowired
+	ServiceSubscriptionService serviceSubscriptionService;
+
+	@Autowired
+	TpiMapRepository tpiMapRepository;
+
+	@Autowired
+	ServiceTypeRepository serviceTypeRepository;
+
+	@Autowired
+	com.abc.dashboard.service.SdMasterDataService sdMasterDataService;
+
+	//Added by Arindam Sikdar for Dynamic Data Load process
+	@Autowired
+	PartnerService partnerService;
+	
+	
+	@Autowired
+	SdServiceCategoryService sdServiceCategoryService;
+
+
+	@Override
+	public Delimiter getDelimiterFromCsvString(String delimiter) {
+		// Delimiter definition expects 2 values: CODE and DESCRIPTION
+		Delimiter delim = null;
+		List<String> items = Arrays.asList(delimiter.split("\\s*,\\s*"));
+		if (items.size() == 6) {
+			delim = new Delimiter();
+			delim.setDelimiter(items.get(0));
+			delim.setDescription(items.get(1));
+			delim.setSegment(Boolean.parseBoolean(items.get(2)));
+			delim.setElement(Boolean.parseBoolean(items.get(3)));
+			delim.setComposite(Boolean.parseBoolean(items.get(4)));
+			delim.setRepeat(Boolean.parseBoolean(items.get(5)));
+
+		}
+		return delim;
+	}
+
+	@Override
+	public Ack getAckFromCsvString(String ack) {
+		Ack newAck = null;
+		List<String> items = Arrays.asList(ack.split("\\s*,\\s*"));
+		if (items.size() == 2) {
+			newAck = new Ack();
+			newAck.setAckValue(items.get(0));
+			newAck.setDescription(items.get(1));
+		}
+		return newAck;
+	}
+
+	@Override
+	public Direction getDirectionFromCsvString(String direction) {
+		Direction newDireciton = null;
+		List<String> items = Arrays.asList(direction.split("\\s*,\\s*"));
+		if (items.size() == 2) {
+			newDireciton = new Direction();
+			newDireciton.setDirectionCode(items.get(0));
+			newDireciton.setDirectionDescription(items.get(1));
+		}
+		return newDireciton;
+	}
+
+	@Override
+	public Document getDocumentFromCsvString(String document) {
+		Document newDocument = null;
+		List<String> items = Arrays.asList(document.split("\\s*,\\s*"));
+		if (items.size() == 2) {
+			newDocument = new Document();
+			newDocument.setDocumentType(Integer.decode(items.get(0)));
+			newDocument.setDocumentDescription(items.get(1));
+		}
+		return newDocument;
+	}
+
+	@Override
+	public PartnerType getPartnerTypeFromCsvString(String partnerType) {
+		PartnerType newPartnerType = null;
+		List<String> items = Arrays.asList(partnerType.split("\\s*,\\s*"));
+		if (items.size() == 2) {
+			newPartnerType = new PartnerType();
+			newPartnerType.setPartnerType(items.get(0));
+			newPartnerType.setTypeDescription(items.get(1));
+		}
+		return newPartnerType;
+	}
+
+	@Override
+	public Protocol getProtocolFromCcvString(String protocol) {
+
+		Protocol entity = null;
+		List<String> items = Arrays.asList(protocol.split("\\s*,\\s*"));
+		if (items.size() == 2) {
+			entity = new Protocol();
+			entity.setProtocolType(items.get(0));
+			entity.setProtocolDescription(items.get(1));
+		}
+		return entity;
+	}
+
+	@Override
+	public TppType getTppTypeFromCsvString(String tppType) {
+		TppType entity = null;
+		List<String> items = Arrays.asList(tppType.split("\\s*,\\s*"));
+		if (items.size() == 2) {
+			entity = new TppType();
+			entity.setTypeCode(Short.decode(items.get(0)));
+			entity.setDescription(items.get(1));
+		}
+		return entity;
+	}
+
+	@Override
+	public Version getVersionFromCsvString(String version) {
+		Version entity = null;
+		List<String> items = Arrays.asList(version.split("\\s*,\\s*"));
+		if (items.size() == 2) {
+			entity = new Version();
+			entity.setVersionNumber(Integer.decode(items.get(0)));
+			entity.setVersionDescription(items.get(1));
+		}
+		return entity;
+	}
+
+	@Override
+	public SeedDataRespMsg processSeedDataCSVFile(MultipartFile file, String entityName) throws IOException {
+
+		int counterCreated = 0;
+		int counterUpdated = 0;
+
+		//Added by Arindam Sikdar for Dynamic Data Load process - Partner Load
+		int counterSkipped = 0;
+		SeedDataRespMsg seedDataRespMsg = new SeedDataRespMsg();
+		ArrayList<SeedDataInsertStatMsg> seedDataInsertStatMsgList = new ArrayList<SeedDataInsertStatMsg>();
+
+
+		String message= "Processing " + entityName;
+		logger.debug("Prcessing Seed Data");
+
+		seedDataRespMsg.setMessage(message); //Added by Arindam Sikdar for Dynamic Data Load process - Partner Load
+
+		BufferedReader reader = null;
+
+		if (file != null && entityName!=null && !file.isEmpty()) 
+		{
+			//Added by Arindam Sikdar for Dynamic Data Load process - Partner Load
+			logger.debug("File Name: " + file.getOriginalFilename());
+			if(file.getOriginalFilename().contains(".xlsx")) {
+				logger.debug("Inside DYNAMIC DATA LOAD Loop");
+
+				//FileInputStream excelFile = new FileInputStream(file.getInputStream());
+				Workbook workbook = new XSSFWorkbook(file.getInputStream());
+				Sheet datatypeSheet = workbook.getSheetAt(0);
+				Iterator<Row> iterator = datatypeSheet.iterator();
+				String rowLine = null;
+				StringBuffer sb = null;
+				int lastColNum = 0;
+				//int firstColNum = 0;
+				boolean isHeaderRow = true;
+				while (iterator.hasNext()) {
+					rowLine = "";
+					sb = new StringBuffer();
+					Row currentRow = iterator.next();
+					if(isHeaderRow) {
+						lastColNum = currentRow.getLastCellNum();
+						isHeaderRow = false;
+						logger.debug("Skipping Hearder Row Number: " + currentRow.getRowNum());
+						continue;
+					}
+					for(int i=0; i < lastColNum; i++) {
+					//Iterator<Cell> cellIterator = currentRow.iterator();
+					//while (cellIterator.hasNext()) {
+						Cell currentCell = currentRow.getCell(i, Row.RETURN_NULL_AND_BLANK); //cellIterator.next();
+						if(currentCell != null) {
+							switch(currentCell.getCellType()) 
+							{
+							case XSSFCell.CELL_TYPE_STRING:
+								sb.append(currentCell.getStringCellValue()+",");
+								break;
+							case XSSFCell.CELL_TYPE_NUMERIC:
+								sb.append(new Double(currentCell.getNumericCellValue()).longValue()+",");
+								break;
+							case XSSFCell.CELL_TYPE_BLANK:
+								sb.append(",");
+								break;	
+							default:
+								sb.append(",");
+								break;
+
+							}
+						} else {
+							sb.append(",");
+						}
+
+					}
+					rowLine = sb.toString();
+					logger.debug("RowLine: " + rowLine);
+
+					SeedDataInsertStatMsg seedDataInsertStatMsg = new SeedDataInsertStatMsg();
+
+					String entityNameUpper = entityName.toUpperCase();
+					logger.debug("Processing data for : " + entityNameUpper); 
+
+					switch (entityNameUpper) 
+					{
+					case "PARTNER":  
+						seedDataInsertStatMsg = loadPartner(rowLine);
+						break;        
+					case "TPP":  
+						seedDataInsertStatMsg = loadTPP(rowLine);
+						break; 
+					default:
+						break;
+					}
+
+					seedDataInsertStatMsg.setRowNum(currentRow.getRowNum());
+					if (seedDataInsertStatMsg.getReturnFlag() == 0)
+					{
+						counterCreated++;
+					}
+					else if(seedDataInsertStatMsg.getReturnFlag() == 1)
+					{
+						counterUpdated++;
+					}
+					else 
+					{
+						counterSkipped++;
+						seedDataInsertStatMsgList.add(seedDataInsertStatMsg);
+					}
+
+				}
+
+			}
+			else 
+			{
+				try 
+				{
+					reader = new BufferedReader(new InputStreamReader(file.getInputStream()));
+
+					while (reader.ready()) 
+					{
+						String line = reader.readLine();
+
+						logger.debug(line);
+						String entityNameUpper = entityName.toUpperCase();
+						logger.debug("Processing data for : " + entityNameUpper); 
+
+						switch (entityNameUpper) 
+						{
+						case "ACK":  
+							if (loadACK(line))
+							{
+								counterCreated++;
+							}
+							else
+							{
+								counterUpdated++;
+							}
+							break;
+						case "DELIMITER":  
+							if (loadDelimiter(line))
+							{
+								counterCreated++;
+							}
+							else
+							{
+								counterUpdated++;
+							}
+							break;
+						case "DOCUMENT":  
+							if (loadDocument(line))
+							{
+								counterCreated++;
+							}
+							else
+							{
+								counterUpdated++;
+							}
+							break;
+						case "DIRECTION":  
+							if (loadDirection(line))
+							{
+								counterCreated++;
+							}
+							else
+							{
+								counterUpdated++;
+							}
+							break;
+						case "PROTOCOL":  
+							if (loadProtocol(line))
+							{
+								counterCreated++;
+							}
+							else
+							{
+								counterUpdated++;
+							}
+							break;
+						case "TPP TYPE":  
+							if (loadTppType(line))
+							{
+								counterCreated++;
+							}
+							else
+							{
+								counterUpdated++;
+							}
+							break;
+						case "VERSION":  
+							if (loadVersion(line))
+							{
+								counterCreated++;
+							}
+							else
+							{
+								counterUpdated++;
+							}
+							break;
+						case "PARTNER GROUP":  
+							if (loadPartnerGroup(line))
+							{
+								counterCreated++;
+							}
+							else
+							{
+								counterUpdated++;
+							}
+							break;	
+						case "SERVICE TYPE":  
+							if (loadServiceType(line))
+							{
+								counterCreated++;
+							}
+							else
+							{
+								counterUpdated++;
+							}
+							break;
+						case "SERVICE CATEGORY":  
+							if (loadServiceCategoryLightWellPartner(line))
+							{
+								counterCreated++;
+							}
+							else
+							{
+								counterUpdated++;
+							}
+							break;
+						case "MAP":
+							if (loadMap(line))
+							{
+								counterCreated++;
+							}
+							else
+							{
+								counterUpdated++;
+							}
+							break;
+						case "SERVICE TYPE MAP":
+							if (loadMapsForServiceCategory(line)!=null)
+							{
+								counterCreated++;
+							}
+							else
+							{
+								counterUpdated++;
+							}
+							break;
+						case "BUSINESS UNIT":
+
+						{
+							if (loadSdBusinessUntiFromString(line))
+							{
+								counterCreated++;
+							}
+							else
+							{
+								counterUpdated++;
+							}
+						}
+						break;
+			            case "SD SERVICE CATEGORY LOOKUP":
+				            
+						try {
+							if (loadServiceCategoryDefFromText(line))
+			            	{
+			            		counterCreated++;
+			            	}
+			            	else
+			            	{
+			            		counterUpdated++;
+			            	}
+						} catch (TpiValidationException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+			            	break;
+						case "SD SERVICE TYPE":
+
+							if (loadSdServiceTypeFromString(line))
+							{
+								counterCreated++;
+							}
+							else
+							{
+								counterUpdated++;
+							}
+							break;
+							/*							//Added by Arindam Sikdar for Dynamic Data Load process
+						case "CONTACT DETAIL":
+
+							if (loadContactDetail(line))
+							{
+								counterCreated++;
+							}
+							else
+							{
+								counterUpdated++;
+							}
+							break;
+							//Added by Arindam Sikdar for Dynamic Data Load process - Partner Load 
+						case "PARTNER":
+
+							if (loadPartner(line) == 0)
+							{
+								counterCreated++;
+							}
+							else if(loadPartner(line) == 1)
+							{
+								counterUpdated++;
+							}
+							else 
+							{
+								counterSkipped++;
+							}
+							break;	*/		            
+						default:
+							break;
+						}
+					}
+				}
+
+				finally 
+				{
+					if (reader != null)
+						reader.close();
+				}
+
+			} // END of ELSE Loop added by Arindam Sikdar for Dynamic Data Load process - Partner Load
+		}
+		else
+		{
+			logger.warn("Invalid file or Entity Name supplied");
+		}
+		message = "Total created: " + counterCreated + " Total updated: " + counterUpdated + " Total skipped: " + counterSkipped;
+
+		seedDataRespMsg.setMessage(message);
+		seedDataRespMsg.setSeedDataInsertStatMsgList(seedDataInsertStatMsgList);
+		return seedDataRespMsg;
+		//return message;
+	}
+
+	private boolean loadMap(String line)
+	{
+		boolean isNew = true;
+
+		TpiMap map = seedDataService.getMapFromCsvString(line);
+		TpiMap existingMap = masterDataService.findMapByName(map.getMapName());
+		if (existingMap != null)
+		{
+			existingMap.setMapName(map.getMapName());
+			existingMap.setMapDescription(map.getMapDescription());
+			masterDataService.saveMap(existingMap);
+			isNew= false;
+		}
+		else
+		{
+			masterDataService.saveMap(map);
+			isNew = true;
+		}
+		return isNew;
+
+	}
+
+	private boolean loadVersion(String line) {
+		boolean isNew = true;
+
+		Version entity = seedDataService.getVersionFromCsvString(line);
+		Version existing = masterDataService.findVersionByVersionNumber(entity.getVersionNumber());
+
+		if (existing != null) 
+		{
+			existing.setVersionDescription(existing.getVersionDescription());
+			masterDataService.saveVersion(existing);
+			isNew = false;
+		} 
+		else 
+		{
+			masterDataService.saveVersion(entity);
+			isNew = true;
+		}
+
+		return isNew;
+	}
+
+	private boolean loadTppType(String line) {
+		boolean isNew = true;
+
+		TppType entity = seedDataService.getTppTypeFromCsvString(line);
+		TppType existing = masterDataService.findTppTypeByTypeCode(entity.getTypeCode());
+
+		if (existing != null) 
+		{
+			existing.setDescription(existing.getDescription());
+			masterDataService.saveTppType(existing);
+			isNew = false;
+		} 
+		else 
+		{
+			masterDataService.saveTppType(entity);
+			isNew = true;
+		}
+
+		return isNew;
+	}
+
+	private boolean loadDelimiter(String delimiterEntry)
+	{
+		boolean isNew = true;
+
+		Delimiter delimiter = seedDataService.getDelimiterFromCsvString(delimiterEntry);
+		Delimiter existing = masterDataService.findDelimiterByCode(delimiter.getDelimiter());
+
+		if (existing != null) 
+		{
+			existing.setDescription(delimiter.getDescription());
+			existing.setComposite(delimiter.isComposite());
+			existing.setElement(delimiter.isElement());
+			existing.setComposite(delimiter.isComposite());
+			masterDataService.saveDelimiter(existing);
+			isNew = false;
+		} 
+		else 
+		{
+			masterDataService.saveDelimiter(delimiter);
+			isNew = true;
+		}
+
+		return isNew;
+	}
+
+	private boolean loadACK(String ackEntry)
+	{
+		boolean isNew = true;
+
+		Ack ack = seedDataService.getAckFromCsvString(ackEntry);
+		Ack existing = masterDataService.findAckByCode(ack.getAckValue());
+
+		if (existing != null) 
+		{
+			existing.setDescription(existing.getDescription());
+			masterDataService.saveAck(existing);
+			isNew = false;
+		} 
+		else 
+		{
+			masterDataService.saveAck(ack);
+			isNew = true;
+		}
+
+		return isNew;
+	}
+
+	private boolean loadDocument(String documentString)
+	{
+		boolean isNew = true;
+
+		Document document = seedDataService.getDocumentFromCsvString(documentString);
+		Document existing = masterDataService.findDocumentTypeByDocumentType(document.getDocumentType());
+
+		if (existing != null) 
+		{
+			existing.setDocumentDescription(existing.getDocumentDescription());
+			masterDataService.saveDocument(existing);
+			isNew = false;
+		} 
+		else 
+		{
+			masterDataService.saveDocument(document);
+			isNew = true;
+		}
+
+		return isNew;
+	}
+
+	private boolean loadDirection(String line)
+	{
+		boolean isNew = true;
+
+		Direction entity = seedDataService.getDirectionFromCsvString(line);
+		Direction existing = masterDataService.findDirectionByName(entity.getDirectionCode());
+
+		if (existing != null) 
+		{
+			existing.setDirectionDescription(existing.getDirectionDescription());
+			masterDataService.saveDirection(existing);
+			isNew = false;
+		} 
+		else 
+		{
+			masterDataService.saveDirection(entity);
+			isNew = true;
+		}
+
+		return isNew;
+	}
+
+	private boolean loadProtocol(String line)
+	{
+		boolean isNew = true;
+
+		Protocol entity = seedDataService.getProtocolFromCcvString(line);
+		Protocol existing = masterDataService.findProtocolByProtocolType(entity.getProtocolType());
+
+		if (existing != null) 
+		{
+			existing.setProtocolDescription(existing.getProtocolDescription());
+			masterDataService.saveProtocol(existing);
+			isNew = false;
+		}
+		else 
+		{
+			masterDataService.saveProtocol(entity);
+			isNew = true;
+		}
+
+		return isNew;
+	}
+
+	//Added by Arindam Sikdar for Dynamic Data Load process
+	private boolean loadContactDetail(String line) {
+		boolean isNew = true;
+		ContactDetail contactDetail = seedDataService.getContactDetailFromCsvString(line);
+		partnerService.insertContactDetail(contactDetail);
+
+		return isNew;
+	}
+
+	//Added by Arindam Sikdar for Dynamic Data Load process - Partner Load
+	private SeedDataInsertStatMsg loadPartner(String line) {
+		int returnFlag = 0; //0 - INSERT, 1 - UPDATE, 2 - ERROR
+		SeedDataInsertStatMsg seedDataInsertStatMsg = new SeedDataInsertStatMsg();
+		String validationStatus = validatePartnerString(line);
+		if(validationStatus.length() == 0) {
+			Partner partner = seedDataService.getPartnerFromXlsxString(line);
+			Partner result = null;		
+			if(partner != null && partner.getPartnerName() != AppConstants.errorCode01 && partner.getPartnerName() != AppConstants.errorCode10 ) {
+				if(!partnerService.isPartnerExist(partner.getPartnerName())) {
+					try {
+
+						result = partnerService.createPartner(partner);
+					} catch (TpiRepositoryException e) {
+						// TODO Auto-generated catch block
+						logger.error(AppConstants.errorCode02, e);
+						returnFlag = 2;
+						seedDataInsertStatMsg.setStatusMsg(AppConstants.errorCode02);
+						e.printStackTrace();
+					}
+				}else {
+					Partner existingPartner = partnerService.findPartnerByUniqueName(partner.getPartnerName());
+					Set<ContactDetail> set = partner.getContactDetails();
+					for (ContactDetail s : set) {
+						partnerService.insertContactDetail(s);
+						existingPartner.addContact(s);
+					}
+					existingPartner.setPartnerGroup(partner.getPartnerGroup());
+					result = partnerService.updatePartner(existingPartner);
+					returnFlag = 1;
+				}
+			} else {
+				returnFlag = 2;
+				if(partner != null && partner.getPartnerName() == AppConstants.errorCode01) {
+					seedDataInsertStatMsg.setStatusMsg(AppConstants.errorCode01);
+				}
+				if(partner != null && partner.getPartnerName() == AppConstants.errorCode10) {
+					seedDataInsertStatMsg.setStatusMsg(AppConstants.errorCode10);
+				}
+			}
+		} else {
+			returnFlag = 2;
+			seedDataInsertStatMsg.setStatusMsg(validationStatus);
+		}
+
+		seedDataInsertStatMsg.setReturnFlag(returnFlag);
+		return seedDataInsertStatMsg;
+	}
+
+	private String validatePartnerString(String partnerString) {
+		String validationStatus = "";
+		StringBuffer sb = new StringBuffer("");
+		List<String> items = Arrays.asList(partnerString.split("\\s*,\\s*"));
+		//logger.debug("Item Size: " + items.size());
+		if(items.size() == 17) {
+/*			for(int i=0;i < 17;i++) {
+				logger.debug("Item"+i+": "+ items.get(i));
+				logger.debug("Item Size"+i+": "+ items.get(i).length());
+			}*/
+			if(items.get(0) == null || items.get(0).trim().length() == 0) {
+				logger.error(AppConstants.errorCode04);
+				sb.append(AppConstants.errorCode04);
+			}
+			if(items.get(1) == null || items.get(1).trim().length() == 0) {
+				logger.error(AppConstants.errorCode05);
+				sb.append(AppConstants.errorCode05);
+			}
+			if(items.get(2) == null || items.get(2).trim().length() == 0) {
+				logger.error(AppConstants.errorCode06);
+				sb.append(AppConstants.errorCode06);
+			}
+			if(items.get(3) == null || items.get(3).trim().length() == 0) {
+				logger.error(AppConstants.errorCode07);
+				sb.append(AppConstants.errorCode07);
+			}
+			if(items.get(14) == null || items.get(14).trim().length() == 0) {
+				logger.error(AppConstants.errorCode08);
+				sb.append(AppConstants.errorCode08);
+			}
+			if(items.get(16) == null || items.get(16).trim().length() == 0) {
+				logger.error(AppConstants.errorCode09);
+				sb.append(AppConstants.errorCode09);
+			}
+			
+		}else {
+			logger.error(AppConstants.errorCode03);
+			sb.append(AppConstants.errorCode03);
+		}
+
+		validationStatus = sb.toString();
+		//logger.debug("Validation Status: " + validationStatus);
+		return validationStatus;
+	}
+
+	//Added by Arindam Sikdar for Dynamic Data Load process - TPP Load
+	private SeedDataInsertStatMsg loadTPP(String line) {
+		int returnFlag = 0; //0 - INSERT, 1 - UPDATE, 2 - ERROR
+		SeedDataInsertStatMsg seedDataInsertStatMsg = new SeedDataInsertStatMsg();
+
+		return seedDataInsertStatMsg;
+
+	}
+
+	//Added by Arindam Sikdar for Dynamic Data Load process - Partner Load
+	@Override
+	public Partner getPartnerFromXlsxString(String partnerString) {
+		Partner partner = null; 
+		PartnerGroup partnerGroup = null;
+		ContactDetail contactDetail = null;
+		//Document doc = null;
+		List<String> items = Arrays.asList(partnerString.split("\\s*,\\s*"));
+		//logger.debug("Total column number in Partner sheet: " + items.size());
+		if(items.size() == 17) {
+			partner = new Partner();
+
+			partner.setPartnerName(items.get(0));
+
+			if(partnerGroupService.isPartnerGroupExists(items.get(1), items.get(2))) {
+				partnerGroup = partnerGroupService.getPartnerGroupByGroupSubGroupName(items.get(1), items.get(2));
+				partner.setPartnerGroup(partnerGroup);
+				contactDetail = seedDataService.getContactDetailFromCsvString(partnerString);
+				if(contactDetail.getContactName() == AppConstants.errorCode10) {
+					//Raise error
+					logger.error(AppConstants.errorCode10);
+					partner.setPartnerName(AppConstants.errorCode10);
+				} else {
+					partner.addContact(contactDetail);
+				}
+			} else {
+				//Raise error
+				logger.error(AppConstants.errorCode01);
+				partner.setPartnerName(AppConstants.errorCode01);
+			}			
+
+
+		}				
+
+
+		return partner;
+	}
+
+
+	//Added by Arindam Sikdar for Dynamic Data Load process
+	@Override
+	public ContactDetail getContactDetailFromCsvString(String contactString) {
+		ContactDetail contactDetail = null;
+		Document doc = null;
+		List<String> items = Arrays.asList(contactString.split("\\s*,\\s*"));
+		//logger.debug("Total column number: " + items.size());
+		if(items.size() == 17) {
+			contactDetail = new ContactDetail();
+
+			contactDetail.setContactName(items.get(3));
+			contactDetail.setContactTitle(items.get(4));
+			contactDetail.setBusinessPhoneCountry(items.get(5));
+			contactDetail.setBusinessPhone(items.get(6));
+			contactDetail.setBusinessPhoneExt(items.get(7));
+			contactDetail.setMobilePhoneCountry(items.get(8));
+			contactDetail.setMobilePhone(items.get(9));
+			contactDetail.setMobilePhoneExt(items.get(10));
+			contactDetail.setPersonalPhoneCountry(items.get(11));
+			contactDetail.setPersonalPhone(items.get(12));
+			contactDetail.setPersonalPhoneExt(items.get(13));
+			contactDetail.setContactEmail(items.get(14));
+			contactDetail.setContactEmail2(items.get(15));
+
+			doc = masterDataService.findDocumentTypeByDocumentType(Integer.parseInt(items.get(16)));
+			if(doc != null) {
+				contactDetail.setTransactionType(doc);
+				//logger.debug("DOC object is not null.");
+			}else {
+				contactDetail.setContactName(AppConstants.errorCode10);
+				logger.error(AppConstants.errorCode10);
+			}
+			
+		}
+
+
+		return contactDetail;
+
+	}
+
+	@Override
+	public PartnerGroup getPartnerGroupFromCsvString(String text) {
+		PartnerGroup entity = null;
+		List<String> items = Arrays.asList(text.split("\\s*,\\s*"));
+		if (items.size() == 2) {
+			entity = new PartnerGroup();
+			entity.setGroupName(items.get(0));
+			entity.setSubGroupName(items.get(1));
+		}
+		return entity;
+	}
+
+	@Override
+	public ServiceType getServiceTypeFromCsvString(String text) {
+		ServiceType entity = null;
+		List<String> items = Arrays.asList(text.split("\\s*,\\s*"));
+		if (items.size() == 7) {
+			entity = new ServiceType();
+			try 
+			{
+
+				ServiceCategory serviceCategory = serviceSubscriptionService.findServiceCategoryByNameIgnoreCase(items.get(2));
+
+				if (serviceCategory==null)
+				{
+					throw new Exception ("Service Category with Name of " + items.get(2) + " not found.");
+				}
+
+
+				String directionName = items.get(4);
+				Integer documentType = new Integer(items.get(5));
+				Integer versionNumber = new Integer(items.get(6));
+				String companyName  = items.get(0);
+				String clientType = items.get(1);
+
+				Document document = masterDataService.findDocumentTypeByDocumentType(documentType);
+
+				if (document==null)
+				{
+					throw new Exception ("Document of Type " + documentType + " not found.");
+				}
+
+				Direction direction = masterDataService.findDirectionByName(directionName);
+
+				if (direction==null)
+				{
+					throw new Exception ("Direction " + directionName + " not found.");
+				}
+
+				Version version = masterDataService.findVersionByVersionNumber(versionNumber);
+
+				if (version==null)
+				{
+					throw new Exception ("Version " + versionNumber + " not found.");
+				}
+
+				if (companyName.equalsIgnoreCase("ABSG"))
+				{
+					entity.setCompany(CompanyEnum.ABSG);
+				}
+				else
+				{
+					entity.setCompany(CompanyEnum.ABSG);
+				}
+
+				if (clientType.equalsIgnoreCase("Supplier"))
+				{
+					entity.setPartnerCategory(PartnerCategoryEnum.Supplier);
+				}
+				else
+				{
+					entity.setPartnerCategory(PartnerCategoryEnum.Customer);
+				}
+				entity.setBusinessServiceName(items.get(3));
+				entity.setDirection(direction);
+				entity.setDocument(document);
+				entity.setServiceCategory(serviceCategory);
+				entity.setVersion(version);
+
+			}
+			catch (NumberFormatException ex)
+			{
+				logger.error("Numbers are expected for Service Category ID, Document and Version : " + text);
+			}
+			catch (Exception ex)
+			{
+				logger.error(ex.getMessage());
+			}
+
+		}
+		return entity;
+	}
+
+	private boolean loadPartnerGroup(String text)
+	{
+		boolean isNew = false;
+
+		PartnerGroup entity = seedDataService.getPartnerGroupFromCsvString(text);
+		if(!partnerGroupService.isPartnerGroupExists(entity.getGroupName(), entity.getSubGroupName()))
+		{
+			partnerGroupService.savePartnerGroup(entity);
+			isNew=true;
+		}
+
+		return isNew;
+	}
+
+	private boolean loadServiceType(String text)
+	{
+		boolean isNew = true;
+
+		ServiceType entity = seedDataService.getServiceTypeFromCsvString(text);
+		serviceSubscriptionService.saveServiceType(entity);
+		return isNew;
+	}
+
+	private boolean loadServiceCategoryLightWellPartner(String text)
+	{
+		boolean isNew = true;
+
+		LightWellPartner lwPartner = seedDataService.getLightWellPartnerFromCsvString(text);
+		String serviceCategoryName = text.substring(0,text.indexOf(","));
+		ServiceCategory serviceCategory = serviceSubscriptionService.findServiceCategoryByNameIgnoreCase(serviceCategoryName.trim());
+
+		if (serviceCategory==null)
+		{
+			serviceCategory = new ServiceCategory();
+			serviceCategory.setName(serviceCategoryName);
+		}
+
+		serviceCategory.addLightWellPartner(lwPartner);
+		serviceSubscriptionService.saveServiceCategory(serviceCategory);			
+
+
+		return isNew;
+	}
+
+	@Override
+	public LightWellPartner getLightWellPartnerFromCsvString(String text) {
+		LightWellPartner lightWellPartner = null;
+		List<String> items = Arrays.asList(text.split("\\s*,\\s*"));
+		if (items.size() == 10) {
+			lightWellPartner = new LightWellPartner();
+			lightWellPartner.setTestIsaID(items.get(1));
+			lightWellPartner.setTestIsaQualifier(items.get(2));
+			lightWellPartner.setTestGsId(items.get(3));
+			lightWellPartner.setProductionIsaID(items.get(4));
+			lightWellPartner.setProductionIsaQualifier(items.get(5));
+			lightWellPartner.setProductionGsId(items.get(6));
+			lightWellPartner.setOrganizationName(items.get(7));
+			lightWellPartner.setActive(true);
+			lightWellPartner.setNotes(items.get(9));
+
+		}
+		return lightWellPartner;
+	}
+
+	@Override
+	public TpiMap getMapFromCsvString(String text) {
+
+		TpiMap result = null;
+
+
+		List<String> items = Arrays.asList(text.split("\\s*,\\s*"));
+
+		try
+		{
+
+
+			if (items.size() == 2 || items.size() == 1)
+			{
+				result = new TpiMap();
+				String mapName = items.get(0);
+				result.setMapName(mapName);
+
+				if (items.size()==2)
+				{
+					result.setMapDescription(items.get(1));
+				}
+
+			}
+		}
+		catch (Exception ex)
+		{
+			logger.error(ex.getMessage());
+		}
+		return result;
+	}
+
+	@Override
+	public ServiceType loadMapsForServiceCategory(String text) {
+		List<String> items = Arrays.asList(text.split("\\s*,\\s*"));
+
+		ServiceType result = null;
+
+		try
+		{
+			if (items.size() == 2)
+			{
+				ServiceType serviceType = masterDataService.findServiceTypeByName(items.get(0));
+				String mapName = items.get(1);
+
+				if (serviceType!=null)
+				{					
+					TpiMap existingMap = masterDataService.findMapByName(mapName);
+					if (existingMap!=null)
+					{
+						serviceType.addMap(existingMap);
+						result = serviceType;
+						serviceTypeRepository.save(serviceType);
+					}
+				}
+
+			}
+		}
+		catch (Exception ex)
+		{
+			logger.error(ex.getMessage());
+		}
+		return result;
+	}
+
+	@Override
+	public SdBusinessUnit getSdBusinessUnitFromString(String text) {
+		SdBusinessUnit sdBusinessUnit = null;
+		List<String> items = Arrays.asList(text.split("\\s*,\\s*"));
+		if (items.size() == 2)
+		{
+			sdBusinessUnit = new SdBusinessUnit();
+			sdBusinessUnit.setName(items.get(0));
+			SdBusinessSubUnit subUnit = new SdBusinessSubUnit();
+			subUnit.setSubUnitName(items.get(1));
+			sdBusinessUnit.addSubUnit(subUnit);
+
+		}
+		return sdBusinessUnit;
+	}
+
+	@Override
+	public SdServiceType getSdServiceTypeFromString(String text) {
+		SdServiceType sdServiceType = null;
+		List<String> items = Arrays.asList(text.split("\\s*,\\s*"));
+		if (items.size() == 1) 
+		{
+			sdServiceType = new SdServiceType();
+			sdServiceType.setName(items.get(0));
+		}
+		else if (items.size() == 2)
+		{
+			sdServiceType = new SdServiceType();
+			sdServiceType.setName(items.get(0));
+			sdServiceType.setDescription(items.get(0));
+		}
+		return sdServiceType;
+	}
+
+	protected boolean loadSdServiceTypeFromString(String text)
+	{
+		boolean result = false;
+		SdServiceType sdServiceType = this.getSdServiceTypeFromString(text);
+		if (sdServiceType!=null)
+		{
+			SdServiceType existing = sdMasterDataService.findServiceTypeByName(sdServiceType.getName());
+
+			if (existing==null)
+			{
+				sdMasterDataService.saveServiceType(sdServiceType);
+				result = true;
+			}
+			else
+			{
+				existing.setDescription(sdServiceType.getDescription());
+				sdMasterDataService.saveServiceType(existing);
+				result = false;
+			}
+		}
+		return result;
+	}
+
+	@Transactional
+	protected boolean loadSdBusinessUntiFromString(String text)
+	{
+		boolean result = false;
+		SdBusinessUnit sdBusinessUnit = getSdBusinessUnitFromString(text);
+
+		if (sdBusinessUnit!=null)
+		{
+			SdBusinessUnit existing = sdMasterDataService.findSdBusinessUnitByName(sdBusinessUnit.getName());
+
+			if (existing==null)
+			{
+				sdMasterDataService.saveSdBusinessUnit(sdBusinessUnit);
+				result = true;
+			}
+			else
+			{
+				boolean found = false;
+				for (SdBusinessSubUnit bs: existing.getSubUnits())
+				{
+					if (bs.getSubUnitName().equalsIgnoreCase(sdBusinessUnit.getSubUnits().iterator().next().getSubUnitName()))
+					{
+						found = true;
+						break;
+					}
+				}
+
+				if (!found)
+				{
+					existing.addSubUnit(sdBusinessUnit.getSubUnits().iterator().next());
+					sdMasterDataService.saveSdBusinessUnit(existing);
+					result = false;
+				}
+			}
+
+		}
+
+		return result;
+	}
+	@Transactional
+	protected boolean loadServiceCategoryDefFromText(String line) throws TpiValidationException
+	{
+		boolean result = false;
+		
+		List<String> items = Arrays.asList(line.split("\\s*,\\s*"));
+		
+		this.validateSdBusinessServiceCategoryInput(items);
+		
+		String serviceKey = items.get(0).trim();
+		String serviceCategory = items.get(1).trim();
+		String categoryId = items.get(2).trim();
+		String serviceLevel = items.get(3).trim();
+		String serviceLevelId = items.get(4).trim();
+		String businessUnit = items.get(5).trim();
+		String businessSubUnit = items.get(6).trim();
+		String servicePreamble = items.get(7).trim();
+		String transactionType = items.get(8).trim();
+		String direction = items.get(9).trim();
+		String serviceType = items.get(10).trim();
+		String interCo = items.get(11).trim();
+		String serviceDescription = items.get(12).trim();
+		int transactionCode = 0;
+		
+		SdBusinessService businessService = null;
+		
+		businessService = sdServiceCategoryService.findBusinessServiceByServiceKey(serviceKey, SdBusinessService.class);
+		
+		if (businessService==null)
+		{
+			businessService = new SdBusinessService();
+			businessService.setServiceKey(serviceKey);
+		}
+		
+		//Transaction
+		if (transactionType.equalsIgnoreCase("All"))
+		{
+			transactionCode=0;
+		}
+		else
+		{
+			try 
+			{
+				transactionCode = Integer.parseInt(transactionType);
+			}
+			catch (NumberFormatException ex)
+			{
+				throw new TpiValidationException(transactionType + " is not a valid transaction code. Numeric or 'All' value is expected");
+			}
+		}
+		
+		Document doc = masterDataService.findDocumentTypeByDocumentType(transactionCode);	
+		
+		if (doc!=null)
+		{
+			businessService.setDocument(doc);
+		}
+		else
+		{
+			throw new TpiValidationException("Transaction " + transactionType + " not found. Add new Transaction code before retrying again");
+		}
+		
+		if (direction.equalsIgnoreCase("I"))
+		{
+			direction = "INBOUND";
+		}
+		else if(direction.equalsIgnoreCase("O"))
+		{
+			direction = "OUTBOUND";
+		}
+
+		Direction directionType = masterDataService.findDirectionByName(direction);
+		
+		if (directionType==null)
+		{
+			throw new TpiValidationException("Direction " + direction + " not found. Add new Direction code before retrying again");
+		}
+		
+		businessService.setDirection(directionType);
+		businessService.setInterCoSendToBU(interCo);
+		businessService.setServiceLevel(serviceLevel);
+		businessService.setServiceLevelId(serviceLevelId);
+		businessService.setServicePreamble(servicePreamble);
+		businessService.setServiceDescription(serviceDescription);
+		
+		
+		SdServiceCategoryDef serviceCategoryDef = null;		
+		
+		serviceCategoryDef = sdServiceCategoryService.findSdServiceCategoryByName(serviceCategory, SdServiceCategoryDef.class);
+		
+		if (serviceCategoryDef==null)
+		{
+			serviceCategoryDef = new SdServiceCategoryDef();
+			ServiceCategory sc = serviceSubscriptionService.findServiceCategoryByNameIgnoreCase(serviceCategory);
+			serviceCategoryDef.setCategoryID(categoryId);
+			
+			if (sc==null)
+			{
+				sc = new ServiceCategory();
+				sc.setName(serviceCategory);
+				sc = serviceSubscriptionService.saveServiceCategory(sc);				
+			}
+
+			serviceCategoryDef.setServiceCategory(sc);
+			
+			SdBusinessUnit bu = sdMasterDataService.findSdBusinessUnitByName(businessUnit);
+			
+			if (bu==null)
+			{
+				bu = new SdBusinessUnit();
+				bu.setName(businessUnit);
+				SdBusinessSubUnit bsu = new SdBusinessSubUnit();
+				bsu.setSubUnitName(businessSubUnit);
+				bu.addSubUnit(bsu);
+				bu = sdMasterDataService.saveSdBusinessUnit(bu);
+				serviceCategoryDef.setBusinessUnit(bu);
+				serviceCategoryDef.setBusinessSubUnit(bsu);
+			}
+			else
+			{
+				if (bu.getSubUnits()!=null)
+				{
+					for (SdBusinessSubUnit bsu: bu.getSubUnits())
+						if (bsu.getSubUnitName().equalsIgnoreCase(businessSubUnit))
+						{	
+							serviceCategoryDef.setBusinessSubUnit(bsu);
+							break;
+						}
+					if (serviceCategoryDef.getBusinessSubUnit()==null)
+					{
+						SdBusinessSubUnit bsu = new SdBusinessSubUnit();
+						bsu.setSubUnitName(businessSubUnit);
+						bu.addSubUnit(bsu);
+						bu = sdMasterDataService.saveSdBusinessUnit(bu);
+						serviceCategoryDef.setBusinessUnit(bu);
+						for (SdBusinessSubUnit newBsu: bu.getSubUnits())
+						{
+							if (newBsu.getSubUnitName().equalsIgnoreCase(businessSubUnit))
+							{
+								serviceCategoryDef.setBusinessSubUnit(newBsu);
+								break;
+							}
+						}
+												
+					}
+					else
+					{
+						serviceCategoryDef.setBusinessUnit(bu);
+					}
+				}
+				
+			}
+			serviceCategoryDef.setPartnerSubscription(SdYesNo.Y);
+			sdServiceCategoryService.saveSdServiceCategoryDef(serviceCategoryDef);
+		}
+		
+		businessService.setServiceCategory(serviceCategoryDef);
+		
+		SdServiceType serviceTypeEntity = sdMasterDataService.findServiceTypeByName(serviceType);
+		if (serviceTypeEntity==null)
+		{
+			serviceTypeEntity = new SdServiceType();
+			serviceTypeEntity.setName(serviceType);
+			serviceTypeEntity.setDescription(serviceType);
+			sdMasterDataService.saveServiceType(serviceTypeEntity);
+		}
+		
+		businessService.setServiceType(serviceTypeEntity);
+		sdServiceCategoryService.saveSdBusinessService(businessService);
+
+		return result;
+	}
+	
+	private void validateSdBusinessServiceCategoryInput(List<String> values) throws TpiValidationException
+	{
+		if (values.size()!=13) 
+		{
+			throw new TpiValidationException("SdServiceCategory data file expects 13 values");
+		}
+		
+		if (values.get(0)==null || values.get(0).isEmpty())
+		{
+			throw new TpiValidationException("SdServiceCategory: Service Key cannot be empty");
+		}
+		
+		if (values.get(1)==null || values.get(1).isEmpty())
+		{
+			throw new TpiValidationException("SdServiceCategory: Service Category cannot be empty");
+		}
+		
+		if (values.get(7)==null || values.get(7).isEmpty())
+		{
+			throw new TpiValidationException("SdServiceCategory: Service Preamble cannot be empty");
+		}
+		
+		if (values.get(8)==null || values.get(8).isEmpty())
+		{
+			throw new TpiValidationException("SdServiceCategory: Transaction cannot be empty");
+		}
+		
+		if (values.get(9)==null || values.get(9).isEmpty())
+		{
+			throw new TpiValidationException("SdServiceCategory: Direction cannot be empty");
+		}
+		
+		if (values.get(10)==null || values.get(10).isEmpty())
+		{
+			throw new TpiValidationException("SdServiceCategory: Service Type cannot be empty");
+		}
+
+	}
+}

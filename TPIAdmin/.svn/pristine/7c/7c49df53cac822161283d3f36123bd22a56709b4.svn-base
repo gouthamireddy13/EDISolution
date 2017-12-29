@@ -1,0 +1,27 @@
+package com.abc.tpi.service;
+
+import java.util.List;
+
+import com.abc.tpi.model.Protocol;
+import com.abc.tpi.model.Tpp;
+import com.abc.tpi.model.Transaction;
+
+public interface TppService {
+	
+	Tpp createTpp(Tpp tpp);
+	void deleteTpp(Tpp tpp);
+	void deleteTppById(long id);
+	Tpp addProtocol(Protocol protocol);
+	Tpp addTransaction(Transaction transaction);
+	Tpp updateService(Tpp tpp);
+	
+	Tpp removeProtocol(Protocol protocol);
+	Tpp removeProtocolByID(long id);
+	Tpp removeTransaction(Transaction transaction);
+	Tpp removeTransactionById(long id);
+	
+	Tpp findTppById(long id);
+	List<Tpp> findAllTpps();
+	List<Tpp> findTppByName(String name);
+	
+}

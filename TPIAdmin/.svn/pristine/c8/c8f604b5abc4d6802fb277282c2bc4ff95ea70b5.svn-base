@@ -1,0 +1,11 @@
+package com.abc.tpi.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+
+import com.abc.tpi.model.tpp.LightWellPartner;
+@Repository("lightWellPartnerRepository")
+public interface LightWellPartnerRepository extends JpaRepository<LightWellPartner, Long> {
+	LightWellPartner namedFindLightWellPartnerByServiceCategoryIdAndLwId(@Param("scId") long scId, @Param("lwId") long lwId);
+}

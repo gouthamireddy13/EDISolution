@@ -1,0 +1,50 @@
+package com.abc.tpi.db;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.abc.tpi.model.ContactDetail;
+import com.abc.tpi.model.Partner;
+import com.abc.tpi.model.PartnerGroup;
+import com.abc.tpi.repository.PartnerGroupRepository;
+import com.abc.tpi.repository.PartnerRepository;
+
+@ContextConfiguration(locations={"classpath:com/abc/tpi/db/application-contexttest.xml"})
+@RunWith(SpringJUnit4ClassRunner.class)
+
+public class TpiPartnerTest {
+
+	
+	@Autowired
+	private PartnerRepository partnerRepository;
+	
+	@Autowired
+	private PartnerGroupRepository partnerGroupRepository;
+	
+	@Test()
+	@Transactional
+	@Rollback(false)
+	public void testPartnerSave()
+	{
+		Partner partner = new Partner();
+		//PartnerGroup group = partnerGroupRepository.find
+		
+		ContactDetail contact = new ContactDetail();
+		contact.setContactEmail("alex@gmail.com");
+		contact.setContactName("alex");
+		contact.setContactPhone("2158221223");
+		contact.setContactTitle("Mr.");
+
+		partner.setPartnerName("Alex Test Partner");
+		//partner.setPartnerGroup(group);
+		//partner.setPartnerSubGroup(subGroup);
+		partnerRepository.save(partner);
+
+	}
+	
+}

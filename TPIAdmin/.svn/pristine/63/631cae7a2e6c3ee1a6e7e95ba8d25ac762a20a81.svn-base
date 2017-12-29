@@ -1,0 +1,187 @@
+package com.abc.tpi.db;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import java.util.List;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import com.abc.tpi.model.Document;
+import com.abc.tpi.model.Protocol;
+import com.abc.tpi.model.TppType;
+import com.abc.tpi.model.Version;
+import com.abc.tpi.service.MasterDataService;
+
+@ContextConfiguration(locations={"classpath:resources/application-contexttest.xml"})
+@RunWith(SpringJUnit4ClassRunner.class)
+public class TpiMasterDataTest {
+
+	@Autowired 
+	MasterDataService masterDataService;
+	
+	@Test
+	public void testTppTypeAdd()
+	{
+		TppType tppType = new TppType();
+		tppType.setTypeCode((short)1);
+		tppType.setDescription("Type One Trading Partner");		
+		masterDataService.addTppType(tppType);
+
+		tppType = new TppType();		
+		tppType.setTypeCode((short)2);
+		tppType.setDescription("Type Two Trading Partner");		
+		masterDataService.addTppType(tppType);
+		
+		tppType = new TppType();		
+		tppType.setTypeCode((short)3);
+		tppType.setDescription("Type Three Trading Partner");		
+		masterDataService.addTppType(tppType);
+		
+		assertEquals(masterDataService.findAllTppTypes().size(),3);
+	}
+	
+	@Test
+	public void testTppTypeFindAll()
+	{		
+		List <TppType> result = masterDataService.findAllTppTypes();
+		for (TppType item : result)
+		{
+			System.out.println(item.getDescription());
+		}
+		assertNotNull(result);
+	}
+	
+	@Test
+	public void testTppTypeDelete()
+	{		
+		Long id = new Long(1);
+		TppType tppType = masterDataService.findTppTypeById(id);
+		//masterDataService.deleteTppType(tppType);
+		//assertNotNull(result);
+	}
+	
+	@Test
+	public void testDocumentAdd()
+	{
+		Document document = new Document();
+		document.setDocumentCode("810 TRANSACTION");
+		document.setDocumentType(810);		
+		masterDataService.addDocumentType(document);
+		
+		document = new Document();
+		document.setDocumentCode("850 TRANSACTION");
+		document.setDocumentType(850);		
+		masterDataService.addDocumentType(document);
+		
+		document = new Document();
+		document.setDocumentCode("855 TRANSACTION");
+		document.setDocumentType(855);		
+		masterDataService.addDocumentType(document);
+		
+		document = new Document();
+		document.setDocumentCode("856 TRANSACTION");
+		document.setDocumentType(856);		
+		masterDataService.addDocumentType(document);
+		
+		assertEquals(masterDataService.findAllDocumentTypes().size(),4);
+	}
+	
+	@Test
+	public void testDocumentFindAll()
+	{		
+		List <Document> result = masterDataService.findAllDocumentTypes();
+		for (Document item : result)
+		{
+			System.out.println(item.getDocumentType());
+		}
+		assertNotNull(result);
+	}
+	
+	@Test
+	public void testProtocolAdd()
+	{
+		Protocol protocol = new Protocol();
+		protocol.setProtocolType("AS2 Direct");		
+		masterDataService.addProtocol(protocol);
+		
+		protocol = new Protocol();
+		protocol.setProtocolType("AS2/VAN");		
+		masterDataService.addProtocol(protocol);
+		
+		protocol = new Protocol();
+		protocol.setProtocolType("AS2/GHX");		
+		masterDataService.addProtocol(protocol);
+		
+		protocol = new Protocol();
+		protocol.setProtocolType("SFTP");		
+		masterDataService.addProtocol(protocol);
+		
+		protocol = new Protocol();
+		protocol.setProtocolType("FTP");		
+		masterDataService.addProtocol(protocol);
+		
+		assertEquals(masterDataService.findAllProtocols().size(),5);
+	}
+	
+	@Test
+	public void testVersionAdd()
+	{
+		Version version = new Version();
+		version.setVersionNumber(4010);
+		masterDataService.addVersion(version);
+		
+		version = new Version();
+		version.setVersionNumber(5010);
+		masterDataService.addVersion(version);
+		
+		version = new Version();
+		version.setVersionNumber(3010);
+		masterDataService.addVersion(version);
+		
+		assertEquals(masterDataService.findAllVersions().size(),3);
+	}
+	
+	@Test
+	public void testFindTppTypeByTypeCode()
+	{
+		TppType tppType = masterDataService.findTppTypeByTypeCode((short)1);
+		System.out.println(tppType.getId());
+		System.out.println(tppType.getDescription());
+		System.out.println(tppType.getTypeCode());
+		assertNotNull(tppType);
+	}
+	
+	@Test
+	public void testFindDocumentByDocumentType()
+	{
+		Document document = masterDataService.findDocumentTypeByDocumentType(855);
+		System.out.println(document.getId());
+		System.out.println(document.getDocumentType());
+		System.out.println(document.getDocumentCode());
+		assertNotNull(document);
+	}
+	
+	@Test
+	public void testFindProtocolByType()
+	{
+		Protocol protocol = masterDataService.findProtocolByProtocolType("sftp");
+		System.out.println(protocol.getId());
+		System.out.println(protocol.getProtocolType());
+		assertNotNull(protocol);
+	}
+	
+	@Test
+	public void testVersionByVersionNumber()
+	{
+		Version version = masterDataService.findVersionByVersionNumber(5010);
+		System.out.println(version.getId());
+		System.out.println(version.getVersionNumber());		
+		assertNotNull(version);
+	}
+	
+}

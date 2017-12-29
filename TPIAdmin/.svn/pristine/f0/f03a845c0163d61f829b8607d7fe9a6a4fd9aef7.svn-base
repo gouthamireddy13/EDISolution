@@ -1,0 +1,47 @@
+package com.abc.tpi.db;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
+
+import com.abc.tpi.model.PartnerGroup;
+import com.abc.tpi.repository.PartnerGroupRepository;
+
+@ContextConfiguration(locations = { "classpath:com/abc/tpi/db/application-contexttest.xml" })
+@RunWith(SpringJUnit4ClassRunner.class)
+public class TpiPartnerGroupTest {
+
+	@Autowired
+	PartnerGroupRepository partnerGroupRepository;
+
+	
+	@Test
+	public void addPartnerGroupTest() {
+		PartnerGroup partnerGroup = new PartnerGroup();
+		partnerGroup.setGroupName("Test Group");
+		partnerGroup.setSubGroupName("Test Sub Group");
+		partnerGroupRepository.save(partnerGroup);
+	}
+
+	
+	@Test
+	public void findByGroupNameIgnoreCase()
+	{
+		PartnerGroup partnerGroup = partnerGroupRepository.findByGroupNameIgnoreCase("Test Group3");
+		System.out.println(partnerGroup.getGroupName());
+		Assert.notNull(partnerGroup);
+	}
+	
+	@Test
+	public void findByGroupNameIgnoreCaseNegative()
+	{
+		PartnerGroup partnerGroup = partnerGroupRepository.findByGroupNameIgnoreCase("XYZ");
+		//System.out.println(partnerGroup.getGroupName());
+		Assert.isNull(partnerGroup);
+	}
+
+}

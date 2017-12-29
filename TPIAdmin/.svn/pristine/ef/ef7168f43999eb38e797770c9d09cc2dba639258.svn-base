@@ -1,0 +1,119 @@
+package com.abc.tpi.model.service;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToOne;
+import javax.persistence.MappedSuperclass;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.RelationTargetAuditMode;
+
+import com.abc.tpi.model.partner.Partner;
+import com.abc.tpi.model.poc.TpiManagedEntity;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@MappedSuperclass
+@AttributeOverrides
+({
+	@AttributeOverride(name="id",column=@Column(name="SUBSCRIPTION_ID"))
+})
+@Table(name="ABC_TPI_SERVICE_SUBSCRIPTION")
+@JsonIgnoreProperties(ignoreUnknown=true,value={"createdDate","lastModifiedDate"})
+public abstract class ServiceSubscriptionEntity extends TpiManagedEntity {
+
+	@ManyToOne(cascade=CascadeType.REFRESH)
+	@JoinColumn(name="PARTNER_ID", nullable=false)	
+	@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+	private Partner partner;
+	
+	@NotNull
+	@ManyToOne
+	@JoinColumn(name="SC_ID", nullable=false)	
+	@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+	private ServiceCategory serviceCategory;
+	
+	@OneToMany(cascade=CascadeType.ALL,fetch=FetchType.EAGER, orphanRemoval=true)
+	@JoinTable(name="ABC_TPI_PARTNER_SERVICE",
+	joinColumns=@JoinColumn(name="SUBSCRIPTION_ID"),
+	inverseJoinColumns=@JoinColumn(name="SERVICE_ID"))
+	@Audited
+	private Set<Service> services;
+
+	public void addService(Service service)
+	{
+		if (services==null)
+		{
+			services = new HashSet<Service>();
+		}
+		services.add(service);
+	}
+	
+	public Partner getPartner() {
+		return partner;
+	}
+
+	public Set<Service> getServices() {
+		return services;
+	}
+
+	public void setPartner(Partner partner) {
+		this.partner = partner;
+	}
+
+	public ServiceCategory getServiceCategory() {
+		return serviceCategory;
+	}
+
+	public void setServiceCategory(ServiceCategory serviceCategory) {
+		this.serviceCategory = serviceCategory;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((partner == null) ? 0 : partner.hashCode());
+		result = prime * result + ((serviceCategory == null) ? 0 : serviceCategory.hashCode());
+		result = prime * result + ((services == null) ? 0 : services.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ServiceSubscriptionEntity other = (ServiceSubscriptionEntity) obj;
+		if (partner == null) {
+			if (other.partner != null)
+				return false;
+		} else if (!partner.equals(other.partner))
+			return false;
+		if (serviceCategory == null) {
+			if (other.serviceCategory != null)
+				return false;
+		} else if (!serviceCategory.equals(other.serviceCategory))
+			return false;
+		if (services == null) {
+			if (other.services != null)
+				return false;
+		} else if (!services.equals(other.services))
+			return false;
+		return true;
+	}
+		
+}

@@ -1,0 +1,269 @@
+var ABApp = angular.module('ABApp');
+
+
+ABApp.controller('serviceController', function($scope,$modal, $http, $window,$interval) {
+	$scope.tpplist=[];
+	$scope.tppCodeList=[];
+	$scope.scSelectDisabled = false;
+	$scope.disableServiceC= function()
+	{
+		$scope.scSelectDisabled = false;
+	};
+	$scope.inittpp = function()
+	{
+		
+		
+		
+		 $http.get('/TPIAdmin/app/tpps')
+	     .success(function (response, status, headers, config) {
+	    	 $scope.tpplist = angular.copy(response);
+	    	// console.log(JSON.stringify($scope.tpplist));
+	     })
+	     .error(function (data, status, header, config) {
+	         $scope.ResponseDetails = "Data: " + data +
+	             "<br />status: " + status ;
+	         //    "<br />headers: " + jsonFilter(header) +
+	           //  "<br />config: " + jsonFilter(config);
+	     })
+		 .then(function(response) {
+			 var temp=[];
+			 angular.forEach($scope.tpplist, function (item) {
+				 if(item.lightWellPartner!=null)
+					 {
+				 var obj={
+						 id:item.id,
+						 testIsaID:item.lightWellPartner.testIsaID,
+						 productionIsaID:item.lightWellPartner.productionIsaID,
+						 testIsaQualifier:item.lightWellPartner.testIsaQualifier,
+						 productionIsaQualifier:item.lightWellPartner.productionIsaQualifier,
+						 testGsId:item.lightWellPartner.testGsId,
+						 productionGsId:item.lightWellPartner.productionGsId
+				 };
+				 temp.push(obj);
+					 }
+				
+        	});
+			
+			 $scope.tppCodeList=angular.copy(temp);
+		    });
+		 };
+		 $scope.lightWellPartner={};
+		 $scope.emptyList={};
+		 $scope.lightWellPartnerDisabled=false;
+		 $scope.select3PPName=function(id)
+		 {
+			 $scope.lightWellPartner=angular.copy( $scope.emptyList);
+			 $scope.lightWellPartnerDisabled=false;
+			 angular.forEach($scope.tppCodeList, function (item) {
+				 if(item.id==id)
+					 {
+				 $scope.lightWellPartner.testIsaID=item.testIsaID;
+				 $scope.lightWellPartner.productionIsaID=item.productionIsaID;
+				 $scope.lightWellPartner.testIsaQualifier=item.testIsaQualifier;
+				 $scope.lightWellPartner.productionIsaQualifier=item.productionIsaQualifier;
+				 $scope.lightWellPartner.testGsId=item.testGsId;
+				 $scope.lightWellPartner.productionGsId=item.productionGsId;
+				 $scope.lightWellPartnerDisabled=true;
+					 }
+			 });
+						
+				
+			 
+				
+			 
+		 }
+		 $scope.res=5;
+		 $scope.reinit=function(d)
+		 {
+			 $scope.res=d;
+		 }
+		 
+		 
+		 $scope.partnerlist=[];
+		 $scope.enabletppn=true;
+			$scope.changeSelTpp=function()
+			{
+				$scope.enabletppn=!$scope.enabletppn;
+				if($scope.enabletppn==true)
+					{
+					$scope.tppName=null;
+					$scope.lightWellPartner=angular.copy( $scope.emptyList);
+					$scope.lightWellPartnerDisabled=false;
+					}
+			};
+		 $scope.findPartner = function(name)
+			{
+				
+				$scope.editEnable=false;
+				var tempList=[];
+				 $http.get('/TPIAdmin/app/partners?partnerName')
+			     .success(function (response, status, headers, config) {
+			    	 $scope.partnerlist=angular.copy(response);
+			     console.log("inputdata "+JSON.stringify(response));
+			     })
+			     .error(function (data, status, header, config) {
+			         $scope.ResponseDetails = "Data: " + data +
+			             "<br />status: " + status ;
+			         //    "<br />headers: " + jsonFilter(header) +
+			           //  "<br />config: " + jsonFilter(config);
+			     })
+			     	
+				 .then(function(response) {
+					 $scope.versList();
+				 });
+					
+			};
+			
+			$scope.versList = function()
+			{
+				
+				
+				 $http.get('/TPIAdmin/app/versions')
+			     .success(function (response, status, headers, config) {
+			    	 
+			    	 $scope.versionList = angular.copy(response);
+			    	 
+			     })
+			     .error(function (data, status, header, config) {
+			         $scope.ResponseDetails = "Data: " + data +
+			             "<br />status: " + status ;
+			         //    "<br />headers: " + jsonFilter(header) +
+			           //  "<br />config: " + jsonFilter(config);
+			     })
+				 .then(function(response) {
+				       
+                  $scope.myWelcome = response.data;
+							 
+				    });
+
+
+				
+				};
+				
+				
+				$scope.serviceList=[];
+				 
+				 $scope.initservice = function()
+					{
+						
+						
+						 $http.get('/TPIAdmin/app/serviceCategories?projection=serviceCategoryForDropDown')
+					     .success(function (response, status, headers, config) {
+					    	 
+					    	 $scope.serviceList=angular.copy(response);
+					    	// console.log("inputdata "+JSON.stringify(tempList));
+					     })
+					     .error(function (data, status, header, config) {
+					    	
+					         $scope.ResponseDetails = "Data: " + data +
+					             "<br />status: " + status ;
+					         //    "<br />headers: " + jsonFilter(header) +
+					           //  "<br />config: " + jsonFilter(config);
+					     })
+					     	
+						 .then(function(response) {
+							 $scope.dlSList();
+							 
+						 });
+							
+					};
+			
+					$scope.delimitersSList=[];
+					
+					$scope.dlSList = function()
+					{
+						
+						
+						 $http.get('/TPIAdmin/app/delimiters?type=segment')
+					     .success(function (response, status, headers, config) {
+					    	 
+					    	 
+					    	 $scope.delimitersSList=angular.copy(response);
+					    	// console.log("inputdata "+JSON.stringify(tempList));
+					     })
+					     .error(function (data, status, header, config) {
+					         $scope.ResponseDetails = "Data: " + data +
+					             "<br />status: " + status ;
+					         //    "<br />headers: " + jsonFilter(header) +
+					           //  "<br />config: " + jsonFilter(config);
+					     })
+					     	
+						 .then(function(response) {
+							 $scope.dlEList(); 
+						 });
+							
+					};
+					
+                  $scope.delimitersEList=[];
+					
+					$scope.dlEList = function()
+					{
+						
+						
+						 $http.get('/TPIAdmin/app/delimiters?type=element')
+					     .success(function (response, status, headers, config) {
+					    	 
+					    	 
+					    	 $scope.delimitersEList=angular.copy(response);
+					    	// console.log("inputdata "+JSON.stringify(tempList));
+					     })
+					     .error(function (data, status, header, config) {
+					         $scope.ResponseDetails = "Data: " + data +
+					             "<br />status: " + status ;
+					         //    "<br />headers: " + jsonFilter(header) +
+					           //  "<br />config: " + jsonFilter(config);
+					     })
+					     	
+						 .then(function(response) {
+							 $scope.dlCList(); 
+						 });
+							
+					};
+					
+					
+                 $scope.delimitersCList=[];
+					
+					$scope.dlCList = function()
+					{
+						
+						
+						 $http.get('/TPIAdmin/app/delimiters?type=composite')
+					     .success(function (response, status, headers, config) {
+					    	 
+					    	 
+					    	 $scope.delimitersCList=angular.copy(response);
+					    	// console.log("inputdata "+JSON.stringify(tempList));
+					     })
+					     .error(function (data, status, header, config) {
+					         $scope.ResponseDetails = "Data: " + data +
+					             "<br />status: " + status ;
+					         //    "<br />headers: " + jsonFilter(header) +
+					           //  "<br />config: " + jsonFilter(config);
+					     })
+					     	
+						 .then(function(response) {
+							 
+						 });
+							
+					};
+			 var self = this,  j= 0, counter = 0;
+	            self.modes = [ ];
+	            self.activated = true;
+	            self.determinateValue = 30;
+	            self.toggleActivation = function() {
+	               if ( !self.activated ) self.modes = [ ];
+	               if (  self.activated ) j = counter = 0;
+	            };
+	            
+	            $interval(function() {
+	               self.determinateValue += 1;
+	               if (self.determinateValue > 100) {
+	                  self.determinateValue = 30;
+	               }
+	               if ( (j < 5) && !self.modes[j] && self.activated ) {
+	                  self.modes[j] = 'indeterminate';
+	               }
+	               if ( counter++ % 4 == 0 ) j++;
+	            }, 100, 0, true);
+						
+});

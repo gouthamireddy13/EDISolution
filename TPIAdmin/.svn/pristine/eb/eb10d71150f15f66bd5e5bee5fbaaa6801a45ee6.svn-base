@@ -1,0 +1,116 @@
+package com.abc.tpi.db;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.abc.tpi.model.master.Document;
+import com.abc.tpi.model.partner.ContactDetail;
+import com.abc.tpi.model.partner.Partner;
+import com.abc.tpi.model.partner.PartnerGroup;
+import com.abc.tpi.repository.PartnerGroupRepository;
+import com.abc.tpi.repository.PartnerRepository;
+import com.abc.tpi.service.MasterDataService;
+import com.abc.tpi.service.PartnerService;
+
+@ContextConfiguration(locations={"classpath:resources/application-contexttest.xml"})
+@RunWith(SpringJUnit4ClassRunner.class)
+
+public class TpiPartnerTest {
+
+	@PersistenceContext
+	private EntityManager entityManager;	
+	
+	@Autowired
+	private PartnerRepository partnerRepository;
+	
+	@Autowired
+	private PartnerGroupRepository partnerGroupRepository;
+	
+	@Autowired PartnerService partnerService;
+	
+	@Autowired
+	MasterDataService masterDataService;
+	
+	@Test()
+	@Transactional
+	@Rollback(false)
+	public void testPartnerSave()
+	{
+		Partner partner = new Partner();
+		PartnerGroup group = partnerGroupRepository.findByGroupNameContainsIgnoreCaseOrderBySubGroupNameAsc("N/A").get(0);
+		Document document = masterDataService.findDocumentTypeByDocumentType(810);
+		
+		
+		ContactDetail contact = new ContactDetail();
+		contact.setContactEmail("alex@gmail.com");
+		contact.setContactName("alex");
+		contact.setContactPhone("2158221223");
+		contact.setContactTitle("Mr.");
+		contact.setTransactionType(document);
+		
+		partner.setPartnerName("Alex Test Partner 2");
+		partner.setPartnerGroup(group);
+		partner.setContactDetails(new ArrayList<ContactDetail>());
+		partner.getContactDetails().add(contact);
+		
+		partnerRepository.save(partner);
+
+	}
+	
+	@Test()
+	@Transactional
+	public void testPartnerFind()
+	{
+		
+		
+		List<Partner> result2 = partnerService.findPartnersByNameContains("alex");
+
+		for (Partner partner: result2)
+		{
+			System.out.println("================================"); 
+			System.out.println(partner.getPartnerName());
+			System.out.println(partner.getContactDetails().iterator().next().getContactName());
+			System.out.println("=================================");
+		}
+
+	}
+	
+	
+	@Test()
+	@Transactional
+	@Rollback(false)
+	public void testDeleteAllPartners()
+	{
+		List<Partner> partners = partnerService.findAllPartners();
+		
+		for (Partner partner: partners)
+		{
+			System.out.println("================================"); 
+			System.out.println(partner.getPartnerName());
+			System.out.println("=================================");
+			partnerService.deletePartner(partner);
+
+		}
+
+	}
+	
+	@Test()
+	public void testFindPartner()
+	{
+		String partnerName = "Alex test";
+		
+		System.out.println(partnerService.isPartnerExist(partnerName));
+	}
+	
+}

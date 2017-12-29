@@ -1,0 +1,1687 @@
+var ABApp = angular.module('ABApp');
+
+
+ABApp.directive('uppercased', function() {
+    return {
+        require: 'ngModel',        
+        link: function(scope, element, attrs, modelCtrl) {
+            modelCtrl.$parsers.push(function(input) {
+                return input ? input.toUpperCase() : "";
+            });
+            element.css("text-transform","uppercase");
+        }
+    };
+});
+
+
+ABApp.controller('tppController', function($scope,$modal, $http, $window, $filter) {
+	
+	
+	
+	$scope.disdelitList=[];
+	//
+	$scope.elementdimitDisable=false;
+	$scope.disableDilimeters = function(){
+		var tempList=[];
+		//$scope.disdelitList.indexOf($scope.elementDelimiter);
+		$scope.disdelitList=angular.copy(tempList);
+		if($scope.segmentDelimiter!=null&&$scope.segmentDelimiter!=undefined)
+		{
+			$scope.delimitersEList = angular.copy(tempList);
+			angular.forEach( $scope.eBackList , function (item) {
+				
+				if(item.id!= $scope.segmentDelimiter){
+					$scope.delimitersEList.push(item);	
+				}
+			});
+			
+		}
+		if($scope.elementDelimiter!=null&&$scope.elementDelimiter!=undefined){
+			
+			
+			$scope.delimitersCList = angular.copy(tempList);
+				angular.forEach( $scope.cBackList , function (item) {
+					
+					if(item.id!= $scope.segmentDelimiter &&  item.id!= $scope.elementDelimiter ){
+						$scope.delimitersCList.push(item);	
+					}
+				});
+		}
+		if($scope.compositeElementDelimiter!=null&& $scope.compositeElementDelimiter!=undefined){
+		
+			$scope.delimitersRList = angular.copy(tempList);
+			angular.forEach( $scope.rBackList , function (item) {
+				
+				if(item.id!= $scope.segmentDelimiter &&  item.id!= $scope.elementDelimiter && item.id!= $scope.compositeElementDelimiter ){
+					$scope.delimitersRList.push(item);	
+				}
+			});
+		
+		
+		
+		}
+		//$scope.disdelitList.indexOf(elementDelimiter)
+	}
+	$scope.resetDilimeters = function(){
+		if($scope.segmentDelimiter==null||$scope.segmentDelimiter==undefined){
+			$scope.elementDelimiter=null;
+			$scope.compositeElementDelimiter=null;
+			$scope.repeatDelimiter=null;
+			};
+			
+		if($scope.elementDelimiter==null||$scope.elementDelimiter==undefined){
+				
+				$scope.compositeElementDelimiter=null;
+				$scope.repeatDelimiter=null;
+				};
+			
+		if($scope.compositeElementDelimiter==null||$scope.compositeElementDelimiter==undefined){
+					
+					
+					$scope.repeatDelimiter=null;
+					};	
+	}
+	
+	$scope.delimitersSList=[];
+	$scope.sBackList = [];
+	$scope.dlSList = function()
+	{
+		
+		
+		 $http.get('/TPIAdmin/app/delimiters?type=segment')
+	     .success(function (response, status, headers, config) {
+	    	 
+	    	 
+	    	 $scope.delimitersSList=angular.copy(response);
+	    	 $scope.sBackList = angular.copy(response);
+	    	// console.log("inputdata "+JSON.stringify(tempList));
+	     })
+	     .error(function (data, status, header, config) {
+	         $scope.ResponseDetails = "Data: " + data +
+	             "<br />status: " + status ;
+	         //    "<br />headers: " + jsonFilter(header) +
+	           //  "<br />config: " + jsonFilter(config);
+	     })
+	     	
+		 .then(function(response) {
+			 $scope.dlEList(); 
+		 });
+			
+	};
+	
+  $scope.delimitersEList=[];
+  $scope.eBackList = [];
+	
+	$scope.dlEList = function()
+	{
+		
+		
+		 $http.get('/TPIAdmin/app/delimiters?type=element')
+	     .success(function (response, status, headers, config) {
+	    	 
+	    	 
+	    	 $scope.delimitersEList=angular.copy(response);
+	    	 $scope.eBackList = angular.copy(response);
+	    	// console.log("inputdata "+JSON.stringify(tempList));
+	     })
+	     .error(function (data, status, header, config) {
+	         $scope.ResponseDetails = "Data: " + data +
+	             "<br />status: " + status ;
+	         //    "<br />headers: " + jsonFilter(header) +
+	           //  "<br />config: " + jsonFilter(config);
+	     })
+	     	
+		 .then(function(response) {
+			 $scope.dlCList(); 
+		 });
+			
+	};
+	
+	
+ $scope.delimitersCList=[];
+ $scope.cBackList = [];
+	
+	$scope.dlCList = function()
+	{
+		
+		
+		 $http.get('/TPIAdmin/app/delimiters?type=composite')
+	     .success(function (response, status, headers, config) {
+	    	 
+	    	 
+	    	$scope.delimitersCList=angular.copy(response);
+	    	 $scope.cBackList = angular.copy(response);
+	    	// console.log("inputdata "+JSON.stringify(tempList));
+	     })
+	     .error(function (data, status, header, config) {
+	         $scope.ResponseDetails = "Data: " + data +
+	             "<br />status: " + status ;
+	         //    "<br />headers: " + jsonFilter(header) +
+	           //  "<br />config: " + jsonFilter(config);
+	     })
+	     	
+		 .then(function(response) {
+			 $scope.dlRList();  
+		 });
+			
+	};
+	
+	
+   $scope.delimitersRList=[];
+   $scope.rBackList = [];
+	$scope.dlRList = function()
+	{
+		
+		
+		 $http.get('/TPIAdmin/app/delimiters?type=repeat')
+	     .success(function (response, status, headers, config) {
+	    	 
+	    	 
+	    	 $scope.delimitersRList=angular.copy(response);
+	    	 $scope.rBackList = angular.copy(response);
+	    	// console.log("inputdata "+JSON.stringify(tempList));
+	     })
+	     .error(function (data, status, header, config) {
+	         $scope.ResponseDetails = "Data: " + data +
+	             "<br />status: " + status ;
+	         //    "<br />headers: " + jsonFilter(header) +
+	           //  "<br />config: " + jsonFilter(config);
+	     })
+	     	
+		 .then(function(response) {
+			 
+		 });
+			
+	};
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/*$scope.singleSelect = function(transactionAll){
+		var tempList=[];
+		var temp = $filter("filter")(transactionAll,1,true);
+		if(temp.length!=0)
+			{
+			//$scope.mask1=temp[0].mask1;
+			transactionAll.splice(0,transactionAll.length);
+			transactionAll.push(1);
+			
+
+			}
+			 
+		
+			
+	};*/
+	
+	
+	
+	
+	
+	$scope.filteredTodos = [];
+	 $scope.currentPage = 1;
+	  $scope.numPerPage = 25;
+	  $scope.maxSize = 5;
+	  
+	 
+	  
+	  var cols = [{
+		    name: 'tppname',
+		    orderDesc: true
+		  }, {
+		    name: 'type',
+		    orderDesc: false
+		  }
+						   ];
+
+		  $scope.totalItems = 0;
+		  $scope.currentPage = 1;
+		  $scope.itemsPerPage = 25;
+
+		  $scope.$watch('currentPage', function() {
+		    setPagingData($scope.currentPage);
+		  });
+
+		  function setPagingData(page) {
+		    $scope.currentPage = page;
+		    var pagedData = $scope.items.slice((page - 1) * $scope.itemsPerPage, page * $scope.itemsPerPage);
+		    $scope.filteredTodos = pagedData;
+		  }
+
+		  $scope.sortData = function(sortCol) {
+		    // make sure it a valid column
+		    var column = cols.find(function(col) {
+		      return col.name === sortCol;
+		    });
+
+		    if (!column) return;
+		    
+		    column.orderDesc = !column.orderDesc;
+
+		    var order = !column.orderDesc ? 1 : -1;
+		    $scope.items.sort(function(a, b) {
+		      if (a[column.name] < b[column.name])
+		        return -1 * order;
+		      if (a[column.name] > b[column.name])
+		        return 1 * order;
+		      return 0;
+		    });
+		    
+		    setPagingData($scope.currentPage);
+		  };
+
+	  
+	  
+	  
+	  
+		  
+		  $scope.$watch('currentPage + numPerPage', function() {
+			  $scope.createPagination();
+		  });
+	$scope.createPagination = function(){
+		var begin = (($scope.currentPage - 1) * $scope.numPerPage);
+		var end = begin + $scope.numPerPage;
+		
+
+	    
+	    $scope.filteredTodos = $scope.items.slice(begin, end);
+	    $scope.searchPage($scope.stppname,true);
+	};
+	
+	$scope.tsList = [];
+	$scope.searchPage = function(search,flag){
+		var temp = $filter("filter")($scope.items, {tppname:search});
+		if(temp.length!=0)
+			{
+			 $scope.tsList = angular.copy(temp);
+			var begin = (($scope.currentPage - 1) * $scope.numPerPage);
+			var end = begin + $scope.numPerPage;
+		    
+		    $scope.filteredTodos =$scope.tsList.slice(begin, end);
+		
+			}
+		else{
+			
+var begin = (($scope.currentPage - 1) * $scope.numPerPage), end = begin + $scope.numPerPage;
+		    
+		    $scope.filteredTodos = $scope.items.slice(begin, end);
+		}
+		if(flag==undefined)
+		{
+			$scope.currentPage=1;
+		}
+	};
+	
+	
+	$scope.emaile2 = false;
+	 
+	$scope.addEmail = function () {
+		 $scope.emaile2 = true;
+	 };
+	 $scope.removeEmail = function () {
+		 
+			
+		 $scope.contact.contactEmail2 = null;
+		 $scope.emaile2 = false;
+	 };
+	
+	
+	
+	$scope.mPhone = false;
+	 
+	$scope.addMPhone = function () {
+		 $scope.mPhone = true;
+	 };
+	 $scope.removeMPhone = function () {
+		 
+		 if($scope.contact==undefined)
+			{
+			$scope.contact={};
+			}
+			
+		 $scope.contact.mobilePhoneCountry = null;	
+		 $scope.contact.mobilePhone = null;
+		 $scope.contact.mobilePhoneExt = null;
+		 $scope.mPhone = false;
+	 };
+	 $scope.pPhone = false;
+	 $scope.addPPhone = function () {
+		 $scope.pPhone = true;
+	 };
+	 $scope.removePPhone = function () {
+		 if($scope.contact==undefined)
+			{
+			$scope.contact={};
+			}
+		 $scope.contact.personalPhoneCountry = null;
+			$scope.contact.personalPhone = null;
+			$scope.contact.personalPhoneExt = null;
+		 $scope.pPhone = false;
+	 };
+	 
+	 
+	 
+	 
+	 $scope.countryList1=[{id:"US(+1)",mask1:"(999) 999-9999"},{id:"Canada(+1)",mask1:"(999) 999-9999"},{id:"India(+91)",mask1:"9999999999"},{id:"Ireland(+353)",mask1:"9999999999"},{id:"Switzerland(+41)",mask1:"9999999999"},{id:"Mexico(+52)",mask1:"9999999999"},{id:"Germany(+49)",mask1:"99999999999"}];
+	 $scope.mask1 = "(999) 999-9999";
+	 
+	 
+	 $scope.setMask1 =  function(countryId1){
+		 if(countryId1!= undefined){
+		 var temp = $filter("filter")($scope.countryList1, {id:countryId1});
+			if(temp.length!=0)
+				{
+				$scope.mask1=temp[0].mask1;
+			
+				}
+		 }
+		 else
+			 {
+			 $scope.mask1 = "(999) 999-9999";
+			 }
+	 };
+	 
+	 $scope.countryList2=[{id:"US(+1)",mask2:"(999) 999-9999"},{id:"Canada(+1)",mask2:"(999) 999-9999"},{id:"India(+91)",mask2:"9999999999"},{id:"Ireland(+353)",mask2:"9999999999"},{id:"Switzerland(+41)",mask2:"9999999999"},{id:"Mexico(+52)",mask2:"9999999999"},{id:"Germany(+49)",mask2:"99999999999"}];
+	 $scope.mask2 = "(999) 999-9999";
+	 $scope.setMask2 =  function(countryId2){
+		 if(countryId2!= undefined){
+		 var temp = $filter("filter")($scope.countryList2, {id:countryId2});
+			if(temp.length!=0)
+				{
+				$scope.mask2=temp[0].mask2;
+			
+				}
+		 }
+		 else
+			 {
+			 $scope.mask2 = "(999) 999-9999";
+			 }
+	 };
+	 
+	 $scope.countryList3=[{id:"US(+1)",mask3:"(999) 999-9999"},{id:"Canada(+1)",mask3:"(999) 999-9999"},{id:"India(+91)",mask3:"9999999999"},{id:"Ireland(+353)",mask3:"9999999999"},{id:"Switzerland(+41)",mask3:"9999999999"},{id:"Mexico(+52)",mask3:"9999999999"},{id:"Germany(+49)",mask3:"99999999999"}];
+	 $scope.mask3 = "(999) 999-9999";
+	 $scope.setMask3 =  function(countryId3){
+		 if(countryId3!= undefined){
+		 var temp = $filter("filter")($scope.countryList3, {id:countryId3});
+			if(temp.length!=0)
+				{
+				$scope.mask3=temp[0].mask3;
+			
+				}
+		 }
+		 else
+			 {
+			 $scope.mask3 = "(999) 999-9999";
+			 }
+	 };
+	$scope.hidetitle=true;
+	$scope.ErrorMsg2=false;
+	$scope.ErrorMsgD = false;
+	
+	$scope.tpplist=[];
+	$scope.ptcolList=[];
+	$scope.drList=[];
+	$scope.ttypeList=[];
+	$scope.versionList=[];
+	$scope.items = [];
+	$scope.sortType     = 'name'; 
+	$scope.sortReverse  = false;
+	$scope.btList = false;
+	
+	$scope.inittableList = function()
+	{
+		
+		
+		$http.get('/TPIAdmin/app/tpps?projection=tppListViewProjection')
+	     .success(function (response, status, headers, config) {
+	    	 tempList  = angular.copy(response);
+	    	 
+	     })
+	     .error(function (data, status, header, config) {
+	         $scope.ResponseDetails = "Data: " + data +
+	             "<br />status: " + status ;
+	         //    "<br />headers: " + jsonFilter(header) +
+	           //  "<br />config: " + jsonFilter(config);
+	     })
+		 .then(function(response) {
+			 angular.forEach(tempList, function (item) {
+			
+			
+			 try
+			 {var obj=
+			 {       id:item.id, 
+					 tppname:item.name,
+					 type:item.type
+					 
+					
+				 };
+			 
+			 $scope.items.push(obj);
+			 }catch(e)
+			 {}
+		
+		
+	    });
+			 $scope.totalItems = $scope.items.length;
+				//console.log(JSON.stringify($scope.items));
+				 $scope.createPagination();	 
+				 $scope.sortData('tppname');
+			 });
+		
+	};
+	
+	
+	$scope.initdisplay = function(item)
+	{
+		
+		var displayList={};
+		 $http.get('/TPIAdmin/app/tpps/'+item.id)
+	     .success(function (response, status, headers, config) {
+	    	 
+	    	 displayList=angular.copy(response);
+	    	//console.log("inputdata "+JSON.stringify(response));
+	     })
+	     .error(function (data, status, header, config) {
+	    	
+	         $scope.ResponseDetails = "Data: " + data +
+	             "<br />status: " + status ;
+	         //    "<br />headers: " + jsonFilter(header) +
+	           //  "<br />config: " + jsonFilter(config);
+	     })
+	     	
+		 .then(function(response) {
+			$scope.showData(displayList); 
+			  
+		 });
+		// console.log("list "+JSON.stringify($scope.items) );	
+	};
+	$scope.emptylist=[];
+	$scope.id=null;
+	$scope.onlyNew=false;
+	$scope.showData=function(item)
+	{
+		$scope.onlyNew=false;
+		$scope.SavefuncName="SAVE";
+		$scope.showTable=false;	
+		$scope.contactList=angular.copy($scope.emptylist);
+		$scope.user.del=false;
+		$scope.hideEdit=true;
+		
+		$scope.id=item.id;
+		
+		$scope.tppType = item.type.id;
+		$scope.tppName=item.name;
+		
+		 angular.forEach(item.contactDetails, function (temp) {
+var obj=
+	{   
+		
+	    id : temp.id,
+	    contactName : temp.contactName,
+		contactTitle : temp.contactTitle,
+		businessPhoneCountry : temp.businessPhoneCountry,
+		businessPhone : temp.businessPhone,
+		businessPhoneExt : temp.businessPhoneExt,
+		mobilePhoneCountry : temp.mobilePhoneCountry,
+		mobilePhone : temp.mobilePhone,
+		mobilePhoneExt : temp.mobilePhoneExt,
+		personalPhoneCountry : temp.personalPhoneCountry,
+		personalPhone : temp.personalPhone,
+		personalPhoneExt: temp.personalPhoneExt,
+		contactEmail : temp.contactEmail,
+		transactionType : {id:temp.transactionType.id }
+	};
+$scope.contactList.push(obj);
+$scope.SavefuncName="EDIT";
+		 });
+$scope.protocolList(item);
+
+
+$scope.resetDilimeters();
+
+$scope.segmentDelimiter = item.segmentDelimiter.id;
+$scope.elementDelimiter = item.elementDelimiter.id;
+	$scope.compositeElementDelimiter = item.compositeElementDelimiter.id;
+	if(item.repeatDelimiter == undefined || item.repeatDelimiter == null){	
+		$scope.repeatDelimiter = null;
+		$scope.disableDilimeters();
+	}
+	else{
+		$scope.repeatDelimiter = item.repeatDelimiter.id;
+	}
+		
+$scope.showTable=true;
+if(item.lightWellPartner!=null)
+	{
+	$scope.lightWellPartner={};
+	//$scope.lwID = item.lightWellPartner.id;
+	$scope.lightWellPartner.id = item.lightWellPartner.id;
+$scope.lightWellPartner.testIsaID=item.lightWellPartner.testIsaID;
+$scope.lightWellPartner.productionIsaID=item.lightWellPartner.productionIsaID;
+$scope.lightWellPartner.testIsaQualifier=item.lightWellPartner.testIsaQualifier;
+$scope.lightWellPartner.productionIsaQualifier=item.lightWellPartner.productionIsaQualifier;
+$scope.lightWellPartner.testGsId=item.lightWellPartner.testGsId;
+$scope.lightWellPartner.productionGsId=item.lightWellPartner.productionGsId;
+	
+	
+	}
+	
+	};
+	$scope.disablesave=false;
+	$scope.EditTppPartner=function()
+	{
+		//$scope.user.edit=true;
+		//$scope.user.trans=false;
+	$scope.hideEdit=false;
+		//$scope.clickModal();
+	};
+	
+	$scope.showName = function(item){
+		var tempt = $filter("filter")($scope.tList, {id:item},true);
+		if(tempt.length!=0)
+			{
+			return tempt[0].documentDescription;
+			}
+		return item;
+	};
+	
+	$scope.tList = []
+	$scope.initTransactionTypeList = function()
+	{
+		
+		
+		 $http.get('/TPIAdmin/app/documents')
+	     .success(function (response, status, headers, config) {
+	    	 $scope.tList = angular.copy(response);
+	    	 
+	     })
+	     .error(function (data, status, header, config) {
+	         $scope.ResponseDetails = "Data: " + data +
+	             "<br />status: " + status ;
+	         //    "<br />headers: " + jsonFilter(header) +
+	           //  "<br />config: " + jsonFilter(config);
+	     })
+		 .then(function(response) {
+			 
+		       
+		    });
+
+
+		
+		};
+		
+	
+	
+	$scope.inittpp = function()
+	{
+		
+		
+		 $http.get('/TPIAdmin/app/tppTypes')
+	     .success(function (response, status, headers, config) {
+	    	 $scope.tpplist = angular.copy(response);
+	    	 
+	     })
+	     .error(function (data, status, header, config) {
+	         $scope.ResponseDetails = "Data: " + data +
+	             "<br />status: " + status ;
+	         //    "<br />headers: " + jsonFilter(header) +
+	           //  "<br />config: " + jsonFilter(config);
+	     })
+		 .then(function(response) {
+			 $scope.protocolList();
+		    });
+
+
+		
+		};
+	
+		$scope.updateSelection = function(position, entities) {
+		      angular.forEach(entities, function(ptcol, index) {
+		    	 /* if (position == index) 
+			        	ptcol.checked = true; */
+		    	     if($scope.tppType == '3'){
+		    	  
+		    	    	 if (position == index) 
+		        	ptcol.checked = true;
+		        }
+		        else
+		        	
+		        	{
+		        	if (position != index) 
+			        	ptcol.checked = false;
+		        	}
+		      });
+		    }
+		$scope.userData = [
+	        {
+	            name: 'John Doe',
+	            selectedProducts: [
+	                'coffee',
+	                'beer',
+	                'wine']
+	        },
+	        {
+	            name: 'Jane Doe',
+	            selectedProducts: [
+	                'coffee',
+	                'tea']
+	        }
+	    ];
+	  $scope.products = ['coffee', 'beer', 'wine', 'tea', 'milk'];
+		$scope.cleadata=function()
+		{
+			$('.extra3').scrollTop(0);
+			$scope.mPhone = false;
+			$scope.emaile2 = false;
+			$scope.transError = false;
+			$scope.pPhone = false;
+			$scope.emptyNm = false;
+			$scope.ErrorMsg=false;
+			$scope.ErrorMsgP = false;
+			$scope.ErrorMsgD = false;
+			$scope.ErrorMsg1=false;
+			$scope.cList = false;
+			$scope.btList = false;
+			$scope.ErrorMsg2=false;
+			
+			$scope.upbt=false;
+			$scope.validName=false;
+			$scope.clearContact();
+			$scope.revertAll();
+			$scope.revertTransAll();
+			$scope.id = null;
+			$scope.tppName=null;
+			$scope.tppType=null;
+			$scope.segmentDelimiter = null;
+			 $scope.elementDelimiter= null;
+			$scope.compositeElementDelimiter = null;
+					
+				 $scope.repeatDelimiter= null;
+			$scope.lightWellPartner={};
+			$scope.showTable=false;
+			$scope.showtransTable=false;
+			var emptyt=[];
+			$scope.backtransactionList=angular.copy(emptyt);
+			 angular.forEach($scope.ptcolList, function (item) {
+				 item.checked=false;
+				
+			 });
+		};
+		
+		$scope.ptcolLimit= function(){
+			if($scope.tppType == "1" || $scope.tppType == "2" ){
+			angular.forEach($scope.ptcolList, function (item) {
+				 item.checked=false;
+				
+			 });
+			};
+		}
+		$scope.deleteTpp=function()
+		{
+			$scope.user.del=true;
+			 $scope.clickModal();
+			 
+
+		};
+		$scope.user={del:false,edit:false};
+		$scope.clickModal=function()
+		{
+			var txt="hello";
+			if($scope.onlyNew)
+				{
+				$scope.user.msg=$scope.tppName+" has been added";
+				}
+			else
+				{
+				$scope.user.msg=$scope.tppName+" has been updated";
+				}
+			if($scope.user.del)
+			{
+				$scope.user.msg="Are you sure you want to delete the "+$scope.tppName+" Partner ?";	
+			}
+			
+			if($scope.user.edit)
+			{
+				$scope.user.msg="Are you sure to delete the contact ?";	
+			}
+			if($scope.user.trans)
+			{
+				$scope.user.msg="Are you sure to delete transaction ?";	
+			}
+			
+			var modalInstance = $modal.open({
+	            templateUrl: 'myModalContent.html',
+	            controller: 'ModalInstanceCtrl',
+	            size: 'sm',
+	        
+	            
+	            //size: size,
+	            resolve: {
+	                user: function() {
+	                    return $scope.user;
+	                },
+	                
+	                selectedProducts: function() {
+	                    return $scope.userData.selectedProducts;
+	                },
+	                products: function () {
+	                    //console.log($scope.selectedProducts);
+	                    return $scope.products; // get all available products
+	                }
+	            }
+	        });
+	        
+	        modalInstance.result.then(function (selectedItems) {
+	        	if(selectedItems=="delete")
+	        		{
+	        	// console.log('eventX found on Controller1 $scope');
+	             $http.delete('/TPIAdmin/app/tpps/' + $scope.id)
+	             .success(function (data, status, headers) {
+	            	 location.reload();
+	             })
+	             .error(function (data, status, header, config) {
+	                 $scope.ServerResponse = htmlDecode("Data: " + data +
+	                     "\n\n\n\nstatus: " + status +
+	                     "\n\n\n\nheaders: " + header +
+	                     "\n\n\n\nconfig: " + config);
+	             });
+	        		}
+	        	else	if(selectedItems=="edit")
+	        		{
+	        		
+			    	var index = $scope.contactList.indexOf($scope.delcon);
+			    	  $scope.contactList.splice(index, 1);  
+			    	  $scope.delcon=null;
+	        		}
+	        	else if(selectedItems=="transedit" )
+	        		{
+			    	var index = $scope.backtransactionList.indexOf($scope.transdObj);
+			    	$scope.backtransactionList.splice(index, 1); 
+			    	$scope.transdObj==null;
+			    	if($scope.transactionList!=null)
+					{
+					 var dir1={
+							 id:$scope.transdObj.direction.id
+							 
+					 };
+					 var doc1=
+						 {
+							 id: $scope.transdObj.document.id
+						 };
+					 var versn1=
+						 {
+							id: $scope.transdObj.version.id
+						 };
+					 var objn=
+						 {direction:dir1,
+							 document:doc1,
+							 version:versn1
+						 }
+				
+					 angular.forEach( $scope.transactionList, function (item5) {
+						 if(item5.direction.id==dir1.id&&item5.document.id==doc1.id&&item5.version.id==versn1.id)
+							 {
+							 var index1 = $scope.transactionList.indexOf(item5);
+						    	$scope.transactionList.splice(index1, 1) 
+						 
+							 }
+					 });
+				
+					}
+	        		}
+	        }, function () {
+	         
+	        });
+		};
+		
+		
+		$scope.protocolList = function(dblist)
+		{
+			
+			
+			 $http.get('/TPIAdmin/app/protocols')
+		     .success(function (response, status, headers, config) {
+		    	 $scope.ptcolList = angular.copy(response);
+		    	 
+		     })
+		     .error(function (data, status, header, config) {
+		         $scope.ResponseDetails = "Data: " + data +
+		             "<br />status: " + status ;
+		         //    "<br />headers: " + jsonFilter(header) +
+		           //  "<br />config: " + jsonFilter(config);
+		     })
+			 .then(function(response) {
+				 if(dblist!=undefined)
+					 {
+					 angular.forEach($scope.ptcolList, function (item) {
+						 
+						 angular.forEach(dblist.protocols, function (item1) {
+							 
+								if(item1.id==item.id)
+									{
+									item.checked=true;
+									}
+								
+						 });
+						
+					 });
+					 $scope.showtransTable=true;
+					 }
+				 $scope.directionList(dblist);
+			    });
+
+
+			
+			};
+			
+			
+			$scope.directionList = function(dbList)
+			{
+				
+				
+				 $http.get('/TPIAdmin/app/directions')
+			     .success(function (response, status, headers, config) {
+			    	 $scope.drList = angular.copy(response);
+			    	 
+			     })
+			     .error(function (data, status, header, config) {
+			         $scope.ResponseDetails = "Data: " + data +
+			             "<br />status: " + status ;
+			         //    "<br />headers: " + jsonFilter(header) +
+			           //  "<br />config: " + jsonFilter(config);
+			     })
+				 .then(function(response) {
+					 
+					 $scope.transactionTypeList(dbList);  
+				    });
+
+
+				
+				};
+				
+			/*	$scope.shouldShow = function(list){
+					return list.documentDescription != 'ALL';
+				}; */
+				
+				$scope.transactionTypeList = function(dbList)
+				{
+					
+					
+					 $http.get('/TPIAdmin/app/documents')
+				     .success(function (response, status, headers, config) {
+				    	 $scope.ttypeList = angular.copy(response);
+				    	 
+				     })
+				     .error(function (data, status, header, config) {
+				         $scope.ResponseDetails = "Data: " + data +
+				             "<br />status: " + status ;
+				         //    "<br />headers: " + jsonFilter(header) +
+				           //  "<br />config: " + jsonFilter(config);
+				     })
+					 .then(function(response) {
+						 $scope.versList(dbList);
+					       
+					    });
+
+
+					
+					};
+					
+					
+					$scope.versList = function(dbList)
+					{
+						
+						
+						 $http.get('/TPIAdmin/app/versions')
+					     .success(function (response, status, headers, config) {
+					    	 $scope.versionList = angular.copy(response);
+					    	 
+					     })
+					     .error(function (data, status, header, config) {
+					         $scope.ResponseDetails = "Data: " + data +
+					             "<br />status: " + status ;
+					         //    "<br />headers: " + jsonFilter(header) +
+					           //  "<br />config: " + jsonFilter(config);
+					     })
+						 .then(function(response) {
+						       if(dbList!=undefined)
+						    	   {
+						    	   
+						    	   $scope.transactionList=[];
+									 angular.forEach(dbList.transactions, function (item) {
+										
+											
+										 var dir={
+												 id:item.direction.id
+												 
+										 };
+										 var doc=
+											 {
+												 id: item.document.id
+											 };
+										 var versn=
+											 {
+												id: item.version.id
+											 };
+										 var obj=
+											 {
+												id:item.id,
+												 direction:dir,
+												 document:doc,
+												 version:versn
+											 }
+										 $scope.transactionList.push(obj); 
+							 $scope.findtrans(item.direction.id , item.document.id ,item.version.id,item.id);
+
+									 });
+						    	   }
+						    });
+
+
+						
+						};
+			
+		$scope.contact={};
+		$scope.contactList=[];
+		$scope.transactionList=[];
+		$scope.ErrorMsg=false;
+		$scope.ErrorMsgP = false;
+		$scope.ErrorMsgD = false;
+		$scope.showTable=false;
+		$scope.showtransTable=false;
+		$scope.transaction={};
+		$scope.ErrorMsg1=false;
+		$scope.backtransactionList=[];
+		
+		$scope.findtrans=function(id1,id2,id3,dbid)
+		{
+			 var dir={
+					 id:id1
+					 
+			 };
+			 var doc=
+				 {
+					 id: id2
+				 };
+			 var versn=
+				 {
+					id: id3
+				 };
+			
+			 angular.forEach($scope.drList, function (item) {
+				 if(item.id==id1)
+					 {
+				 dir.directionCode=item.directionCode;
+				 
+					 }
+			 });
+			 angular.forEach($scope.ttypeList, function (item) {
+				 if(item.id==id2)
+					 {
+					 doc.documentDescription=item.documentDescription;
+				 
+					 }
+			 });
+			 angular.forEach($scope.versionList, function (item) {
+				 if(item.id==id3)
+					 {
+					 versn.versionNumber=item.versionNumber;
+				 
+					 }
+			 });
+		
+			 var obj1=
+			 {direction:dir,
+				 document:doc,
+				 version:versn
+			 }
+			 if(dbid!=undefined)
+				 {
+				 obj1.id=dbid;
+				 }
+			 $scope.backtransactionList.push(obj1);
+		};
+		
+		$scope.editEnable=false;
+		$scope.editcontact=function(contact)
+		{
+			$scope.emaile2 = true;
+			$scope.mPhone = true;
+			$scope.pPhone = true;
+			if($scope.contact==undefined)
+				{
+				$scope.contact={};
+				}
+			$scope.contact.contactName = contact.contactName;
+			$scope.contact.contactTitle = contact.contactTitle;
+			
+			
+			
+
+			
+				$scope.contact.businessPhoneCountry =  contact.businessPhoneCountry;
+			
+			
+			 $scope.setMask1($scope.contact.country);
+			 
+			 
+			$scope.contact.businessPhone = Number(contact.businessPhone) || '';
+			
+			 
+			
+			$scope.contact.businessPhoneExt = Number(contact.businessPhoneExt) || '';
+			
+			
+				$scope.contact.mobilePhoneCountry =  contact.mobilePhoneCountry;
+			
+			$scope.setMask2($scope.contact.mobilePhoneCountry);
+			
+			$scope.contact.mobilePhone = Number(contact.mobilePhone) || '';
+		
+			
+			$scope.contact.mobilePhoneExt = Number(contact.mobilePhoneExt) || '';
+			
+							
+				$scope.contact.personalPhoneCountry =  contact.personalPhoneCountry;
+			
+				$scope.setMask3($scope.contact.personalPhoneCountry);
+				
+				$scope.contact.personalPhone = Number(contact.personalPhone) || '';
+				
+				
+				
+			$scope.contact.personalPhoneExt = Number(contact.personalPhoneExt) || '';
+				
+			$scope.contact.contactEmail = contact.contactEmail;
+			$scope.contact.contactEmail2 = contact.contactEmail2;
+			if($scope.contact.transactionType==undefined||$scope.contact.transactionType==null)
+			{
+			$scope.contact.transactionType={};
+			}
+		$scope.contact.transactionType.id=[];
+		$scope.contact.transactionType.id.push(contact.transactionType.id);
+			$scope.editEnable=true;
+			$scope.upbt=true;
+			deleteobj=contact;
+			
+		};
+		$scope.clearContact=function()
+		{
+			$scope.SavefuncName="SAVE";
+			$scope.user.del=false;
+			$scope.showTable=false;
+			$scope.transError = false;
+			$scope.contactList=angular.copy($scope.emptylist);
+			$scope.hideEdit=false;
+			$scope.onlyNew=true;
+		};
+		
+		$scope.deletecontact=function(item,flag)
+		{
+			
+			$scope.user.edit=true;
+			 $scope.user.trans=false;
+			$scope.delcon=item;
+			$scope.clickModal();  	  
+			    
+			
+		};
+		$scope.transError = false;
+		$scope.addTransaction=function(flag,transaction)
+		{
+			$scope.transError = false;
+			if($scope.transactionList!=null)
+				{
+				 var dir1={
+						 id:$scope.transaction.direction
+						 
+				 };
+				 var doc1=
+					 {
+						 id: $scope.transaction.document
+					 };
+				 var versn1=
+					 {
+						id: $scope.transaction.version
+					 };
+				 var objn=
+					 {direction:dir1,
+						 document:doc1,
+						 version:versn1
+					 }
+			var temp = $filter("filter")($scope.transactionList, objn,true);
+			if(temp.length!=0)
+				{
+				//throw error message from here
+				$scope.transError = true;
+				return false;
+				}
+			
+				}
+			$scope.btList=false;
+			if(!flag)
+			{
+			$scope.ErrorMsg1=true;
+			return false;
+			}
+			
+			if($scope.transEdit)
+			{
+				$scope.deletetrans(	$scope.transdel,true);
+				//$scope.deletetransid($scope.transdel)
+			}
+			$scope.transEdit=false;
+			$scope.uptransbt=false;
+			var temp=angular.copy(transaction);
+			if($scope.transactionList==null)
+				$scope.transactionList=[];
+			
+				 var dir={
+						 id:$scope.transaction.direction
+						 
+				 };
+				 var doc=
+					 {
+						 id: $scope.transaction.document
+					 };
+				 var versn=
+					 {
+						id: $scope.transaction.version
+					 };
+				 var obj=
+					 {direction:dir,
+						 document:doc,
+						 version:versn
+					 }
+				 $scope.transactionList.push(obj); 
+				 $scope.findtrans($scope.transaction.direction , $scope.transaction.document ,$scope.transaction.version);
+				 $scope.uptransbt=false;
+				
+				$scope.transaction.direction = null;
+				$scope.transaction.document = null;
+				$scope.transaction.version = null;
+								$scope.showtransTable=true;
+				//console.log(JSON.stringify($scope.transactionList));
+				$scope.ErrorMsg1=false;
+		};
+					$scope.transdObj=null;
+		$scope.deletetrans=function(item,flag)
+		{
+			$scope.user.edit=false;
+			$scope.user.trans=true;
+			$scope.transdObj=item;
+			if(flag!=undefined)
+				{
+				var index = $scope.backtransactionList.indexOf($scope.transdObj);
+		    	$scope.backtransactionList.splice(index, 1); 
+		    	$scope.transdObj==null;
+		    	if($scope.transactionList!=null)
+				{
+				 var dir1={
+						 id:item.direction.id
+						 
+				 };
+				 var doc1=
+					 {
+						 id: item.document.id
+					 };
+				 var versn1=
+					 {
+						id: item.version.id
+					 };
+				 var objn=
+					 {direction:dir1,
+						 document:doc1,
+						 version:versn1
+					 }
+				 angular.forEach( $scope.transactionList, function (item5) {
+					 if(item5.direction.id==dir1.id&&item5.document.id==doc1.id&&item5.version.id==versn1.id)
+						 {
+						 var index1 = $scope.transactionList.indexOf(item5);
+					    	$scope.transactionList.splice(index1, 1) 
+					 
+						 }
+				 });
+				}
+				}else
+					{
+			 $scope.clickModal();
+			    	
+					}
+		};	
+		$scope.deletetransid=function(id)
+		{
+			 angular.forEach( $scope.transactionList, function (item) {
+				 if(item.id==id)
+					 {
+					 var index = $scope.backtransactionList.indexOf(item);
+				    	$scope.transactionList.splice(index, 1); 
+				 
+					 }
+			 });
+			    	
+			    	 
+			    	
+			
+		};	
+		$scope.transEdit=false;
+					$scope.transdel={};
+					
+				$scope.Edittrans=function(trans)
+				{
+					$scope.user.trans=false;
+					$scope.transEdit=true;
+					$scope.uptransbt=true;
+					$scope.transaction.direction=trans.direction.id;
+					$scope.transaction.document = trans.document.id;
+					$scope.transaction.version = trans.version.id;
+					$scope.transdel=trans;
+					//$scope.onlyNew=false;
+					
+				};
+
+				$scope.revertAll=function()
+				{
+					$scope.upbt=false;
+					$scope.ErrorMsg=false;
+				    
+				   
+					$scope.editEnable=false;
+					
+					$scope.contact.contactName = null;
+					$scope.contact.contactTitle = null;
+					 $scope.contact.businessPhoneCountry = null;
+					 $scope.contact.mobilePhoneCountry = null;
+					 $scope.contact.personalPhoneCountry = null;
+					$scope.contact.businessPhone = null;
+					$scope.contact.mobilePhoneExt = null;
+					$scope.contact.businessPhoneExt = null;
+					$scope.contact.personalPhoneExt = null;
+					$scope.contact.mobilePhone = null;
+				
+					
+					$scope.contact.personalPhone = null;
+					
+					$scope.contact.contactEmail = null;
+					$scope.contact.contactEmail2 = null;
+					$scope.contact.transactionType = {};
+					$scope.contact.transactionType.id = null;
+				};
+				
+				$scope.revertTransAll=function()
+				{
+					$scope.uptransbt=false;
+					$scope.transError = false;
+					$scope.ErrorMsg1=false;
+				    $scope.editEnable=false;
+					$scope.transaction.direction = null;
+					$scope.transaction.document = null;
+					$scope.transaction.version = null;
+				};
+				
+				$scope.uptransbt=false;
+			$scope.addContact=function(flag,contact)
+			{
+				$scope.cList = false;
+				$scope.emaile2 = false;
+				$scope.mPhone = false;
+				$scope.pPhone = false;
+				if(!flag)
+				{
+				$scope.ErrorMsg=true;
+				return false;
+				}
+				if($scope.editEnable)
+				{
+				var index = $scope.contactList.indexOf(deleteobj);
+				$scope.contactList.splice(index, 1);
+			//	$scope.onlyNew=false;
+
+					}
+				$scope.editEnable=false;
+				$scope.cList=false;
+				$scope.upbt=false;
+				if($scope.contactList==null)
+					$scope.contactList=[];
+				angular.forEach($scope.contact.transactionType.id, function (item) {
+					var obj=
+						{
+							contactName    :     $scope.contact.contactName,
+							contactTitle   :     $scope.contact.contactTitle,
+							businessPhoneCountry        :     $scope.contact.businessPhoneCountry,
+							businessPhone  :     $scope.contact.businessPhone,
+							mobilePhoneCountry       :     $scope.contact.mobilePhoneCountry,
+							personalPhoneCountry       :     $scope.contact.personalPhoneCountry,
+							businessPhoneExt      :     $scope.contact.businessPhoneExt,
+							mobilePhoneExt     :     $scope.contact.mobilePhoneExt,
+							mobilePhone    :     $scope.contact.mobilePhone,
+							personalPhone  :     $scope.contact.personalPhone,
+							personalPhoneExt     :     $scope.contact.personalPhoneExt ,
+							contactEmail   :     $scope.contact.contactEmail,
+							contactEmail2  :     $scope.contact.contactEmail2,
+							transactionType:     {id:item}						};
+					
+					$scope.contactList.push(obj);
+				});
+
+
+					
+				$scope.contact.contactName = null;
+				$scope.contact.contactTitle = null;
+				 $scope.contact.businessPhoneCountry = null;
+				 $scope.contact.mobilePhoneCountry = null;
+				 $scope.contact.personalPhoneCountry = null;
+				$scope.contact.businessPhone = null;
+				$scope.contact.mobilePhoneExt = null;
+				$scope.contact.businessPhoneExt = null;
+				$scope.contact.personalPhoneExt = null;
+				$scope.contact.mobilePhone = null;
+			
+				
+				$scope.contact.personalPhone = null;
+				
+				$scope.contact.contactEmail = null;
+				$scope.contact.contactEmail2 = null;
+						$scope.contact.transactionType.id = null;
+						
+						$scope.showTable=true;
+						//console.log(JSON.stringify($scope.contactList));
+						$scope.ErrorMsg=false;
+			};
+			$scope.cList = false;
+			$scope.btList = false;
+			$scope.protoval=true;
+			 $scope.ErrorMsgP=false;
+			 $scope.ErrorMsgD = false;
+			 $scope.onlyNew=true;
+			 $scope.user={};
+			 $scope.validateName="";
+				$scope.validName=false;
+				$scope.emptyNm = false;
+				$scope.checktppNameandSubmit = function(name,contactflag,transactionflag,delimiterflag,flag)
+				{
+					if(name == undefined || name == null || name.length == 0){
+						$scope.emptyNm = true;
+						return false;
+					}
+					if($scope.contactList.length < 1){
+		                $scope.cList = true;
+						return;
+					}
+					if($scope.backtransactionList.length < 1){
+		                $scope.btList = true;
+						return;
+					}
+					$scope.emptyNm = false;
+					
+					$scope.validName=false;
+					$scope.ErrorMsg=false;
+					$scope.ErrorMsgD = false;
+					 $scope.user.del=false;
+					 $scope.user.edit=false;
+					 $scope.user.trans=false;
+					if($scope.onlyNew)
+						{
+					 $http.get('/TPIAdmin/app/tpps/exists?name='+name)
+				     .success(function (response, status, headers, config) {
+				    		$scope.validateName=response;
+				     })
+				     .error(function (data, status, header, config) {
+				         $scope.ResponseDetails = "Data: " + data +
+				             "<br />status: " + status ;
+				         //    "<br />headers: " + jsonFilter(header) +
+				           //  "<br />config: " + jsonFilter(config);
+				     })
+					 .then(function(response) {
+					        $scope.myWelcome = response.data;
+					        if($scope.validateName!="true")
+					        	{
+					        	if($scope.tppType=="1"){
+					        	//$scope.checkids2(contactflag,transactionflag,flag);
+					        	$scope.checkids2(contactflag,transactionflag,delimiterflag,flag);
+					        	}
+					        	else{
+					        		$scope.savetpp(contactflag,transactionflag,delimiterflag,flag);
+					        	}
+					        	}
+					        else
+					        	{
+					        //	$scope.ErrorMsg=true;
+					        	$scope.validName=true;
+					        	}
+					    });
+
+						}
+					else
+						{
+						if($scope.tppType=="1"){
+							$scope.checkids2(contactflag,transactionflag,delimiterflag,flag);
+						}
+						
+						else{
+							$scope.savetpp(contactflag,transactionflag,delimiterflag,flag);	
+						}
+						}
+					
+					};
+			 
+					$scope.validId=false;
+					
+					$scope.checkids2 = function(contactflag,transactionflag,delimiterflag,flag)
+					{
+						
+						 var url=' /TPIAdmin/app/lightWellPartners/existsfor?testIsaId='+$scope.lightWellPartner.testIsaID+'&prodIsaId='+$scope.lightWellPartner.productionIsaID+'&testGsId='+$scope.lightWellPartner.testGsId+'&prodGsId='+$scope.lightWellPartner.productionGsId;
+						 if($scope.lightWellPartner.id!=undefined && $scope.lightWellPartner.id!=null){
+							url = url+'&lwId='+$scope.lightWellPartner.id;
+						 }
+						 
+						
+						 $http.get( url )
+					     .success(function (response, status, headers, config) {
+					    		$scope.validateId=response;
+					     })
+					     .error(function (data, status, header, config) {
+					         $scope.ResponseDetails = "Data: " + data +
+					             "<br />status: " + status ;
+					         //    "<br />headers: " + jsonFilter(header) +
+					           //  "<br />config: " + jsonFilter(config);
+					     })
+						 .then(function(response) {
+						        $scope.myWelcome = response.data;
+						        if($scope.validateId!="true")
+						        	{
+						        
+						        	$scope.savetpp(contactflag,transactionflag,delimiterflag,flag);
+						        	}
+						        else
+						        	{
+						        //	$scope.ErrorMsg=true;
+						        	$scope.validId=true;
+						        	}
+						    });
+
+						
+						
+						
+						};
+				 
+				
+				
+				
+				
+				
+					
+					
+					
+			 
+			$scope.savetpp = function(contactflag,transactionflag,delimiterflag,flag){
+					
+			if(!contactflag&&$scope.contactList.length==0)
+				{
+				$scope.ErrorMsg=true;
+				return false;
+				}
+				if(!transactionflag&&$scope.transactionList.length==0)
+				{
+				$scope.ErrorMsg1=true;
+				return false;
+				}
+				if(!delimiterflag)
+				{
+				$scope.ErrorMsgD=true;
+				return false;
+				}
+				
+				if(!flag&&$scope.tppType=="1")
+				{
+				$scope.ErrorMsg2=true;
+				return false;
+				}
+				
+				
+				$scope.protocol=[];
+				var tempproto=[];
+				 angular.forEach($scope.ptcolList, function (item) {
+					 var obj={};
+					 if(item.checked)
+						 {
+						 obj.id=item.id;
+						 tempproto.push(obj);
+						 $scope.protoval=false;
+						 }
+					
+				 });
+				 
+				 if($scope.protoval)
+				 {
+					 $scope.ErrorMsgP=true;
+					 return false;
+				 }
+				 
+				 $scope.protocol=angular.copy(tempproto);
+				 var typeobj=
+					 {
+						id:$scope.tppType 
+					 };
+				 
+					if($scope.tppType=="2" ||$scope.tppType=="3" )	{		
+						$scope.lightWellPartner= null;
+					};
+					var tempList=[];
+					$scope.disablesave=true;
+					 angular.forEach($scope.backtransactionList, function (item) {
+						
+							
+						 var dir={
+								 id:item.direction.id
+								 
+						 };
+						 var doc=
+							 {
+								 id: item.document.id
+							 };
+						 var versn=
+							 {
+								id: item.version.id
+							 };
+						 var obj1=
+							 {
+								id:item.id,
+								 direction:dir,
+								 document:doc,
+								 version:versn
+							 }
+						 tempList.push(obj1);
+						 
+						 
+					 });
+						  
+					
+					 if($scope.repeatDelimiter != undefined || $scope.repeatDelimiter!= null){
+					 var submitobj= 
+					 {
+					     id:$scope.id,
+						 type:typeobj,
+					     name:$scope.tppName,
+						 contactDetails:$scope.contactList,
+						 protocols:$scope.protocol,
+						 transactions:tempList,
+						 segmentDelimiter:{id:$scope.segmentDelimiter},
+							 elementDelimiter:{id:$scope.elementDelimiter},
+								 compositeElementDelimiter:{id:$scope.compositeElementDelimiter},
+									
+								 repeatDelimiter:{id:$scope.repeatDelimiter} ,
+						 lightWellPartner:$scope.lightWellPartner
+						    
+					 };
+				 }
+					 
+					 else{
+						 var submitobj= 
+						 {
+						     id:$scope.id,
+							 type:typeobj,
+						     name:$scope.tppName,
+							 contactDetails:$scope.contactList,
+							 protocols:$scope.protocol,
+							 transactions:tempList,
+							 segmentDelimiter:{id:$scope.segmentDelimiter},
+								 elementDelimiter:{id:$scope.elementDelimiter},
+									 compositeElementDelimiter:{id:$scope.compositeElementDelimiter},
+										
+									
+							 lightWellPartner:$scope.lightWellPartner
+							    
+						 };
+						 
+					 }
+				 $http.post("/TPIAdmin/app/tpps",submitobj)
+					.success(function (response, status, headers, config) {
+						 //$scope.grouplist = angular.copy(response);
+						// console.log(JSON.stringify(response));
+						 $scope.disablesave=false;
+						$scope.ErrorMsg=false;
+						$scope.ErrorMsgD = false;
+						$scope.ErrorMsg1=false;
+						 $scope.id=angular.copy(response.id);
+						 $scope.contactList=angular.copy(response.contactDetails);
+					 })
+					 .error(function (data, status, header, config) {
+						 $scope.ErrorMsg=false;
+						 $scope.ErrorMsg1=false;
+						 $scope.ErrorMsg2=false;
+						 $scope.ErrorMsgD = false;
+					     $scope.ResponseDetails = "Data: " + data +
+					         "<br />status: " + status ;
+					     //    "<br />headers: " + jsonFilter(header) +
+					       //  "<br />config: " + jsonFilter(config);
+					 })
+					.then(function(response) {
+						$scope.ErrorMsg=false;
+						$scope.validId=false;
+					    $scope.myWelcome = response;
+					    $scope.clickModal();
+					    
+					});
+									
+			};
+			
+			
+						
+						
+});

@@ -1,0 +1,114 @@
+package com.abc.tpi.model.tpp;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
+import javax.validation.constraints.NotNull;
+
+import com.abc.tpi.model.master.Protocol;
+import com.abc.tpi.model.master.TppType;
+import com.abc.tpi.model.partner.ContactDetail;
+
+@Entity
+@Table(name="ABC_TPI_TPP")
+public class Tpp {
+	@Id
+
+	@SequenceGenerator(name="ABC_TPI_TPP_GEN", sequenceName="ABC_TPI_TPP_SEQ",allocationSize=10)
+	@GeneratedValue(generator="ABC_TPI_TPP_GEN")
+	@Column(name="TPP_ID")
+	private Long id;
+	
+	//unidirectional
+	@NotNull
+	@ManyToOne
+	@JoinColumn(name="TPP_TYPE_ID", nullable=false)
+	private TppType type;
+	
+	@NotNull
+	@Column(name="TPP_NAME",unique=true,nullable=false)
+	private String name;
+
+	@OneToMany(cascade=CascadeType.ALL,fetch=FetchType.LAZY, orphanRemoval=true)
+	@JoinTable(name="ABC_TPI_TPP_CONTACT",
+			joinColumns=@JoinColumn(name="TPP_ID"),
+			inverseJoinColumns=@JoinColumn(name="CONTACT_DETAIL_ID"))
+	private List<ContactDetail> contactDetails = new ArrayList<ContactDetail>();
+	
+	//unidirectional - Protocol class doesn't know about Tpps (doesn't maintain back-reference via 'mapppedBy')
+	@ManyToMany(fetch=FetchType.LAZY)
+	@JoinTable(name="ABC_TPI_TPP_PROTOCOLS",
+			joinColumns=@JoinColumn(name="TPP_ID"),
+			inverseJoinColumns=@JoinColumn(name="PROTOCOL_ID"),uniqueConstraints=@UniqueConstraint(columnNames={"TPP_ID","PROTOCOL_ID"}))
+	private List<Protocol> protocols = new ArrayList<Protocol>();
+	
+	//unidirectional
+	@NotNull
+	@OneToMany(fetch=FetchType.LAZY, cascade=CascadeType.ALL,orphanRemoval=true)
+	@JoinTable(name="ABC_TPI_TPP_TRANSACTIONS",
+			joinColumns=@JoinColumn(name="TPP_ID"),
+			inverseJoinColumns=@JoinColumn(name="TRANSACTION_ID"))
+	private List<Transaction> transactions;
+	
+	@OneToOne(fetch=FetchType.EAGER, cascade=CascadeType.ALL,orphanRemoval=true)
+	@JoinColumn(name="LW_ID", nullable=true)
+	private LightWellPartner lightwellPartner;
+	
+	public List<ContactDetail> getContactDetails() {
+		return contactDetails;
+	}
+	public Long getId() {
+		return id;
+	}
+	public LightWellPartner getLightWellPartner() {
+		return lightwellPartner;
+	}
+	public String getName() {
+		return name;
+	}
+
+	public List<Protocol> getProtocols() {
+		return protocols;
+	}
+	public List<Transaction> getTransactions() {
+		return transactions;
+	}
+	public TppType getType() {
+		return type;
+	}
+	public void setContactDetails(List<ContactDetail> contactDetails) {
+		this.contactDetails = contactDetails;
+	}
+	
+	public void setLightWellPartner(LightWellPartner lightWellPartner) {
+		this.lightwellPartner = lightWellPartner;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public void setProtocols(List<Protocol> protocols) {
+		this.protocols = protocols;
+	}
+	public void setTransactions(List<Transaction> transactions) {
+		this.transactions = transactions;
+	}
+	public void setType(TppType type) {
+		this.type = type;
+	}
+}
+

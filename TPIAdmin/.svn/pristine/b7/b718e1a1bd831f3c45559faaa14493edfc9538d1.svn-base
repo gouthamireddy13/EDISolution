@@ -1,0 +1,683 @@
+	// create the module and name it ABApp
+	var ABApp = angular.module('ABApp', ['ngRoute','ui.bootstrap','ui.mask']);
+
+	// configure our routes
+	ABApp.config(function($routeProvider) {
+		$routeProvider
+
+			// route for the Dashboard
+		/*	.when('/', {
+				templateUrl : 'pages/home.html',
+				controller  : 'mainController'
+			})*/
+
+			// route for the about page
+			.when('/partnerManagement', {
+				templateUrl : 'pages/partnerManagement.html',
+				controller  : 'patnerManagementController'
+			})
+			
+			.when('/tppManagement', {
+				templateUrl : 'pages/tppManagement.html',
+				controller  : 'tppController'
+			})
+
+		});
+
+	// create the controller and inject Angular's $scope
+	ABApp.controller('mainController', function($scope) {
+		$scope.hidetitle=true;
+		$scope.hidemsg=function()
+		{
+			$scope.hidetitle=false;
+		}
+		
+	});
+
+	
+ABApp.controller('patnerManagementController', function($scope,$modal, $http, $window) {
+	$scope.message = ' Partner Management ';
+	$scope.hidetitle=true;
+	$scope.ErrorMsg=false;
+	$scope.items = [];
+	$scope.sortType     = 'name'; 
+	  $scope.sortReverse  = false;
+
+			        			      
+    $scope.OpenPopupWindow = function () {
+               $window.open("pages/addPartnerDetails.html", "popup", "width=500, height=500");
+           }
+  
+   
+	$scope.contactList=[];
+	
+	
+	$scope.addContact=function(flag,contact)
+	{
+		$scope.ErrorMsg=true;
+		$scope.upbt=false;
+		//$scope.tableshow=true;
+		//$scope.contactlist.push({contactNameINP:'',contactTitleINP:'',contactPhoneINP:'',contactEmailINP:'',contactGroup:1,contactSubGroup:1});	
+if(!flag)
+	{
+	$scope.subgpreq=false;
+	return false;
+	}
+if($scope.contactGroup!=null&&($scope.contactSubGroup==null||$scope.contactSubGroup.length==0))
+	{
+	$scope.subgpreq=true;
+	return false;
+	}
+//if(contact.id==undefined||contact.id==null)
+//contact.id=$scope.contactList.length+1;
+//contact.id=null;
+$scope.subgpreq=false;
+if($scope.editEnable)
+	{
+	if(deleteobj!=null)
+	$scope.deletecontact(deleteobj);
+	}
+$scope.editEnable=false;
+
+
+var temp=angular.copy(contact);
+	if($scope.contactList==null)
+		$scope.contactList=[];
+		$scope.contactList.push(temp);
+		$scope.contact.contactName = null;
+		$scope.contact.contactTitle = null;
+		$scope.contact.contactPhone = null;
+		$scope.contact.contactEmail = null;
+		$scope.showTable=true;
+		console.log(JSON.stringify($scope.contactList));
+		$scope.ErrorMsg=false;
+	};
+	
+	
+	
+	
+	$scope.updatebt=function(flag)
+	{
+$scope.upbt=false;
+		$scope.ErrorMsg=true;
+			
+if($scope.contactList==null||$scope.contactList.length==0)
+	{
+	return false;
+	}
+
+var partnerGroupObj=
+	{
+	    id:$scope.contactSubGroup
+		
+		
+	};
+if($scope.editEnable)
+{
+var index = $scope.contactList.indexOf(deleteobj);
+$scope.contactList.splice(index, 1);
+
+	}
+$scope.editEnable=false;
+var submitObj=
+	{
+		
+		id : $scope.id,
+		partnerName:$scope.partnerName,
+		contactDetails:$scope.contactList,
+		partnerGroup:partnerGroupObj
+	};
+$http.post("/TPIAdmin/app/partners",submitObj)
+.success(function (response, status, headers, config) {
+	 //$scope.grouplist = angular.copy(response);
+	 console.log(JSON.stringify(response));
+	$scope.ErrorMsg=false;
+	 $scope.id=angular.copy(response.id);
+	 $scope.contactList=angular.copy(response.contactDetails);
+ })
+ .error(function (data, status, header, config) {
+	 $scope.ErrorMsg=false;
+     $scope.ResponseDetails = "Data: " + data +
+         "<br />status: " + status ;
+     //    "<br />headers: " + jsonFilter(header) +
+       //  "<br />config: " + jsonFilter(config);
+ })
+.then(function(response) {
+	$scope.ErrorMsg=false;
+    $scope.myWelcome = response;
+   
+    
+});
+		
+		
+	
+	};
+	
+	$scope.clear=function()
+	{
+		$scope.upbt=false;
+		$scope.ErrorMsg=false;
+		$scope.validName=false;
+	    $scope.id = null;
+		$scope.partnerName = null;
+		$scope.contactGroup = null;
+		$scope.contactSubGroup = null;
+		if($scope.contact==null||$scope.contact==undefined)
+			{
+			return;
+			}
+		$scope.contact.contactName = null;
+		$scope.contact.contactTitle = null;
+		$scope.contact.contactPhone = null;
+		$scope.contact.contactEmail = null;
+		$scope.showTable=false;
+		var emptyl=[];
+		$scope.contactList=angular.copy(emptyl);
+		//$scope.contactList= null;
+		
+		
+	};
+	
+	$scope.hide = function(){
+		$scope.ErrorMsg=false;
+	  }
+
+	$scope.revertAll=function()
+	{
+		$scope.upbt=false;
+		$scope.ErrorMsg=false;
+	    
+	   
+		$scope.editEnable=false;
+		
+		$scope.contact.contactName = null;
+		$scope.contact.contactTitle = null;
+		$scope.contact.contactPhone = null;
+		$scope.contact.contactEmail = null;
+	};
+	$scope.editEnable=false;
+	$scope.editcontact=function(contact)
+	{
+		if($scope.contact==undefined)
+			{
+			$scope.contact={};
+			}
+		$scope.contact.contactName = contact.contactName;
+		$scope.contact.contactTitle = contact.contactTitle;
+		$scope.contact.contactPhone =Number(contact.contactPhone);
+		$scope.contact.contactEmail = contact.contactEmail;	
+		$scope.editEnable=true;
+		$scope.upbt=true;
+		deleteobj=contact;
+		
+	};
+	$scope.deleteobj=null;
+	$scope.deletecontactt=function(item)
+	{
+		
+		    	
+		    	var index = $scope.contactList.indexOf(item);
+		    	  $scope.contactList.splice(index, 1);  
+		    	
+		
+	};
+	$scope.deletecontact=function(item)
+	{
+		
+		    	
+		    	var index = $scope.contactList.indexOf(item);
+		    	  $scope.contactList.splice(index, 1);  
+		    
+		
+	};
+	
+	$scope.contactSubGroup=null;
+	$scope.SubmitcontactList=function(flag)
+	{
+	
+			
+if($scope.contactList==null||$scope.contactList.length==0)
+	{
+	$scope.ErrorMsg=true;
+	return false;
+	}
+
+var partnerGroupObj=
+	{
+	    id:$scope.contactSubGroup
+		
+		
+	};
+if($scope.editEnable)
+{
+var index = $scope.contactList.indexOf(deleteobj);
+$scope.contactList.splice(index, 1);
+
+	}
+$scope.editEnable=false;
+var submitObj=
+	{
+		id : $scope.id,
+		partnerName:$scope.partnerName,
+		contactDetails:$scope.contactList,
+		partnerGroup:partnerGroupObj
+	};
+$scope.ErrorMsg=false;
+$http.post("/TPIAdmin/app/partners",submitObj)
+.success(function (response, status, headers, config) {
+	 //$scope.grouplist = angular.copy(response);
+	 console.log(JSON.stringify(response));
+	 $scope.ErrorMsg=false;
+	 $scope.id=angular.copy(response.id);
+	 $scope.contactList=angular.copy(response.contactDetails);
+ })
+ .error(function (data, status, header, config) {
+	 $scope.ErrorMsg=false;
+     $scope.ResponseDetails = "Data: " + data +
+         "<br />status: " + status ;
+     //    "<br />headers: " + jsonFilter(header) +
+       //  "<br />config: " + jsonFilter(config);
+ })
+.then(function(response) {
+	$scope.ErrorMsg=false;
+    $scope.myWelcome = response;
+    $scope.clickModal();
+    
+});
+		
+		
+	}
+	
+	$scope.grouplist=[];
+	$scope.subgrouplist=[];
+	$scope.initgroup = function()
+	{
+		
+		$scope.editEnable=false;
+		
+		 $http.get('/TPIAdmin/app/partnerGroupNames')
+	     .success(function (response, status, headers, config) {
+	    	 $scope.grouplist = angular.copy(response);
+	    	 console.log(JSON.stringify($scope.grouplist));
+	     })
+	     .error(function (data, status, header, config) {
+	         $scope.ResponseDetails = "Data: " + data +
+	             "<br />status: " + status ;
+	         //    "<br />headers: " + jsonFilter(header) +
+	           //  "<br />config: " + jsonFilter(config);
+	     })
+		 .then(function(response) {
+		        $scope.myWelcome = response.data;
+		    });
+
+
+		
+		};
+		$scope.validateName="";
+		$scope.validName=false;
+		$scope.checkpartnerNameandSubmit = function(name,flag)
+		{
+			
+			
+			$scope.validName=false;
+			$scope.ErrorMsg=false;
+			$scope.user.edit=false;
+			$scope.user.del=false;
+			if($scope.onlyNew)
+				{
+			 $http.get('/TPIAdmin/app/partnerExists?partnerName='+name)
+		     .success(function (response, status, headers, config) {
+		    		$scope.validateName=response;
+		     })
+		     .error(function (data, status, header, config) {
+		         $scope.ResponseDetails = "Data: " + data +
+		             "<br />status: " + status ;
+		         //    "<br />headers: " + jsonFilter(header) +
+		           //  "<br />config: " + jsonFilter(config);
+		     })
+			 .then(function(response) {
+			        $scope.myWelcome = response.data;
+			        if($scope.validateName!="true")
+			        	{
+			        	$scope.SubmitcontactList(flag);
+			        	}
+			        else
+			        	{
+			        //	$scope.ErrorMsg=true;
+			        	$scope.validName=true;
+			        	}
+			    });
+
+				}
+			else
+				{
+				$scope.SubmitcontactList(flag);
+				}
+			
+			};
+		
+		$scope.initPartnerList = function()
+		{
+			
+			$scope.editEnable=false;
+			var tempList=[];
+			 $http.get('/TPIAdmin/app/partners?partnerName')
+		     .success(function (response, status, headers, config) {
+		    	tempList = angular.copy(response);
+		    	// console.log("inputdata "+JSON.stringify(tempList));
+		     })
+		     .error(function (data, status, header, config) {
+		         $scope.ResponseDetails = "Data: " + data +
+		             "<br />status: " + status ;
+		         //    "<br />headers: " + jsonFilter(header) +
+		           //  "<br />config: " + jsonFilter(config);
+		     })
+		     	
+			 .then(function(response) {
+				 angular.forEach(tempList, function (item) {
+					 var group="";
+					 var subgroup="";
+					 if(item.partnerGroup==null)
+						 {
+						 group="None";
+						 subgroup="None";
+						 }
+					 else
+						 {
+						 group=item.partnerGroup.groupName;
+						 subgroup=item.partnerGroup.subGroupName;
+						 }
+					 try
+					 {var obj=
+					 {       id:item.id, 
+							 partnerName:item.partnerName,
+							 
+							 group:group ,
+							 subGroup:subgroup,
+							 data:item
+						 };
+					 
+					 $scope.items.push(obj);
+					 }catch(e)
+					 {}
+				 });
+				
+			    });
+
+			 
+console.log("list "+JSON.stringify($scope.items) );
+			
+			};
+			$scope.emptylist=[];
+			$scope.SavefuncName="SAVE";
+			$scope.clearContact=function()
+			{
+				$scope.SavefuncName="SAVE";
+				$scope.user.del=false;
+				$scope.showTable=false;	
+				$scope.contactList=angular.copy($scope.emptylist);
+				$scope.hideEdit=false;
+				$scope.onlyNew=true;
+			};
+			
+			$scope.onlyNew=false;
+	$scope.showData=function(item)
+	{
+		$scope.onlyNew=false;
+		$scope.SavefuncName="SAVE";
+		$scope.showTable=false;	
+		$scope.contactList=angular.copy($scope.emptylist);
+		$scope.user.del=false;
+		$scope.hideEdit=true;
+		
+		$scope.id=item.id;
+		
+		$scope.partnerName = item.partnerName;
+		if(item.partnerGroup!=null)
+			{
+		$scope.contactGroup = item.partnerGroup.groupName;
+		$scope.subgroupList($scope.contactGroup,item.partnerGroup.subGroupName);
+			}
+		 angular.forEach(item.contactDetails, function (temp) {
+var obj=
+	{
+		contactName : temp.contactName,
+		contactTitle : temp.contactTitle,
+		contactPhone : temp.contactPhone,
+		contactEmail : temp.contactEmail
+	};
+$scope.contactList.push(obj);
+$scope.SavefuncName="EDIT";
+		 });
+		
+$scope.showTable=true;	
+		
+	};
+	$scope.EditPartner=function()
+	{
+		$scope.user.edit=true;
+		 $scope.clickModal();
+	};
+	
+		$scope.subgroupList=function(gpName,subgpName)
+		{
+			console.log("hello");
+			 $scope.subgpreq=false;
+			$http.get('/TPIAdmin/app/partnerSubGroups?groupName='+gpName)
+		     .success(function (response, status, headers, config) {
+		    	 $scope.subgroupdisable=false;
+		    	 $scope.subgrouplist = angular.copy(response);
+		    	// console.log(JSON.stringify($scope.subgrouplist));
+		     })
+		     .error(function (data, status, header, config) {
+		         $scope.ResponseDetails = "Data: " + data +
+		             "<br />status: " + status ;
+		         //    "<br />headers: " + jsonFilter(header) +
+		           //  "<br />config: " + jsonFilter(config);
+		     })
+			 .then(function(response) {
+			        $scope.myWelcome = response.data;
+			        if(subgpName!=undefined&&subgpName!=null)
+		        	{
+		        	 angular.forEach($scope.subgrouplist, function (temp) {
+		        		 if(subgpName==temp.subGroupName)
+			        	{
+			        	$scope.contactSubGroup = temp.id;
+		        	}
+		        	});
+		        	
+		        	}
+			        if($scope.contactGroup!=null&&($scope.contactSubGroup==null||$scope.contactSubGroup.length==0))
+			    	{
+			    	$scope.subgpreq=true;
+			    	return false;
+			    	}
+			        
+			       
+			    $scope.subgpreq=false;
+			     $scope.print(gpName);
+			    });
+
+		}
+		
+		
+		$scope.user={del:false,edit:false};
+		$scope.deletePartner=function()
+		{
+			$scope.user.del=true;
+			 $scope.clickModal();
+			 
+
+		}
+		$scope.print=function(gpname)
+		{
+			if(gpname=='N/a'|| gpname=='n/A')
+				{
+				$scope.contactSubGroup=$scope.subgrouplist[0].id;
+				}
+			 console.log(JSON.stringify($scope.contactSubGroup));
+		}
+	
+		$scope.userData = [
+	        {
+	            name: 'John Doe',
+	            selectedProducts: [
+	                'coffee',
+	                'beer',
+	                'wine']
+	        },
+	        {
+	            name: 'Jane Doe',
+	            selectedProducts: [
+	                'coffee',
+	                'tea']
+	        }
+	    ];
+	  $scope.products = ['coffee', 'beer', 'wine', 'tea', 'milk'];
+
+	
+	$scope.clickModal=function()
+	{
+		var txt="hello";
+		if($scope.onlyNew)
+			{
+			$scope.user.msg=$scope.partnerName+" has been added";
+			}
+		else
+			{
+			$scope.user.msg=$scope.partnerName+" has been updated";
+			}
+		if($scope.user.del)
+		{
+			$scope.user.msg="Are you sure you want to delete the "+$scope.partnerName+" Partner ?";	
+		}
+		if($scope.user.edit)
+		{
+			$scope.user.msg="Are you sure you want to Edit the "+$scope.partnerName+" Partner ?";	
+		}
+		
+		var modalInstance = $modal.open({
+            templateUrl: 'myModalContent.html',
+            controller: 'ModalInstanceCtrl',
+            size: 'sm',
+        
+            
+            //size: size,
+            resolve: {
+                user: function() {
+                    return $scope.user;
+                },
+                
+                selectedProducts: function() {
+                    return $scope.userData.selectedProducts;
+                },
+                products: function () {
+                    //console.log($scope.selectedProducts);
+                    return $scope.products; // get all available products
+                }
+            }
+        });
+        
+        modalInstance.result.then(function (selectedItems) {
+        	if(selectedItems=="delete")
+        		{
+        	 console.log('eventX found on Controller1 $scope');
+             $http.delete('/TPIAdmin/app/partners/' + $scope.id)
+             .success(function (data, status, headers) {
+            	 location.reload();
+             })
+             .error(function (data, status, header, config) {
+                 $scope.ServerResponse = htmlDecode("Data: " + data +
+                     "\n\n\n\nstatus: " + status +
+                     "\n\n\n\nheaders: " + header +
+                     "\n\n\n\nconfig: " + config);
+             });
+        		}
+        	else	if(selectedItems=="edit")
+    		{
+    		$scope.hideEdit=false;
+    		}
+        }, function () {
+         
+        });
+	};
+	
+	
+	
+   
+	$scope.subgroupdisable=true;
+	$scope.tableshow=false;
+	$scope.contactlist=[];
+	
+});
+
+ABApp.controller('ModalInstanceCtrl', function ($scope, $http, $modalInstance, products, selectedProducts, user) {
+
+	  //console.log('user', user);
+	  $scope.products = products;
+	    $scope.user=user;
+	  $scope.selected = selectedProducts;
+	  $scope.cancel = function (flag,editf) {
+		    
+		    if(flag!=undefined&&flag==true)
+	    	{
+		    	  $scope.deletef();
+	    	}
+		    else if(editf!=undefined &&editf==true)
+		    	{
+		    	$scope.Editfuc();
+		    	}
+		    else
+		    	{
+		    	location.reload();
+		    	}
+		    
+		  };
+
+		  $scope.Editfuc = function () {
+			  $modalInstance.close("edit");
+			   
+			  };
+			  
+		  $scope.deletef = function () {
+			  $modalInstance.close("delete");
+			   
+			  };
+			  $scope.close = function () {
+				//  user.del=false;
+				//  user.edit=false;
+				  $modalInstance.close('cancel');
+				   
+				  };
+			  
+				  
+	  $scope.chkChange = function(item) {
+	      console.log(item);
+	      var index  = $scope.selected.indexOf(item);
+	      if (index > -1) {
+	          $scope.selected.splice(index, 1);
+	      }
+	      else {
+	          // not selected --> we have to add it
+	          $scope.selected.push(item);
+	      }
+	      console.log($scope.selected);
+	  };
+	  //console.log(selectedProducts);
+	  $scope.ok = function () {
+	      // prepare everything for sending to sever
+	      // --> probably check here if the data have changed or not (not implemented yet)
+	      
+	      
+	    var data = $.param({
+	            json: JSON.stringify({
+	                user: user.name,
+	                products: $scope.selected
+	            })
+	        });
+	       
+	  };
+});
+	      
+	      
+	

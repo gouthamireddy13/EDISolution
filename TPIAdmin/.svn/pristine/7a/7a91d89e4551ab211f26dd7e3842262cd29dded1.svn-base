@@ -1,0 +1,53 @@
+package com.abc.tpi.db;
+
+import javax.transaction.Transactional;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import com.abc.dashboard.model.SdBusinessUnit;
+import com.abc.dashboard.model.SdServiceCategoryDef;
+import com.abc.dashboard.model.SdYesNo;
+import com.abc.dashboard.service.SdMasterDataService;
+import com.abc.dashboard.service.SdServiceCategoryService;
+
+@ContextConfiguration(locations={"classpath:application-contexttest.xml"})
+@RunWith(SpringJUnit4ClassRunner.class)
+
+public class TestDashboardServiceData {
+
+	public TestDashboardServiceData() {
+		// TODO Auto-generated constructor stub
+	}
+ 
+	@Autowired
+	SdServiceCategoryService sdServiceCategoryService;
+	
+	@Autowired
+	SdMasterDataService sdMasterDataService;
+	
+	@Test
+	@Transactional
+	@Rollback(false)
+	public void testAddNewSdServiceCategoryDef()
+	{
+		SdBusinessUnit bu = sdMasterDataService.findSdBusinessUnitByNameAndSubUnitName("ABSG", "Theracom");
+		SdServiceCategoryDef result = new SdServiceCategoryDef();
+		
+		if (bu!=null)
+		{
+			result.setCategoryID("testID");
+			result.setPartnerSubscription(SdYesNo.Y);
+			result.setServiceCategory("test service category");
+			result.setBusinessUnit(bu);
+			result.setBusinessSubUnit(bu.getSubUnits().iterator().next());
+		}
+		sdServiceCategoryService.saveSdServiceCategoryDef(result);
+		
+	}
+}
+

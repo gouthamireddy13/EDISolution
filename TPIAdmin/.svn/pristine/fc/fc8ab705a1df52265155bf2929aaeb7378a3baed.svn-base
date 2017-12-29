@@ -1,0 +1,15 @@
+package com.abc.tpi.repository;
+
+import java.util.Collection;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+
+import com.abc.tpi.model.service.BusinessService;
+
+@Repository("businessServiceRepository")
+public interface BusinessServiceRepository extends JpaRepository<BusinessService, Long> {
+	Collection<BusinessService> namedFindBusinessServicesByServiceId(@Param("serviceId") long serviceId);
+	Collection<BusinessService> namedFindBusinessServicesByServiceSubscriptionAndServiceId(@Param("subscriptionId") long subscriptionId, @Param("serviceId") long serviceId);
+}

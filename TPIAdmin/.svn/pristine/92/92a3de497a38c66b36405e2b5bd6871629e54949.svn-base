@@ -1,0 +1,64 @@
+package com.abc.tpi.model.poc;
+
+import javax.persistence.Access;
+import javax.persistence.AccessType;
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
+import javax.persistence.Column;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.MappedSuperclass;
+import javax.validation.constraints.NotNull;
+
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.RelationTargetAuditMode;
+
+import com.abc.tpi.model.master.Delimiter;
+
+@MappedSuperclass
+@AttributeOverrides
+({
+	@AttributeOverride(name="id",column=@Column(name="POC_ID"))
+})
+
+@Access(AccessType.FIELD)
+public abstract class PocEntity extends TpiManagedEntity {
+
+	@Column(name="POC")		
+	private String pocValue;
+	
+	@Column(name="POC_DESC")
+	private String description;
+
+	@NotNull
+	@ManyToOne
+	@JoinColumn(name="DELIM", nullable=false)
+	@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+	private Delimiter delimiter;
+	
+	public Delimiter getDelimiter() {
+		return delimiter;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+	
+	public String getPocValue() {
+		return pocValue;
+	}
+
+	public void setDelimiter(Delimiter delimiter) {
+		this.delimiter = delimiter;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public void setPocValue(String pocValue) {
+		this.pocValue = pocValue;
+	}
+
+	
+}

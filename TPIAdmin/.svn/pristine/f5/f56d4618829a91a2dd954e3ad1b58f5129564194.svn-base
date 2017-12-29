@@ -1,0 +1,268 @@
+package com.abc.tpi.db;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import java.util.List;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import com.abc.tpi.model.master.Delimiter;
+import com.abc.tpi.model.master.Direction;
+import com.abc.tpi.model.master.Document;
+import com.abc.tpi.model.master.Protocol;
+import com.abc.tpi.model.master.TppType;
+import com.abc.tpi.model.master.Version;
+import com.abc.tpi.repository.ProtocolRepository;
+import com.abc.tpi.repository.VersionRepository;
+import com.abc.tpi.service.MasterDataService;
+
+@ContextConfiguration(locations={"classpath:application-contexttest.xml"})
+@RunWith(SpringJUnit4ClassRunner.class)
+public class TpiMasterDataTest {
+
+	@Autowired 
+	MasterDataService masterDataService;
+	
+	@Autowired
+	VersionRepository versionRepository;
+	
+	@Autowired
+	ProtocolRepository protocolRepository;
+	
+	@Test
+	public void testTppTypeAdd()
+	{
+		TppType tppType = new TppType();
+		tppType.setTypeCode((short)1);
+		tppType.setDescription("Type One Trading Partner");		
+		masterDataService.saveTppType(tppType);
+
+		tppType = new TppType();		
+		tppType.setTypeCode((short)2);
+		tppType.setDescription("Type Two Trading Partner");		
+		masterDataService.saveTppType(tppType);
+		
+		tppType = new TppType();		
+		tppType.setTypeCode((short)3);
+		tppType.setDescription("Type Three Trading Partner");		
+		masterDataService.saveTppType(tppType);
+		
+		assertEquals(masterDataService.findAllTppTypes().size(),3);
+	}
+	
+	@Test
+	public void testTppTypeFindAll()
+	{		
+		List <TppType> result = masterDataService.findAllTppTypes();
+		for (TppType item : result)
+		{
+			System.out.println(item.getDescription());
+		}
+		assertNotNull(result);
+	}
+	
+	@Test
+	public void testTppTypeDelete()
+	{		
+		Long id = new Long(1);
+		TppType tppType = masterDataService.findTppTypeById(id);
+		//masterDataService.deleteTppType(tppType);
+		//assertNotNull(result);
+	}
+	
+	@Test
+	public void testDocumentAdd()
+	{
+		Document document = new Document();
+		document.setDocumentDescription("810 TRANSACTION");
+		document.setDocumentType(810);		
+		masterDataService.saveDocument(document);
+		
+		document = new Document();
+		document.setDocumentDescription("850 TRANSACTION");
+		document.setDocumentType(850);		
+		masterDataService.saveDocument(document);
+		
+		document = new Document();
+		document.setDocumentDescription("855 TRANSACTION");
+		document.setDocumentType(855);		
+		masterDataService.saveDocument(document);
+		
+		document = new Document();
+		document.setDocumentDescription("856 TRANSACTION");
+		document.setDocumentType(856);		
+		masterDataService.saveDocument(document);
+		
+		assertEquals(masterDataService.findAllDocumentTypes().size(),4);
+	}
+	
+	@Test
+	public void testDocumentFindAll()
+	{		
+		List <Document> result = masterDataService.findAllDocumentTypes();
+		for (Document item : result)
+		{
+			System.out.println(item.getDocumentType());
+		}
+		assertNotNull(result);
+	}
+	
+	@Test
+	public void testProtocolAdd()
+	{
+		Protocol protocol = new Protocol();
+		protocol.setProtocolType("AS2 Direct");		
+		masterDataService.saveProtocol(protocol);
+		
+		protocol = new Protocol();
+		protocol.setProtocolType("AS2/VAN");		
+		masterDataService.saveProtocol(protocol);
+		
+		protocol = new Protocol();
+		protocol.setProtocolType("AS2/GHX");		
+		masterDataService.saveProtocol(protocol);
+		
+		protocol = new Protocol();
+		protocol.setProtocolType("SFTP");		
+		masterDataService.saveProtocol(protocol);
+		
+		protocol = new Protocol();
+		protocol.setProtocolType("FTP");		
+		masterDataService.saveProtocol(protocol);
+		
+		assertEquals(masterDataService.findAllProtocols().size(),5);
+	}
+	
+	@Test
+	public void testVersionAdd()
+	{
+		Version version = new Version();
+		version.setVersionNumber(4010);
+		masterDataService.saveVersion(version);
+		
+		version = new Version();
+		version.setVersionNumber(5010);
+		masterDataService.saveVersion(version);
+		
+		version = new Version();
+		version.setVersionNumber(3010);
+		masterDataService.saveVersion(version);
+		
+		assertEquals(masterDataService.findAllVersions().size(),3);
+	}
+	
+	@Test
+	public void testFindTppTypeByTypeCode()
+	{
+		TppType tppType = masterDataService.findTppTypeByTypeCode((short)1);
+		System.out.println(tppType.getId());
+		System.out.println(tppType.getDescription());
+		System.out.println(tppType.getTypeCode());
+		assertNotNull(tppType);
+	}
+	
+	@Test
+	public void testFindDocumentByDocumentType()
+	{
+		Document document = masterDataService.findDocumentTypeByDocumentType(855);
+		System.out.println(document.getId());
+		System.out.println(document.getDocumentType());
+		System.out.println(document.getDocumentDescription());
+		assertNotNull(document);
+	}
+	
+	@Test
+	public void testFindProtocolByType()
+	{
+		Protocol protocol = masterDataService.findProtocolByProtocolType("sftp");
+		System.out.println(protocol.getId());
+		System.out.println(protocol.getProtocolType());
+		assertNotNull(protocol);
+	}
+	
+	@Test
+	public void testVersionByVersionNumber()
+	{
+		Version version = masterDataService.findVersionByVersionNumber(5010);
+		System.out.println(version.getId());
+		System.out.println(version.getVersionNumber());		
+		assertNotNull(version);
+	}
+	
+	@Test
+	public void testAddDirection()
+	{
+		Direction direction = new Direction();
+		direction.setDirectionCode("INBOUND");
+		direction.setDirectionDescription("Inbound Transaction");
+		
+		masterDataService.saveDirection(direction);
+		
+		direction = new Direction();
+		direction.setDirectionCode("OUTBOUND");
+		direction.setDirectionDescription("Outbound Transaction");
+		
+		masterDataService.saveDirection(direction);
+		
+	}
+	@Test
+	public void testAddDelimiters()
+	{
+		Delimiter delimiter = new Delimiter();
+		delimiter.setDelimiter("/");
+		delimiter.setDescription("Slash delimiter");
+		masterDataService.saveDelimiter(delimiter);
+	}
+	
+	@Test
+	public void testShowDelimiters()
+	{
+		List<Delimiter> result = masterDataService.getCompositeDelimiters();
+		
+		for (Delimiter delim : result)
+		{
+			System.out.println(delim.getDescription() + " " + delim.isComposite());			
+		}
+		
+		result = masterDataService.getElementDelimiters();
+		
+		for (Delimiter delim : result)
+		{
+			System.out.println(delim.getDescription() + " " + delim.isElement());			
+		}
+
+		result = masterDataService.getSegmentDelimiters();
+		
+		for (Delimiter delim : result)
+		{
+			System.out.println(delim.getDescription() + " " + delim.isSegment());			
+		}		
+	}
+	
+	@Test
+	public void testFindVersionsForTpp()
+	{
+		List<Version> versions = versionRepository.namedFindAllVersionsForTpp(19);
+		
+		for (Version version:versions)
+		{
+			System.out.println(version.getVersionDescription());
+		}
+	}
+	
+	@Test
+	public void testFindProtocolsForTpp()
+	{
+		List<Protocol> protocols = protocolRepository.namedFindAllProtocolsForTpp(19);
+		
+		for (Protocol protocol:protocols)
+		{
+			System.out.println(protocol.getProtocolDescription());
+		}
+	}
+}

@@ -1,0 +1,29 @@
+package com.abc.tpi.service.soap;
+
+import java.util.List;
+
+public class UploadTppsResponse {
+	
+	private int loaded;
+	private int updated;
+	private List<String> failed;
+	
+	public List<String> getFailed() {
+		return failed;
+	}
+	public int getLoaded() {
+		return loaded;
+	}
+	public int getUpdated() {
+		return updated;
+	}
+	public void setFailed(List<String> failed) {
+		this.failed = failed;
+	}
+	public void setLoaded(int loaded) {
+		this.loaded = loaded;
+	}
+	public void setUpdated(int updated) {
+		this.updated = updated;
+	}
+}

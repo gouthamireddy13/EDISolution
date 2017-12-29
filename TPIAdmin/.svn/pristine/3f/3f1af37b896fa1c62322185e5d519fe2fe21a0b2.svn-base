@@ -1,0 +1,146 @@
+package com.abc.tpi.model.sd;
+
+import java.io.Serializable;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+
+@Entity
+@Table(name="ABC_BUSINESS_UNIT_LOOKUP" ,  schema = "PCCE")
+public class BusinessUnit implements Serializable{
+	
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6398488982476253183L;
+
+	@Id
+	
+	
+	
+	
+	
+	@Column(name="SOURCE_ID")
+	private String sourceID;
+	
+	
+	@Column(name="DESTINATION_ID")
+	private String destinationID;
+	
+	@Column(name="BUSINESS_UNIT")
+	private String businessUnit;
+	
+	
+	@Column(name="SUB_BUSINESS_UNIT")
+	private String subBusinessUnit;
+	
+	@Column(name="SERVICE_PREAMBLE")
+	private String servicePreamble;
+
+	public String getSourceID() {
+		return sourceID;
+	}
+
+	public void setSourceID(String sourceID) {
+		this.sourceID = sourceID;
+	}
+
+	public String getDestinationID() {
+		return destinationID;
+	}
+
+	public void setDestinationID(String destinationID) {
+		this.destinationID = destinationID;
+	}
+
+	public String getBusinessUnit() {
+		return businessUnit;
+	}
+
+	public void setBusinessUnit(String businessUnit) {
+		this.businessUnit = businessUnit;
+	}
+
+	public String getSubBusinessUnit() {
+		return subBusinessUnit;
+	}
+
+	public void setSubBusinessUnit(String subBusinessUnit) {
+		this.subBusinessUnit = subBusinessUnit;
+	}
+
+	public String getServicePreamble() {
+		return servicePreamble;
+	}
+
+	public void setServicePreamble(String servicePreamble) {
+		this.servicePreamble = servicePreamble;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((businessUnit == null) ? 0 : businessUnit.hashCode());
+		result = prime * result + ((destinationID == null) ? 0 : destinationID.hashCode());
+		result = prime * result + ((servicePreamble == null) ? 0 : servicePreamble.hashCode());
+		result = prime * result + ((sourceID == null) ? 0 : sourceID.hashCode());
+		result = prime * result + ((subBusinessUnit == null) ? 0 : subBusinessUnit.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		BusinessUnit other = (BusinessUnit) obj;
+		if (businessUnit == null) {
+			if (other.businessUnit != null)
+				return false;
+		} else if (!businessUnit.equals(other.businessUnit))
+			return false;
+		if (destinationID == null) {
+			if (other.destinationID != null)
+				return false;
+		} else if (!destinationID.equals(other.destinationID))
+			return false;
+		if (servicePreamble == null) {
+			if (other.servicePreamble != null)
+				return false;
+		} else if (!servicePreamble.equals(other.servicePreamble))
+			return false;
+		if (sourceID == null) {
+			if (other.sourceID != null)
+				return false;
+		} else if (!sourceID.equals(other.sourceID))
+			return false;
+		if (subBusinessUnit == null) {
+			if (other.subBusinessUnit != null)
+				return false;
+		} else if (!subBusinessUnit.equals(other.subBusinessUnit))
+			return false;
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "BusinessUnit [sourceID=" + sourceID + ", destinationID=" + destinationID + ", businessUnit="
+				+ businessUnit + ", subBusinessUnit=" + subBusinessUnit + ", servicePreamble=" + servicePreamble + "]";
+	}
+	
+	
+	
+	
+	
+
+}

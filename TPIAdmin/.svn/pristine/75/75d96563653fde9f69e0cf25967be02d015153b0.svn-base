@@ -1,0 +1,453 @@
+var ABApp = angular.module('ABApp');
+
+
+ABApp.controller('serviceController', function($scope,$modal,$filter, $http, $window,$interval,$filter) {
+	$scope.message="";
+	$scope.tpplist=[];
+	$scope.tppCodeList=[];
+	$scope.scSelectDisabled = true;
+	$scope.selectAllDisabled = true;
+	
+	$scope.disableServiceC= function(id)
+	{
+		$scope.scSelectDisabled = false;
+		$scope.bsList(id);
+		
+	}
+	$scope.ttpNameList=[];
+/*$scope.bussService={};
+$scope.emp={};
+$scope.bussServiceList=[];
+$scope.servError=false;
+	$scope.addBusinessService = function(flag,data)
+	{
+		$scope.servError=false;
+		if(!flag)
+			{
+			$scope.servError=true;
+			return false;
+			}
+		if($scope.editService)
+			{
+			$scope.deleteBService(editService);
+	    	  editService=null;
+			}
+		
+		$scope.editService=false;
+		
+		var obj=[],obj1=[];
+		var tempobj={};
+		
+		var temp = $filter("filter")($scope.versionList, {id:data.version});
+		if(temp.length!=0)
+			{
+			tempobj.version=temp[0];
+		
+			}
+		var tempt = $filter("filter")($scope.bserviceList, {id:data.businessService});
+		if(tempt.length!=0)
+			{
+			
+			tempobj.businessService=tempt[0]
+			
+			}
+		
+		$scope.bussServiceList.push(tempobj);
+		$scope.bussService=null;
+		
+	};
+	$scope.editService=false;
+	var editService=null;
+	$scope.editBService= function(item){
+		$scope.bussService={};
+		$scope.bussService.businessService=item.businessService.id;
+		$scope.bussService.version= item.version.id;
+		editService=item;
+		$scope.editService=true;
+	};
+	
+$scope.deleteBService= function(editService){
+	var index = $scope.bussServiceList.indexOf(editService);
+	  $scope.bussServiceList.splice(index, 1);	
+	};
+	$scope.serviceList=[];
+	$scope.serviceobj={};
+	$scope.addServiceCategory= function(){
+		$scope.serviceobj.name=$scope.search.tppname;
+		$scope.serviceobj.name
+		
+	};
+	
+    $scope.editServiceCategory= function(){
+		
+	};
+	
+    $scope.deleteServiceCategory= function(){
+		
+	};  */
+	
+	$scope.inittpp = function()
+	{
+		
+		
+		
+		 $http.get('/TPIAdmin/app/tpps')
+	     .success(function (response, status, headers, config) {
+	    	 $scope.tpplist = angular.copy(response);
+	    	// console.log(JSON.stringify($scope.tpplist));
+	     })
+	     .error(function (data, status, header, config) {
+	         $scope.ResponseDetails = "Data: " + data +
+	             "<br />status: " + status ;
+	         //    "<br />headers: " + jsonFilter(header) +
+	           //  "<br />config: " + jsonFilter(config);
+	     })
+		 .then(function(response) {
+			 var temp=[];
+			 var temptpp=[];
+			 angular.forEach($scope.tpplist, function (item) {
+				 if(item.lightWellPartner!=null)
+					 {
+				 var obj={
+						 id:item.id,
+						 testIsaID:item.lightWellPartner.testIsaID,
+						 productionIsaID:item.lightWellPartner.productionIsaID,
+						 testIsaQualifier:item.lightWellPartner.testIsaQualifier,
+						 productionIsaQualifier:item.lightWellPartner.productionIsaQualifier,
+						 testGsId:item.lightWellPartner.testGsId,
+						 productionGsId:item.lightWellPartner.productionGsId
+				 };
+				 temp.push(obj);
+					 }
+				 var obj2=
+					 {
+						id:item.id,
+						name:item.name
+					 };
+				 temptpp.push(obj2);
+				
+        	});
+			 $scope.ttpNameList=angular.copy(temptpp);
+			 $scope.tppCodeList=angular.copy(temp);
+		    });
+		 };
+		 $scope.lightWellPartner={};
+		 $scope.emptyList={};
+		 $scope.lightWellPartnerDisabled=false;
+		 $scope.select3PPName=function(id)
+		 {
+			 $scope.lightWellPartner=angular.copy( $scope.emptyList);
+			 $scope.lightWellPartnerDisabled=false;
+			 angular.forEach($scope.tppCodeList, function (item) {
+				 if(item.id==id)
+					 {
+				 $scope.lightWellPartner.testIsaID=item.testIsaID;
+				 $scope.lightWellPartner.productionIsaID=item.productionIsaID;
+				 $scope.lightWellPartner.testIsaQualifier=item.testIsaQualifier;
+				 $scope.lightWellPartner.productionIsaQualifier=item.productionIsaQualifier;
+				 $scope.lightWellPartner.testGsId=item.testGsId;
+				 $scope.lightWellPartner.productionGsId=item.productionGsId;
+				 $scope.lightWellPartnerDisabled=true;
+					 }
+			 });
+						
+				
+			 
+				
+			 
+		 }
+		 $scope.partChange1=function(pt)
+		 {
+			 console.log(JSON.stringify($scope.serviceobj.selected));
+		//	 var temp = $filter("filter")($scope.partnerlist, {PracticeByFacilityId:id});
+			 if($scope.serviceobj.selected==undefined)
+				{
+				 $scope.selectAllDisabled = true;
+				 $scope.message = "partner name does not exist";
+				}
+			 else
+				 {
+				 $scope.selectAllDisabled = false;
+				 $scope.message = " ";
+				 }
+		 };
+		 
+		 $scope.partChange=function(pt)
+		 {
+			 console.log(JSON.stringify($scope.serviceobj.selected));
+		//	 var temp = $filter("filter")($scope.partnerlist, {PracticeByFacilityId:id});
+			 if($scope.serviceobj.selected==undefined)
+				{
+				 $scope.selectAllDisabled = true;
+				 $scope.message = "partner name does not exist";
+				 
+				}
+			 else
+				 {
+				 $scope.selectAllDisabled = false;
+				 $scope.message = " ";
+				 }
+		 };
+		 
+		 $scope.partnerlist=[];
+		 $scope.enabletppn=true;
+			$scope.changeSelTpp=function()
+			{
+				$scope.enabletppn=!$scope.enabletppn;
+				if($scope.enabletppn==true)
+					{
+					$scope.tppName=null;
+					$scope.lightWellPartner=angular.copy( $scope.emptyList);
+					$scope.lightWellPartnerDisabled=false;
+					}
+			};
+		 $scope.findPartner = function(name)
+			{
+				
+				$scope.editEnable=false;
+				var tempList=[];
+				 $http.get('/TPIAdmin/app/partners?projection=partnerName')
+			     .success(function (response, status, headers, config) {
+			    	 $scope.partnerlist=angular.copy(response);
+			    // console.log("inputdata "+JSON.stringify(response));
+			     })
+			     .error(function (data, status, header, config) {
+			         $scope.ResponseDetails = "Data: " + data +
+			             "<br />status: " + status ;
+			         //    "<br />headers: " + jsonFilter(header) +
+			           //  "<br />config: " + jsonFilter(config);
+			     })
+			     	
+				 .then(function(response) {
+					 $scope.versList();
+				 });
+					
+			};
+			
+			$scope.versList = function()
+			{
+				
+				
+				 $http.get('/TPIAdmin/app/versions')
+			     .success(function (response, status, headers, config) {
+			    	 
+			    	 $scope.versionList = angular.copy(response);
+			    	 
+			     })
+			     .error(function (data, status, header, config) {
+			         $scope.ResponseDetails = "Data: " + data +
+			             "<br />status: " + status ;
+			         //    "<br />headers: " + jsonFilter(header) +
+			           //  "<br />config: " + jsonFilter(config);
+			     })
+				 .then(function(response) {
+				       
+                  $scope.myWelcome = response.data;
+							 
+				    });
+
+
+				
+				};
+				
+				
+				$scope.serviceList=[];
+				 
+				 $scope.initservice = function()
+					{
+						
+						
+						 $http.get('/TPIAdmin/app/serviceCategories?projection=serviceCategoryForDropDown')
+					     .success(function (response, status, headers, config) {
+					    	 
+					    	 $scope.serviceList=angular.copy(response);
+					    	// console.log("inputdata "+JSON.stringify(tempList));
+					     })
+					     .error(function (data, status, header, config) {
+					    	
+					         $scope.ResponseDetails = "Data: " + data +
+					             "<br />status: " + status ;
+					         //    "<br />headers: " + jsonFilter(header) +
+					           //  "<br />config: " + jsonFilter(config);
+					     })
+					     	
+						 .then(function(response) {
+							 $scope.dlSList();
+							 
+						 });
+							
+					};
+			
+					$scope.delimitersSList=[];
+					
+					$scope.dlSList = function()
+					{
+						
+						
+						 $http.get('/TPIAdmin/app/delimiters?type=segment')
+					     .success(function (response, status, headers, config) {
+					    	 
+					    	 
+					    	 $scope.delimitersSList=angular.copy(response);
+					    	// console.log("inputdata "+JSON.stringify(tempList));
+					     })
+					     .error(function (data, status, header, config) {
+					         $scope.ResponseDetails = "Data: " + data +
+					             "<br />status: " + status ;
+					         //    "<br />headers: " + jsonFilter(header) +
+					           //  "<br />config: " + jsonFilter(config);
+					     })
+					     	
+						 .then(function(response) {
+							 $scope.dlEList(); 
+						 });
+							
+					};
+					
+                  $scope.delimitersEList=[];
+					
+					$scope.dlEList = function()
+					{
+						
+						
+						 $http.get('/TPIAdmin/app/delimiters?type=element')
+					     .success(function (response, status, headers, config) {
+					    	 
+					    	 
+					    	 $scope.delimitersEList=angular.copy(response);
+					    	// console.log("inputdata "+JSON.stringify(tempList));
+					     })
+					     .error(function (data, status, header, config) {
+					         $scope.ResponseDetails = "Data: " + data +
+					             "<br />status: " + status ;
+					         //    "<br />headers: " + jsonFilter(header) +
+					           //  "<br />config: " + jsonFilter(config);
+					     })
+					     	
+						 .then(function(response) {
+							 $scope.dlCList(); 
+						 });
+							
+					};
+					
+					
+                 $scope.delimitersCList=[];
+					
+					$scope.dlCList = function()
+					{
+						
+						
+						 $http.get('/TPIAdmin/app/delimiters?type=composite')
+					     .success(function (response, status, headers, config) {
+					    	 
+					    	 
+					    	 $scope.delimitersCList=angular.copy(response);
+					    	// console.log("inputdata "+JSON.stringify(tempList));
+					     })
+					     .error(function (data, status, header, config) {
+					         $scope.ResponseDetails = "Data: " + data +
+					             "<br />status: " + status ;
+					         //    "<br />headers: " + jsonFilter(header) +
+					           //  "<br />config: " + jsonFilter(config);
+					     })
+					     	
+						 .then(function(response) {
+							 
+						 });
+							
+					};
+					$scope.bserviceList=[];
+					$scope.bsList = function(id)
+					{
+						
+						
+						 $http.get('/TPIAdmin/app/serviceTypes?serviceCat='+id)
+					     .success(function (response, status, headers, config) {
+					    	 
+					    	 $scope.bserviceList = angular.copy(response);
+					    	 
+					     })
+					     .error(function (data, status, header, config) {
+					         $scope.ResponseDetails = "Data: " + data +
+					             "<br />status: " + status ;
+					         //    "<br />headers: " + jsonFilter(header) +
+					           //  "<br />config: " + jsonFilter(config);
+					     })
+						 .then(function(response) {
+						       
+		                  $scope.myWelcome = response.data;
+									 
+						    });
+
+
+						
+						};
+						//$scope.bservicepList = [];
+						$scope.bspList = function(id,pid)
+						{
+							
+							
+							 $http.get('/TPIAdmin/app/serviceTypes?serviceCat='+id+'&tpp='+pid)
+						     .success(function (response, status, headers, config) {
+						    	 
+						    	 $scope.bserviceList = angular.copy(response);
+						    	 
+						     })
+						     .error(function (data, status, header, config) {
+						         $scope.ResponseDetails = "Data: " + data +
+						             "<br />status: " + status ;
+						         //    "<br />headers: " + jsonFilter(header) +
+						           //  "<br />config: " + jsonFilter(config);
+						     })
+							 .then(function(response) {
+							       
+			                  $scope.myWelcome = response.data;
+										 
+							    });
+
+
+							
+							};
+
+							$scope.cleardata=function()
+							{
+								$scope.scSelectDisabled = true;
+								$scope.selectAllDisabled = true;
+								$scope.enabletppn = true;
+								$scope.serviceobj.selected = null;
+								$scope.message="";
+								$scope.serviceCategory=null;
+								$scope.selecttpp = null;
+								$scope.lightWellPartner={};
+								 $scope.emptyList={};
+								 $scope.lightWellPartnerDisabled=false;
+								$scope.tppName = null;
+								$scope.segmentDelimiter =null;
+								$scope.elementDelimiter =null;
+								$scope.compositeDelimiter =null;
+								$scope.businessService =null;
+								$scope.version =null;
+								
+							};
+						
+			 var self = this,  j= 0, counter = 0;
+	            self.modes = [ ];
+	            self.activated = true;
+	            self.determinateValue = 30;
+	            self.toggleActivation = function() {
+	               if ( !self.activated ) self.modes = [ ];
+	               if (  self.activated ) j = counter = 0;
+	            };
+	            
+	            $interval(function() {
+	               self.determinateValue += 1;
+	               if (self.determinateValue > 100) {
+	                  self.determinateValue = 30;
+	               }
+	               if ( (j < 5) && !self.modes[j] && self.activated ) {
+	                  self.modes[j] = 'indeterminate';
+	               }
+	               if ( counter++ % 4 == 0 ) j++;
+	            }, 100, 0, true);
+						
+});

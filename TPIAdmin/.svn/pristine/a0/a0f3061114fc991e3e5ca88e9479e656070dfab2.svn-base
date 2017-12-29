@@ -1,0 +1,52 @@
+package com.abc.tpi.domain.soap;
+
+import java.util.List;
+
+import com.abc.tpi.model.partner.ContactDetail;
+
+public class Tpp {
+	
+	String name;
+	String type;
+	List<ContactDetail> contacts;
+	LW lw;
+	List<Transaction> transactions;
+	List<String> protocols;
+	
+	public List<ContactDetail> getContacts() {
+		return contacts;
+	}
+	public LW getLw() {
+		return lw;
+	}
+	public String getName() {
+		return name;
+	}
+	public List<String> getProtocols() {
+		return protocols;
+	}
+	public List<Transaction> getTransactions() {
+		return transactions;
+	}
+	public String getType() {
+		return type;
+	}
+	public void setContacts(List<ContactDetail> contacts) {
+		this.contacts = contacts;
+	}
+	public void setLw(LW lw) {
+		this.lw = lw;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public void setProtocols(List<String> protocols) {
+		this.protocols = protocols;
+	}
+	public void setTransactions(List<Transaction> transactions) {
+		this.transactions = transactions;
+	}
+	public void setType(String type) {
+		this.type = type;
+	}
+}

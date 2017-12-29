@@ -1,0 +1,5 @@
+package com.abc.tpi.repository;
+
+public interface PocRepositoryCustom {
+	long readParentbjectId(long pocId);
+}

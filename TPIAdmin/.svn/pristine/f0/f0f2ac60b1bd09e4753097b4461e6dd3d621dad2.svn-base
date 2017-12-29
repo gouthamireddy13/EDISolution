@@ -1,0 +1,176 @@
+package com.abc.tpi.model.tpp;
+
+import javax.persistence.Access;
+import javax.persistence.AccessType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+
+@Entity
+
+@NamedQueries
+(
+	{
+	@NamedQuery(name="LightWellPartner.namedFindLightWellPartnerByServiceCategoryIdAndLwId", 
+			query="select lw from ServiceCategory sc join sc.lightWellPartners  lw where sc.id = :scId and lw.id = :lwId"),
+	
+	@NamedQuery(name="LightWellPartner.namedFindLightWellPartner", 
+			query="select lw from LightWellPartner lw "
+					+ " WHERE lw.testIsaID = :testIsaID "
+					+ " AND lw.testIsaQualifier = :testIsaQualifier "
+					+ " AND lw.testGsId = :testGsId "
+					+ " AND lw.productionIsaID = :productionIsaID "
+					+ " AND lw.productionIsaQualifier = :productionIsaQualifier "
+					+ " AND lw.productionGsId = :productionGsId "
+					+ " AND lw.isActive = :isActive "),
+	
+	@NamedQuery(name="LightWellPartner.namedFindLightWellPartnerByPartnerName", 
+			query="select "
+			+ "	NEW com.abc.tpi.domain.json.PartnerLightWellData(ss.partner.id,ss.partner.partnerName,lw.id,lw.productionGsId) "
+			+ "	from ServiceSubscription ss join ss.services s join s.lightWellPartner lw "
+			+ " WHERE ss.partner.partnerName = :partnerName" ),		
+	
+	@NamedQuery(name="LightWellPartner.namedFindLightWellPartnerBySrId", 
+			query="select "
+			+ "	NEW com.abc.tpi.domain.json.PartnerLightWellData(ss.partner.id,ss.partner.partnerName,lw.id,lw.productionGsId) "
+			+ "	from ServiceSubscription ss join ss.services s join s.lightWellPartner lw "
+			+ " WHERE s.srId = :srId"),
+	
+	@NamedQuery(name="LightWellPartner.namedFindLightWellIdentityByPartnerIdLwIds", 
+		query="select "
+				+ "	NEW com.abc.tpi.model.reporting.LightWellPartnerRecord(lw.productionGsId,ss.partner.partnerName) "
+				+ "	from ServiceSubscription ss join ss.services s join s.lightWellPartner lw "
+				+ " WHERE ss.partner.id = :partnerId and lw.id IN :lwIds")
+	}
+)
+
+@Table(name="ABC_TPI_LW")
+@Access(AccessType.FIELD)
+public class LightWellPartner {
+	
+	@Id
+	@SequenceGenerator(name="ABC_TPI_LW_GEN", sequenceName="ABC_TPI_LW_SEQ",allocationSize=10)
+	@GeneratedValue(generator="ABC_TPI_LW_GEN")
+	@Column(name="LW_ID")
+	private Long id;
+
+	@Column(name="ORG_NAME",nullable=true)
+	private String organizationName;
+	
+	@NotNull
+	@Column(name="TEST_ISA_ID",nullable=false)
+	private String testIsaID;
+	
+	@NotNull
+	@Column(name="TEST_ISA_QUAL",nullable=false)
+	private String testIsaQualifier;
+	
+	@NotNull
+	@Column(name="TEST_GS_ID",nullable=false)
+	private String testGsId;
+	
+	@NotNull
+	@Column(name="PROD_ISA_ID",nullable=false)
+	private String productionIsaID;
+	
+	@NotNull
+	@Column(name="PROD_ISA_QUAL",nullable=false)
+	private String productionIsaQualifier;
+	
+	@NotNull
+	@Column(name="PROD_GS_ID",nullable=false)
+	private String productionGsId;
+	
+	@Column(name="ACTIVE",nullable=true)
+	private boolean isActive;
+		
+	@Column(name="NOTES",nullable=true)
+	private String notes;
+	
+
+	public String getNotes() {
+		return notes;
+	}
+	public String getOrganizationName() {
+		return organizationName;
+	}
+	public String getProductionGsId() {
+		return productionGsId;
+	}
+	public String getProductionIsaID() {
+		return productionIsaID;
+	}
+	public String getProductionIsaQualifier() {
+		return productionIsaQualifier;
+	}
+	public String getTestGsId() {
+		return testGsId;
+	}
+	public String getTestIsaID() {
+		return testIsaID;
+	}
+	public String getTestIsaQualifier() {
+		return testIsaQualifier;
+	}
+	public boolean isActive() {
+		return isActive;
+	}
+	public void setActive(boolean isActive) {
+		this.isActive = isActive;
+	}
+	public void setNotes(String notes) {
+		this.notes = notes;
+	}
+	public void setOrganizationName(String organizationName) {
+		this.organizationName = organizationName;
+	}
+	public void setProductionGsId(String productionGsId) {
+		this.productionGsId = productionGsId;
+	}
+	public void setProductionIsaID(String productionisaID) {
+		this.productionIsaID = productionisaID;
+	}
+	public void setProductionIsaQualifier(String productionIsaQualifier) {
+		this.productionIsaQualifier = productionIsaQualifier;
+	}
+	public void setTestGsId(String testGsId) {
+		this.testGsId = testGsId;
+	}
+	public void setTestIsaID(String testIsaID) {
+		this.testIsaID = testIsaID;
+	}
+	public void setTestIsaQualifier(String testIsaQualifier) {
+		this.testIsaQualifier = testIsaQualifier;
+	}
+	public Long getId() {
+		return id;
+	}
+
+	public static LightWellPartner newInstance(LightWellPartner lw)
+	{
+		if (lw==null)
+		{
+			return null;
+		}
+		
+		LightWellPartner clonedLW = new LightWellPartner();
+		clonedLW.setActive(lw.isActive());
+		clonedLW.setNotes(lw.getNotes());
+		clonedLW.setOrganizationName(lw.getOrganizationName());
+		clonedLW.setProductionGsId(lw.getProductionGsId());
+		clonedLW.setProductionIsaID(lw.getProductionIsaID());
+		clonedLW.setProductionIsaQualifier(lw.getProductionIsaQualifier());
+		clonedLW.setTestGsId(lw.getTestGsId());
+		clonedLW.setTestIsaID(lw.getTestIsaID());
+		clonedLW.setTestIsaQualifier(lw.getTestIsaQualifier());
+		
+		return clonedLW;
+	}
+
+}

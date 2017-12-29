@@ -1,0 +1,76 @@
+package com.abc.tpi.db;
+
+import java.util.List;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.abc.tpi.model.ContactDetail;
+import com.abc.tpi.model.Partner;
+import com.abc.tpi.model.PartnerGroup;
+import com.abc.tpi.repository.PartnerGroupRepository;
+import com.abc.tpi.repository.PartnerRepository;
+import com.abc.tpi.service.PartnerService;
+
+@ContextConfiguration(locations={"classpath:resources/application-contexttest.xml"})
+@RunWith(SpringJUnit4ClassRunner.class)
+
+public class TpiPartnerTest {
+
+	@PersistenceContext
+	private EntityManager entityManager;	
+	
+	@Autowired
+	private PartnerRepository partnerRepository;
+	
+	@Autowired
+	private PartnerGroupRepository partnerGroupRepository;
+	
+	@Autowired PartnerService partnerService;
+	
+	@Test()
+	@Transactional
+	@Rollback(false)
+	public void testPartnerSave()
+	{
+		Partner partner = new Partner();
+		PartnerGroup group = partnerGroupRepository.findByGroupNameContainsIgnoreCaseOrderBySubGroupNameAsc("Test").get(0);
+		
+		ContactDetail contact = new ContactDetail();
+		contact.setContactEmail("alex@gmail.com");
+		contact.setContactName("alex");
+		contact.setContactPhone("2158221223");
+		contact.setContactTitle("Mr.");
+
+		partner.setPartnerName("Alex Test Partner 2");
+		partner.setPartnerGroup(group);
+		partnerRepository.save(partner);
+
+	}
+	
+	@Test()
+	@Transactional
+	public void testPartnerFind()
+	{
+		
+		
+		List<Partner> result2 = partnerService.findPartnersByNameContains("alex");
+
+		for (Partner partner: result2)
+		{
+			System.out.println("================================"); 
+			System.out.println(partner.getPartnerName());
+			System.out.println(partner.getContactDetails().get(0).getContactName());
+			System.out.println("=================================");
+		}
+
+	}
+}

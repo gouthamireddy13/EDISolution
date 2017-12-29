@@ -1,0 +1,118 @@
+/**
+ * 
+ */
+package com.abc.filter;
+
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.filter.GenericFilterBean;
+
+import com.abc.tpi.view.excel.PromotionExportXlsx;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.abc.user.model.User;
+
+/**
+ * @author ARINDAMSIKDAR
+ *
+ */
+public class AuditRequestFilter extends GenericFilterBean {
+
+	private static final Logger logger = LogManager.getLogger(AuditRequestFilter.class);
+
+	/* (non-Javadoc)
+	 * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest, javax.servlet.ServletResponse, javax.servlet.FilterChain)
+	 */
+	@Override
+	public void doFilter(ServletRequest req, ServletResponse resp, FilterChain filterChain)
+			throws IOException, ServletException {
+		// TODO Auto-generated method stub
+		HttpServletRequest httpRequest = (HttpServletRequest) req;
+		HttpServletResponse httpResponse = (HttpServletResponse) resp;
+
+		logger.debug("request is " + httpRequest.getClass());
+		logger.debug("request URL : " + httpRequest.getRequestURL());
+		logger.debug("response is " + httpResponse.getClass());
+		
+		logger.debug("Request URI: " + httpRequest.getRequestURI());
+		Enumeration<String> e = httpRequest.getParameterNames();
+		
+		while (e.hasMoreElements())
+	      {
+	          String paramName = (String) e.nextElement();
+	          String[] values = httpRequest.getParameterValues(paramName);
+	          for (int i=0; i < values.length; i++)
+	          {
+	        	  logger.debug("Parameter Name: " + paramName);
+	        	  logger.debug("Parameter Value: " + values[i]);
+	          }
+	      }
+		
+		String accessToken = httpRequest.getParameter("accessToken");
+		logger.debug("AccessToken: "+ accessToken);
+		if(accessToken != null) {
+		if(httpRequest.getSession().getAttribute("userName") == null || httpRequest.getSession().getAttribute("userName").toString().length() <= 0) {
+			RestTemplate restTemplate = new RestTemplate(); //for http only
+			MultiValueMap<String, String> headers = new LinkedMultiValueMap<String, String>();
+			headers.add("Accept", "application/json");
+			headers.add("Content-Type", "application/json");
+			//headers.add("Authorization", " Bearer 56f08ea0-9d9b-445d-8803-56a3de4ac63b");
+			headers.add("Authorization", " Bearer "+accessToken);
+			restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+			HttpEntity<String> requestProcStatus = new HttpEntity<String>("parameters", headers);
+
+			try {
+				URI urlPost = new URI("http://sbycdediap01.corp.absc.local:8760/v1/users/current-user");
+				ResponseEntity<String> response = restTemplate.exchange(urlPost, HttpMethod.GET, requestProcStatus, String.class);
+				if(response != null) {
+					ObjectMapper objectMapper = new ObjectMapper();
+					User user = objectMapper.readValue(response.getBody(), new TypeReference<User>(){});
+					if(user != null) {
+						if( user.getData() != null && user.getData().getUsername() != null && user.getData().getUsername().length() > 0) {
+							logger.debug("<======================================================>");
+							logger.debug("USER NAME: " + user.getData().getUsername());
+							logger.debug("<======================================================>");
+							httpRequest.getSession().setAttribute("userName", user.getData().getUsername());
+						}
+					}
+				}
+			} catch (URISyntaxException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (HttpClientErrorException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			}
+		} else {
+			logger.debug("<======================================================>");
+			logger.debug("USER NAME: Existing User");
+			logger.debug("<======================================================>");
+		}
+		}
+
+		filterChain.doFilter(httpRequest, httpResponse);
+	}
+
+}

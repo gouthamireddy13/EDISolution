@@ -1,0 +1,196 @@
+var ABApp = angular.module('ABApp');
+
+
+ABApp.controller('migrationController', function($scope,$modal, $http, $window,$interval,$filter) {
+	
+	
+	$scope.emptyList = [];
+	$scope.items = [];
+	$scope.idrequest=[];
+	$scope.Id=[];
+	$scope.bussidrequest=[];
+	$scope.excelList=[];
+	$scope.getExcel=function(bussid,check,id)
+	{
+		 $scope.Id  = angular.copy($scope.emptyList);
+		 $scope.Id.push(id);
+			  if (!check) {
+				  
+				 
+					$scope.bussidrequest.push(bussid);
+			   var searchchar="_O ";
+			   $scope.direction="OUT";
+			   var uncheckchar="_I ";
+				var tempsc = $filter("filter")($scope.items, {bId:bussid});
+				if(tempsc.length!=0)
+					{
+					if(tempsc[0].businessServiceName.indexOf("_I ")!=-1)
+						{
+						$scope.direction="IN";
+						searchchar="_I ";
+						uncheckchar="_O ";
+						}
+					$scope.excelList.push(tempsc[0].businessServiceName);
+					tempsc[0].checked=true;
+					//angular.forEach($scope.excelList, function (item2){
+					var tempseOut = $filter("filter")($scope.excelList, searchchar);
+					if(tempseOut.length!=0)
+						{
+					
+						var tempse = $filter("filter")($scope.excelList, uncheckchar);
+						if(tempse.length!=0)
+							{
+						angular.forEach($scope.items, function (item) {
+							
+							if(item.businessServiceName.indexOf(uncheckchar)!=-1)
+								{
+						item.checked=false;
+						var index = $scope.excelList.indexOf(item.businessServiceName);
+						if(index!=-1)
+							{
+						$scope.excelList.splice(index, 1);
+						  var index4 = $scope.bussidrequest.indexOf(item.bId);
+							if(index4!=-1)
+								{
+							  $scope.bussidrequest.splice(index4, 1);
+								}
+							}
+								}
+						
+							
+							console.log(item.businessServiceName+" "+item.checked);
+						}
+						);
+							}
+						}
+					
+
+						
+				
+				
+					} 
+				 
+			  } else {
+				 
+				  var index1 = $scope.bussidrequest.indexOf(bussid);
+				  $scope.bussidrequest.splice(index1, 1);
+				  var tempsc = $filter("filter")($scope.items, {bId:bussid});
+				if(tempsc.length!=0)
+						{
+				 var index = $scope.excelList.indexOf(tempsc[0].businessServiceName);
+				 if(index!=-1)
+					{
+				 $scope.excelList.splice(index, 1);
+				
+					}
+						}
+			    
+			  }
+			
+		
+	};
+	
+	$scope.direction = 'OUT';
+	 $scope.downloadExcel = function () {
+		//for(var i=0;i<$scope.bussidrequest.length;i++) { 
+			  
+
+		 $window.open('/TPIAdmin/app/partnerSubscriptionReportForSrIdPrtnrId?id='+$scope.Id+'&direction='+$scope.direction+'&prtnrIds='+$scope.bussidrequest, '_blank');
+		 
+		// }
+		// $scope.idrequest.length=0;
+		 };
+	$scope.table = function(srid)
+	{
+		 $scope.items = angular.copy($scope.emptyList) ;
+		var tableList=[];
+		 $http.get('/TPIAdmin/app/search?q=businessServiceForSrId&filter='+srid)
+	     .success(function (response, status, headers, config) {
+	    	
+	    	 tableList=angular.copy(response);
+	    	 
+	    	// console.log("inputdata "+JSON.stringify(tempList));
+	     })
+	     .error(function (data, status, header, config) {
+	    	
+	         $scope.ResponseDetails = "Data: " + data +
+	             "<br />status: " + status ;
+	         //    "<br />headers: " + jsonFilter(header) +
+	           //  "<br />config: " + jsonFilter(config);
+	     })
+	     	
+		 .then(function(response) {
+			
+			 angular.forEach(tableList, function (item) {
+				 
+				 try
+				 {var obj=
+				 {       id:item.serviceSubscripionId, 
+						 srId:item.srId,
+						 businessServiceName:item.businessServiceName,
+						 bId:item.businessServiceId,
+						checked:false
+					 };
+				 
+				 $scope.items.push(obj);
+				 }catch(e)
+				 {}
+				
+			 });
+			
+		 
+		 });
+		 console.log("list "+JSON.stringify($scope.items) );
+		 
+	
+	};
+	
+	
+	
+	$scope.display = function(name)
+	{
+		 $scope.items = angular.copy($scope.emptyList) ;
+		var tableList=[];
+		 $http.get('/TPIAdmin/app/search?q=businessServiceForPartnerName&filter='+name)
+	     .success(function (response, status, headers, config) {
+	    	
+	    	 tableList=angular.copy(response);
+	    	 
+	    	// console.log("inputdata "+JSON.stringify(tempList));
+	     })
+	     .error(function (data, status, header, config) {
+	    	
+	         $scope.ResponseDetails = "Data: " + data +
+	             "<br />status: " + status ;
+	         //    "<br />headers: " + jsonFilter(header) +
+	           //  "<br />config: " + jsonFilter(config);
+	     })
+	     	
+		 .then(function(response) {
+			
+			 angular.forEach(tableList, function (item) {
+				 
+				 try
+				 {var obj=
+				 {       id:item.serviceSubscripionId, 
+						 srId:item.srId,
+						 businessServiceName:item.businessServiceName,
+						 bId:item.businessServiceId,
+						checked:false
+					 };
+				 
+				 $scope.items.push(obj);
+				 }catch(e)
+				 {}
+				
+			 });
+			
+		 
+		 });
+		 console.log("list "+JSON.stringify($scope.items) );
+		 
+	
+	};
+	
+	
+});

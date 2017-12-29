@@ -1,0 +1,131 @@
+package com.abc.dashboard.controller;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.abc.dashboard.model.SdServiceCategoryDef;
+import com.abc.dashboard.model.projections.SdServiceCategoryDefProjection;
+import com.abc.dashboard.service.SdServiceCategoryService;
+import com.abc.tpi.common.exceptions.TpiRepositoryException;
+import com.abc.tpi.controller.PartnerControllerRest;
+import com.abc.tpi.model.partner.Partner;
+
+@RestController
+@RequestMapping("/sd/sdServiceCategoryDefs")
+public class SdServiceCategoryDefController {
+
+	private static final Logger logger = LogManager.getLogger(SdServiceCategoryDefController.class);
+	
+	@Autowired
+	SdServiceCategoryService serviceCategoryService;
+	
+	@RequestMapping(method={RequestMethod.GET})
+	ResponseEntity<List<?>> getAllServiceCategoryDefs(
+			@RequestParam(name="name",required=false) String name,
+			@RequestParam(name="projection",required=false) String projection)
+	{
+		List<?> result = null;
+		logger.debug("SdServiceCategoryDefController::getAllServiceCategoryDefs()");
+		
+		
+		if (name!=null)
+		{
+			if (projection!=null && projection.compareToIgnoreCase("display")==0)
+			{
+				SdServiceCategoryDefProjection item = serviceCategoryService.findSdServiceCategoryByName(name,SdServiceCategoryDefProjection.class);
+				ArrayList<SdServiceCategoryDefProjection> result1 = new ArrayList<SdServiceCategoryDefProjection>();
+				result1.add(item);
+				return ResponseEntity.status(HttpStatus.OK).body(result1);
+			}
+			else
+			{
+				SdServiceCategoryDef item = serviceCategoryService.findSdServiceCategoryByName(name,SdServiceCategoryDef.class);
+				ArrayList<SdServiceCategoryDef> result2 = new ArrayList<SdServiceCategoryDef>();
+				result2.add(item);
+				return ResponseEntity.status(HttpStatus.OK).body(result2);
+			}
+
+		}
+		else
+		{
+			if (projection!=null && projection.compareToIgnoreCase("display")==0)
+			{
+				result = serviceCategoryService.getAllSdServiceCategoryDefs(SdServiceCategoryDefProjection.class);
+			}
+			else
+			{
+				result = serviceCategoryService.getAllSdServiceCategoryDefs(SdServiceCategoryDef.class);
+			}
+		}
+		
+		return ResponseEntity.status(HttpStatus.OK).body(result);		
+	}
+	
+	@RequestMapping(method={RequestMethod.GET},value={"/{id}"})
+	ResponseEntity<?> getAllServiceCategoryDef(@PathVariable(name="id") long id)
+	{
+		Object result = null;
+		logger.debug("SdServiceCategoryDefController::getAllServiceCategoryDef()");
+		{
+			result = serviceCategoryService.findSdServiceCategoryById(id);
+		}
+		
+		return ResponseEntity.status(HttpStatus.OK).body(result);
+	}
+	
+	@RequestMapping(method={RequestMethod.DELETE},value={"/{id}"})
+	ResponseEntity<Object> deleteSdServiceCategoryDef(@PathVariable("id") int entityId) throws TpiRepositoryException {
+
+		logger.debug("Invoked SdServiceCategoryDefController.deleteSdServiceCategoryDef()");
+
+		try 
+		{
+			int id = entityId;
+			serviceCategoryService.deleteSdServiceCategoryDef(id);
+			return ResponseEntity.noContent().build();
+		} 
+	 	catch (ResourceNotFoundException e) 
+		{
+	 		return ResponseEntity.notFound().build();
+		}
+		catch (Exception ex) 
+		{
+			logger.error(ex);
+			logger.error("Failed to Delete SdServiceCategoryDef with ID: . " + entityId, ex);
+			throw new TpiRepositoryException("Failed to SdServiceCategoryDef Partner.");
+		}
+	}
+	
+	@RequestMapping(method={RequestMethod.POST})
+	public ResponseEntity<SdServiceCategoryDef> saveSdServiceCategoryDef(HttpServletRequest request, HttpServletResponse response,
+			@RequestBody SdServiceCategoryDef entity) throws TpiRepositoryException {
+
+		Logger logger = LogManager.getLogger(PartnerControllerRest.class);
+		logger.debug("Invoked SdServiceCategoryDefController.saveSdServiceCategoryDef()");
+
+		SdServiceCategoryDef result = null;
+		try {
+			result = serviceCategoryService.saveSdServiceCategoryDef(entity);
+			return ResponseEntity.status(HttpStatus.OK).body(result);
+		} catch (Exception ex) {
+			logger.error("Failed to Save SdServiceCategoryDef. ", ex);
+			throw new TpiRepositoryException("Failed to Save SdServiceCategoryDef.");
+		}
+	}
+}

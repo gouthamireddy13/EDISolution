@@ -1,0 +1,179 @@
+package com.abc.tpi.controller;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.Collection;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.abc.tpi.common.exceptions.TpiRepositoryException;
+import com.abc.tpi.domain.json.PartnerContactDetail;
+import com.abc.tpi.model.partner.ContactDetail;
+import com.abc.tpi.model.partner.Partner;
+import com.abc.tpi.repository.ContactDetailRepository;
+import com.abc.tpi.repository.PartnerRepository;
+import com.abc.tpi.service.PartnerService;
+
+@Controller
+public class PartnerController {
+
+	
+	@Autowired
+	private PartnerRepository partnerRepsitory;
+
+	@Autowired 
+	private PartnerService partnerService;
+	
+	@RequestMapping(value = "editPartner", method = RequestMethod.GET)
+	public ModelAndView editParnter(HttpServletRequest request) {
+		String id = "";
+		ModelAndView mv = new ModelAndView();
+		try {
+			id = URLDecoder.decode(request.getParameter("id"), "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+
+			e.printStackTrace();
+		}
+		if (!id.isEmpty()) {
+			Partner partner = partnerRepsitory.findOne(Long.parseLong(id));
+			if (partner != null) {
+				mv.addObject("partner", partner);
+			}
+
+		}
+		mv.setViewName("partner");
+		return mv;
+	}
+
+	@RequestMapping(value = { "/addContact" }, method = { RequestMethod.POST })
+	public ResponseEntity<Collection<ContactDetail>> addPartnerContact(HttpServletRequest request, HttpServletResponse response,
+			@RequestBody PartnerContactDetail partnerContactDetail) {
+
+		Partner ptnr = null;
+		if (partnerContactDetail != null && partnerContactDetail.getPartnerId() != null) {
+			ptnr = partnerRepsitory.findOne(partnerContactDetail.getPartnerId());
+			if (ptnr != null) {
+				ContactDetail contact = new ContactDetail();
+				contact.setContactName(partnerContactDetail.getContactName());
+				contact.setContactTitle(partnerContactDetail.getContactTitle());
+				contact.setContactPhone(partnerContactDetail.getContactPhone());
+				contact.setContactEmail(partnerContactDetail.getContactEmail());
+				ptnr.getContactDetails().add(contact);
+				partnerRepsitory.save(ptnr);
+			}
+		}
+		ResponseEntity<Collection<ContactDetail>> result = null;
+		if (ptnr!=null)
+		{
+			result = new ResponseEntity<Collection<ContactDetail>>(ptnr.getContactDetails(), HttpStatus.OK);
+		}
+		else
+		{
+			result = new ResponseEntity<Collection<ContactDetail>>(HttpStatus.NO_CONTENT);
+		}		
+		return result;
+	}
+	
+	@RequestMapping(value = { "/deleteContact" }, method = { RequestMethod.POST })
+	public ResponseEntity<Collection<ContactDetail>> deletePartnerContact(HttpServletRequest request, HttpServletResponse response,
+			@RequestBody PartnerContactDetail partnerContactDetail) {
+
+		Partner ptnr = null;
+		if (partnerContactDetail != null && partnerContactDetail.getPartnerId() != null) {
+			ptnr = partnerRepsitory.findOne(partnerContactDetail.getPartnerId());
+			if (ptnr != null) {
+				for (ContactDetail contact : ptnr.getContactDetails())
+				{
+					if (contact.getId() == partnerContactDetail.getContactId())
+					{
+						ptnr.getContactDetails().remove(contact);
+					}
+				}
+				partnerRepsitory.save(ptnr);
+			}
+		}
+		ResponseEntity<Collection<ContactDetail>> result = null;
+		if (ptnr!=null)
+		{
+			result = new ResponseEntity<Collection<ContactDetail>>(ptnr.getContactDetails(), HttpStatus.OK);
+		}
+		else
+		{
+			result = new ResponseEntity<Collection<ContactDetail>>(HttpStatus.NO_CONTENT);
+		}		
+		return result;
+	}
+	
+	@RequestMapping(value = { "/savePartner" }, method = { RequestMethod.POST })
+	public ResponseEntity<Partner> addPartner(HttpServletRequest request, HttpServletResponse response,
+			@RequestBody Partner partner) throws TpiRepositoryException {
+		
+		Partner result = null;
+		try
+		{
+			result = partnerService.createPartner(partner);
+			return ResponseEntity.status(HttpStatus.OK).body(result);
+		}
+		catch (TpiRepositoryException ex)
+		{
+			throw new TpiRepositoryException("Failed to save Partner. " + ex.getLocalizedMessage());
+		
+		}
+		
+	}
+	
+	@RequestMapping(value = { "/findPartners" }, method = { RequestMethod.GET })
+	public ResponseEntity findPartnersByName(HttpServletRequest request, HttpServletResponse response) {
+
+		Logger logger = LogManager.getLogger(PartnerController.class);
+		logger.debug("Invoked PartnerController.findPartnersByName()");
+
+		String partnerName=null;
+		try
+		{
+			partnerName = URLDecoder.decode(request.getParameter("partnerName"), "UTF-8");
+		}
+		catch (Exception ex)
+		{
+			logger.error("Invalid value passed for 'partnerName' request parameter");
+			logger.error(ex);
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Partner Group Name is invalid");
+		}
+		
+		List<Partner> result = null;
+		
+		if (partnerName != null) {
+
+			try {
+				result = partnerService.findPartnersByNameContains(partnerName);
+				for (Partner partner: result)
+				{
+					partner.getContactDetails().size();
+				}
+				return ResponseEntity.status(HttpStatus.OK).body(result);
+			} catch (Exception ex) {
+				logger.error(ex);
+				return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Failed to retrieve Partners");
+			}
+		} else {
+			logger.error("Invalid value passed for 'partnerName' request parameter");
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Name is invalid");
+		}	
+	}
+	
+
+
+}

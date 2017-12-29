@@ -1,0 +1,114 @@
+package com.abc.dashboard.controller;
+
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.abc.dashboard.model.SdBusinessService;
+import com.abc.dashboard.model.projections.SdBusinessServiceProjection;
+import com.abc.dashboard.service.SdServiceCategoryService;
+import com.abc.tpi.common.exceptions.TpiRepositoryException;
+
+@RestController
+@RequestMapping("/sd/businessServices")
+public class SdBusinessServiceController {
+	
+	private static final Logger logger = LogManager.getLogger(SdBusinessServiceController.class);
+	
+	@Autowired
+	SdServiceCategoryService sdService;
+	
+	@RequestMapping(method={RequestMethod.GET})
+	ResponseEntity<List<?>> getAllBusinessServices(@RequestParam(name="projection",required=false) String projection)
+	{
+		logger.debug("SdBusinessServiceController::getBusinessServices()");
+		List<?> result = null;
+		if (projection!=null && projection.compareToIgnoreCase("display") == 0)
+		{
+			result = sdService.getAllSdBusinessServices(SdBusinessServiceProjection.class);
+		}
+		else
+		{
+			result = sdService.getAllSdBusinessServices(SdBusinessService.class);
+		}
+		return ResponseEntity.status(HttpStatus.OK).body(result);
+	}
+	
+	@RequestMapping(method={RequestMethod.GET},value={"/{id}"})
+	ResponseEntity<?> getBusinessService(@RequestParam(name="projection",required=false) String projection,
+			@PathVariable(name="id") long id)
+	{
+		logger.debug("SdBusinessServiceController::getBusinessService()");
+		Object result = null;
+		if (projection!=null && projection.compareToIgnoreCase("display") == 0)
+		{
+			result = sdService.findBusinessServiceById(id, SdBusinessServiceProjection.class);
+		}
+		else
+		{
+			result = sdService.findBusinessServiceById(id);
+		}
+		return ResponseEntity.status(HttpStatus.OK).body(result);
+	}
+	
+	@RequestMapping(method={RequestMethod.POST})
+	public ResponseEntity<SdBusinessService> saveSdBusinessService(HttpServletRequest request, HttpServletResponse response,
+			@RequestBody SdBusinessService entity) throws TpiRepositoryException {
+
+		Logger logger = LogManager.getLogger(SdBusinessServiceController.class);
+		logger.debug("Invoked SdBusinessServiceController.saveSdBusinessService()");
+
+		SdBusinessService result = null;
+		try {
+			//result = sdService.saveSdBusinessService(entity);
+			//==================
+			
+				result = sdService.saveSdBusinessServiceWithPCCEInsert(entity); //saveSdServiceAccess(entity);
+			
+			//===============
+			result = sdService.findBusinessServiceById(result.getId());
+			return ResponseEntity.status(HttpStatus.OK).body(result);
+		} catch (Exception ex) {
+			logger.error("Failed to Save SdBusinessService. ", ex);
+			throw new TpiRepositoryException("Failed to Save SdBusinessService.");
+		}
+	}
+	
+	@RequestMapping(method={RequestMethod.DELETE},value={"/{id}"})
+	ResponseEntity<Object> deleteSdBusinessService(@PathVariable("id") int entityId) throws TpiRepositoryException {
+
+		logger.debug("Invoked SdBusinessServiceController.deleteSdBusinessService()");
+
+		try 
+		{
+			int id = entityId;
+			sdService.deleteSdBusinessService(id);
+			return ResponseEntity.noContent().build();
+		} 
+	 	catch (ResourceNotFoundException e) 
+		{
+	 		return ResponseEntity.notFound().build();
+		}
+		catch (Exception ex) 
+		{
+			logger.error(ex);
+			logger.error("Failed to Delete SdBusinessService with ID: . " + entityId, ex);
+			throw new TpiRepositoryException("Failed to delete SdBusinessService.");
+		}
+	}
+
+}

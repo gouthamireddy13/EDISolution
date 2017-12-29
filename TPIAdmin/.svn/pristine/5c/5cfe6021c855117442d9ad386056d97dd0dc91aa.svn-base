@@ -1,0 +1,49 @@
+package com.abc.tpi.service;
+
+import java.util.List;
+
+import com.abc.tpi.model.Direction;
+import com.abc.tpi.model.Document;
+import com.abc.tpi.model.LightWellPartner;
+import com.abc.tpi.model.Protocol;
+import com.abc.tpi.model.TppType;
+import com.abc.tpi.model.Version;
+
+public interface MasterDataService {
+	
+	TppType addTppType(TppType tppType);
+	Document addDocumentType(Document docType);
+	Version addVersion(Version version);
+	Protocol addProtocol(Protocol protocol);
+	
+	void deleteTppType(TppType tppType);
+	void deleteDocumentType(Document docType);
+	void deleteVersion(Version version);
+	void deleteProtocol(Protocol protocol);
+	
+	List<TppType> findAllTppTypes();
+	List<Document> findAllDocumentTypes();
+	List<Version> findAllVersions();
+	List<Protocol> findAllProtocols();
+	
+	TppType findTppTypeById(long Id);
+	TppType findTppTypeByTypeCode(short typeCode);
+	
+	Document findDocumentTypeById(long id);
+	Document findDocumentTypeByDocumentType(int documentType);
+	
+	Version findVersionById(long id);
+	Version findVersionByVersionNumber(int versionNumber);
+		
+	Protocol findProtocolById(long id);
+	Protocol findProtocolByProtocolType(String protocolType);
+	
+	Direction findDirectionById(long id);
+	Direction findDirectionByName(String name);
+	Direction saveDirection(Direction direction);
+	void deleteDirection(Direction direction);
+	
+	LightWellPartner findLWPartnerById(long id);	
+	
+	
+}

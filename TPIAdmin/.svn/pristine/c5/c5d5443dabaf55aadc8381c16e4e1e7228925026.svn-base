@@ -1,0 +1,86 @@
+package com.abc.tpi.service;
+
+import java.util.Collection;
+import java.util.List;
+
+import com.abc.tpi.domain.core.Company;
+import com.abc.tpi.domain.core.PartnerType;
+import com.abc.tpi.model.master.Ack;
+import com.abc.tpi.model.master.Delimiter;
+import com.abc.tpi.model.master.Direction;
+import com.abc.tpi.model.master.Document;
+import com.abc.tpi.model.master.Map;
+import com.abc.tpi.model.master.MapForDropDownProjection;
+import com.abc.tpi.model.master.Protocol;
+import com.abc.tpi.model.master.TppType;
+import com.abc.tpi.model.master.Version;
+import com.abc.tpi.model.sd.BusinessUnit;
+import com.abc.tpi.model.sd.ServiceCategories;
+import com.abc.tpi.model.service.ServiceType;
+import com.abc.tpi.model.tpp.LightWellPartner;
+
+public interface MasterDataService {
+	
+	TppType saveTppType(TppType tppType);
+	Protocol saveProtocol(Protocol protocol);
+	
+	void deleteTppType(TppType tppType);
+	void deleteDocumentType(Document docType);
+	void deleteVersion(Version version);
+	void deleteProtocol(Protocol protocol);
+	
+	List<TppType> findAllTppTypes();
+	List<Document> findAllDocumentTypes();
+	List<Version> findAllVersions();
+	List<Protocol> findAllProtocols();
+	List<Delimiter> findAllDelimiters();
+	List<Direction> findAllDirections();
+	List<BusinessUnit> findAllBusinessUnit();
+	TppType findTppTypeById(long Id);
+	TppType findTppTypeByTypeCode(short typeCode);
+	
+	Document findDocumentTypeById(long id);
+	Document findDocumentTypeByDocumentType(int documentType);
+	Document saveDocument(Document document);
+	
+	Version findVersionById(long id);
+	Version findVersionByVersionNumber(int versionNumber);
+	Version saveVersion(Version version);
+	
+	Protocol findProtocolById(long id);
+	Protocol findProtocolByProtocolType(String protocolType);
+	
+	Direction findDirectionById(long id);
+	Direction findDirectionByName(String name);
+	Direction saveDirection(Direction direction);
+	void deleteDirection(Direction direction);
+	
+	LightWellPartner findLWPartnerById(long id);	
+	
+	Delimiter saveDelimiter(Delimiter delimiter);	
+	Delimiter findDelimiterByCode(String code);
+	Ack findAckByCode(String ackValue);
+	Ack saveAck(Ack ack);
+	
+	List<Delimiter> getSegmentDelimiters();
+	List<Delimiter> getElementDelimiters();
+	List<Delimiter> getCompositeDelimiters();
+	List<Delimiter> getRepeatDeleimiters();
+	
+	Map findMap(Company company,PartnerType partner, Document document, Direction direction);
+	Map findMap(Document document, Direction direction);
+	Map saveMap(Map map);
+	List<MapForDropDownProjection> findMapForServiceType(long serviceTypeId);
+	List<MapForDropDownProjection> findMapForServiceType(ServiceType serviceType);
+	List<Map> getAllMaps();
+	List<MapForDropDownProjection> getAllMapsProjections();
+	Map findMapById(long id);
+	MapForDropDownProjection findMapByIdProjection(long id);
+	Map findMapByName(String name);
+	BusinessUnit saveBussiness(BusinessUnit businessUnit);
+	Collection<ServiceCategories> findAllSDServiceCategory();
+	
+	
+	
+	
+}

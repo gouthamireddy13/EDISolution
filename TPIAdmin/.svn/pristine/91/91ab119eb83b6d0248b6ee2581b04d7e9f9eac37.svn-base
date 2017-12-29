@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+
+<!-- define angular app -->
+<html ng-app="ABApp">
+
+<head>
+  <title>TPI</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+<!--   <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" /> -->
+  <script src="Plugins/jquery.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  
+ 
+ <!--   <link rel="stylesheet" href="Plugins/bootstrap.min.css" />-->
+  <link rel="stylesheet" href="Plugins/font-awesome.css" />
+    <link rel="stylesheet" href="style.css" />
+
+  
+  
+ <!-- <script src="Plugins/bootstrap.min.js"></script>-->
+
+  <script src="Plugins/angular.js"></script>
+  <script src="Plugins/angular-route.js"></script>
+  <script type="text/javascript" src="Plugins/ui-bootstrap-tpls-0.12.1.js"></script>
+  <script type="text/javascript" src="Plugins/mask.min.js"></script>
+
+  
+  
+  <script src="script.js"></script>
+  <script src="tppController.js"></script>
+  
+  
+</head>
+
+<!-- define angular controller -->
+<body ng-controller="mainController" class="row content">
+
+  <nav class="navbar navbar-inverse">
+    <!-- <div class="container-fluid"> --.
+
+      <div class="navbar-header">
+       <!--  <a class="navbar-brand" href="/">Angular Routing Example</a> -->
+        <img src="assets/logo.jpg" id="logo">
+      
+
+      <!-- <ul class="nav navbar-nav navbar-right">
+        <li><a href="#"><i class="fa fa-home"></i> Home</a></li>
+        <li><a href="#about"><i class="fa fa-shield"></i> About</a></li>
+        <li><a href="#contact"><i class="fa fa-comment"></i> Contact</a></li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="#"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+      </ul> --> 
+   
+  </nav>
+
+
+<!--<div class="container-fluid text-center"> -->   
+  <div class="row content" >
+    <div class="col-xs-6 col-md-2 sidenav" >
+    <!-- > <div> <b><a id="headingleft" href="#">User Dashboard</a> </b></div> -->
+      <div> <b><a id="headingleft" href="#partnerManagement">Partner Management</a></b></div>
+      <div> <b><a id="headingleft" href="#tppManagement">TPP Management</a></b></div> 
+    </div>
+    <div class="col-xs-6 col-md-10 rightpanel"> 
+        <div ng-view></div>
+    </div>
+    
+  </div>
+  
+</body>
+
+</html>

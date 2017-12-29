@@ -1,0 +1,15 @@
+package com.abc.tpi.model.migrator;
+
+public class BusinessServiceTracker {
+
+	private ObjectTracker businessServiceObject;
+
+	public ObjectTracker getBusinessServiceObject() {
+		return businessServiceObject;
+	}
+
+	public void setBusinessServiceObject(ObjectTracker businessServiceObject) {
+		this.businessServiceObject = businessServiceObject;
+	}
+
+}

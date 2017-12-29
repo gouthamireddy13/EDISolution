@@ -1,0 +1,44 @@
+/**
+ * 
+ */
+package com.abc.environment.controller;
+
+import java.util.List;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.abc.environment.model.EnvironmentInfo;
+import com.abc.environment.service.EnvironmentService;
+
+/**
+ * @author ARINDAMSIKDAR
+ *
+ */
+@RestController
+public class EnvironmentControllerRest {
+
+	private static final Logger logger = LogManager.getLogger(EnvironmentControllerRest.class);
+	
+	@Autowired
+	EnvironmentService environmentService;
+	
+	@RequestMapping(value = {"/environmentInfoForParam"}, method= {RequestMethod.GET})
+	public ResponseEntity<EnvironmentInfo> getEnvironmentInfoForParam(@RequestParam(name="paramName",required=false) String paramName) {
+		logger.debug("Invoked EnvironmentControllerRest.getEnvironmentInfoForParam()");
+		EnvironmentInfo envInfo = null;
+		if(paramName != null && paramName.length() != 0) {
+			envInfo = environmentService.findEnvironmentInfoByParamName(paramName);
+		}		
+		
+		return ResponseEntity.status(HttpStatus.OK).body(envInfo);
+	}
+	
+}

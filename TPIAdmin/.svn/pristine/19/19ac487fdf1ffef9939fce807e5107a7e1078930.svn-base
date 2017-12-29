@@ -1,0 +1,107 @@
+<div>
+
+<style>input:required:invalid {
+    outline: none;
+}
+</style>
+
+<div style="margin:15px 20px 15px 20px; border:1px solid black;" >
+ <div  style="background-color: #404951;border:#404951" >
+
+<div class="row">
+<div class="col-6 col-md-4">
+ <div style="padding-top:20px;padding-left:20px;" >
+      
+      <div class="panel-heading ">TPP NAME</div>
+      </div>
+      <div class="panel-body " style="padding-top:0px; padding-left:20px" >
+      	
+		
+		<input class="form-control" id="panelsearch" type="text" name="name"  ng-model="name"  ng-change="table(name);"> 
+      
+      </div>
+      </div>
+  
+    
+      </div>
+      
+      <div class=" panel-body pull-right col-sm-12" style=" background-color:#59626b ;">	
+
+  
+		  <!-- Trigger the modal with a button -->
+		  <button type="button" class="btn btn-primary pull-right"   ng-click="downloadExcel();" data-toggle="modal" data-target="#myModal" id="panelbtn"><img src="assets/export.png" id="exportlogo">&nbsp;&nbsp;&nbsp; EXPORT</button>
+
+</div>
+</div>
+<div style="background-color:#fff;">
+ <table class="table table-striped">
+
+	        <thead id="partnerhead">
+	        
+	            
+	            <tr>
+	            <th style="width:20px;"></th>
+	            <th id="partnerrow"> <a id="sortlink"
+	             ng-click="sortType = 'partnerName'; sortReverse = !sortReverse">TPP NAME 
+            
+            <span ng-show="sortType == 'partnerName' && !sortReverse" ><img src="assets/up.png" id="sort"></span>
+            <span ng-show="sortType == 'partnerName' && sortReverse" ><img src="assets/down.png" id="sort"></span></a>
+	             </th>
+	            <th id="partnerrow"> <a id="sortlink"
+	             ng-click="sortType = 'serviceCategoryName'; sortReverse = !sortReverse">TPP TYPE 
+	              <span ng-show="sortType == 'serviceCategoryName' && !sortReverse" ><img src="assets/up.png" id="sort"></span>
+                 <span ng-show="sortType == 'serviceCategoryName' && sortReverse" ><img src="assets/down.png" id="sort"></span></a> </th>
+	        
+	        </tr>
+	        </thead>
+	        <tbody>
+	        <tr  ng-repeat="item in items  |    orderBy:sortType:sortReverse   |    filter:search "  data-toggle="modal" data-target="#myModal"  >
+	       <td ><input type = "checkbox"    ng-model="item.checked"  ng-click="getExcel(item.id,item.checked)" ></td>
+	          <td id="partnerrow">{{item.partnerName}}</td>
+	          
+	          <td id="partnerrow">{{item.partnerGroup}}</td>
+	          
+	         
+	        
+	        </tr>
+	        </tbody>
+	      </table>
+	      </div>
+	      </div>
+	      
+	      <!-- Modal -->
+	       
+		
+		  
+		  </div>				    
+					   
+					    
+					    
+					    
+                        
+                     
+                 
+
+	      
+	      
+	      
+					
+					   
+					   
+		         
+				 
+		      
+					      
+					      
+		      
+				
+				
+				
+				
+		
+				
+	     
+	      
+				
+				 
+		  

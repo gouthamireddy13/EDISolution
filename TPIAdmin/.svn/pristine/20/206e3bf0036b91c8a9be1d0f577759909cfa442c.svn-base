@@ -1,0 +1,16 @@
+package com.abc.tpi.service;
+
+import java.util.List;
+
+import com.abc.tpi.model.PartnerGroup;
+
+public interface PartnerGroupService {
+	List<String> getDistinctPartnerGroupNames();
+	List<String> getDistinctPartnerGroupNamesForDropDown();	
+	List<PartnerGroup> getPartnerGroupsByGroupName(String groupName);
+	List<PartnerGroup> getPartnerGroupsByGroupNameForDropDown(String groupName);
+	PartnerGroup getPartnerGroupById(long id);
+	void addParnterGroup(PartnerGroup partnerGroup);
+	void deletePartnerGroup(PartnerGroup partnerGroup);
+	void deletePartnerGroupByID(long id);
+}

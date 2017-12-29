@@ -1,0 +1,135 @@
+package com.abc.tpi.db;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.abc.tpi.common.exceptions.TpiRepositoryException;
+import com.abc.tpi.model.master.Delimiter;
+import com.abc.tpi.model.master.Version;
+import com.abc.tpi.model.partner.Partner;
+import com.abc.tpi.model.service.BusinessService;
+import com.abc.tpi.model.service.Service;
+import com.abc.tpi.model.service.ServiceCategory;
+import com.abc.tpi.model.service.ServiceSubscription;
+import com.abc.tpi.model.service.ServiceType;
+import com.abc.tpi.model.tpp.LightWellPartner;
+import com.abc.tpi.model.tpp.Tpp;
+import com.abc.tpi.repository.DocumentRepository;
+import com.abc.tpi.repository.ProtocolRepository;
+import com.abc.tpi.repository.TppTypeRepository;
+import com.abc.tpi.repository.VersionRepository;
+import com.abc.tpi.service.MasterDataService;
+import com.abc.tpi.service.PartnerService;
+import com.abc.tpi.service.ServiceSubscriptionService;
+import com.abc.tpi.service.TppService;
+
+@ContextConfiguration(locations={"classpath:application-contexttest.xml"})
+@RunWith(SpringJUnit4ClassRunner.class)
+
+public class TpiServiceSubscriptionTest 
+{
+
+	@Autowired
+	TppService tppService;
+	
+	@Autowired 
+	ProtocolRepository protocolRepository;
+	
+	@Autowired
+	DocumentRepository documentRepository;
+	
+	@Autowired
+	VersionRepository versionRepository;
+	
+	@Autowired
+	TppTypeRepository tppTypeRepository;
+	
+	@Autowired
+	ServiceSubscriptionService subscriptionService;
+	
+	@Autowired
+	PartnerService partnerService;
+
+	@Autowired
+	MasterDataService masterDataService;
+	
+	@Test
+	@Transactional
+	@Rollback(false)
+	public void testSaveServiceSubscriptionEntity() throws TpiRepositoryException
+	{
+		ServiceCategory serviceCategory = subscriptionService.findServiceCategoryById(32);
+		Partner partner = partnerService.findPartnerById(1);		
+		
+		Tpp tpp = tppService.findTppById(12);
+		
+		Delimiter del1 = masterDataService.findDelimiterByCode("#");
+		Delimiter del2 = masterDataService.findDelimiterByCode("$");
+		Delimiter del3 = masterDataService.findDelimiterByCode("%");
+		Delimiter del4 = masterDataService.findDelimiterByCode("+");
+		
+		ServiceType serviceType  = subscriptionService.getAllServiceTypes().get(0);
+		LightWellPartner lwPartner = serviceCategory.getLightWellPartners().iterator().next();
+		
+		Version version = masterDataService.findVersionById(1);
+		
+		ServiceSubscription serviceSubscription = new ServiceSubscription();
+		
+		serviceSubscription.setPartner(partner);
+		serviceSubscription.setServiceCategory(serviceCategory);
+		
+		Service service = new Service();
+		service.setTpp(tpp);
+		service.setCompositeElementDelimiter(del1);
+		service.setElementDelimiter(del2);
+		service.setSegmentDelimiter(del3);
+		service.setRepeatDelimiter(del4);
+		
+		BusinessService businessService = new BusinessService();
+		businessService.setServiceType(serviceType);
+		businessService.setVersion(version);
+		businessService.setAck(true);
+		businessService.setAckPeriod(90);
+		businessService.setLightWellPartner(lwPartner);
+		
+		service.setBusinessServices(new ArrayList<BusinessService>());
+		service.getBusinessServices().add(businessService);
+		
+		businessService = new BusinessService();
+		businessService.setServiceType(serviceType);
+		businessService.setVersion(version);
+		businessService.setAck(true);
+		businessService.setAckPeriod(120);
+		businessService.setLightWellPartner(lwPartner);
+		
+		service.getBusinessServices().add(businessService);
+		
+		serviceSubscription.setServices(new ArrayList<Service>());
+		serviceSubscription.getServices().add(service);
+		
+		subscriptionService.saveServiceSubscription(serviceSubscription);
+		
+	}
+	
+	@Test
+	@Transactional
+	@Rollback(false)
+	public void testDeleteServiceSubscriptions() throws TpiRepositoryException
+	{
+		List<ServiceSubscription> serviceSubscriptions = subscriptionService.getAllServiceSubscriptions();
+		
+		for (ServiceSubscription sc:serviceSubscriptions)
+		{
+			subscriptionService.deleteServiceSubscription(sc.getId());
+		}
+	}
+	
+}

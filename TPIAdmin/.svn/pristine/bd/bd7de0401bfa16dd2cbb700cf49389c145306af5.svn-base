@@ -1,0 +1,219 @@
+package com.abc.tpi.controller;
+
+import java.net.URLDecoder;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.abc.tpi.common.exceptions.TpiRepositoryException;
+import com.abc.tpi.common.exceptions.TpiValidationException;
+import com.abc.tpi.model.service.Service;
+import com.abc.tpi.model.service.ServiceCategory;
+import com.abc.tpi.model.service.ServiceCategoryForDropDownProjection;
+import com.abc.tpi.model.service.ServiceSubscription;
+import com.abc.tpi.model.service.ServiceSubscriptionListViewProjection;
+import com.abc.tpi.model.service.ServiceType;
+import com.abc.tpi.model.tpp.LightWellPartner;
+import com.abc.tpi.model.tpp.Tpp;
+import com.abc.tpi.service.ServiceSubscriptionService;
+
+@RestController
+public class ServiceSubscriptionControllerRest {
+
+	private static final Logger logger = LogManager.getLogger(ServiceSubscriptionControllerRest.class);
+	
+	@Autowired
+	ServiceSubscriptionService serviceSubscriptionService;
+
+	@RequestMapping(value={"/serviceTypes"},method={RequestMethod.GET})
+	public ResponseEntity<List<ServiceType>> getServiceTypes(HttpServletRequest request, HttpServletResponse response) throws TpiRepositoryException
+	{
+		long serviceCategoryId = 0;
+		long tppId = 0;
+		List<ServiceType> serviceTypes = null;
+		try
+		{
+			logger.debug("Invoked ServiceSubscriptionControllerRest.getServiceTypes()");
+			
+			if (request.getParameter("serviceCat")!=null)
+			{
+				logger.debug("Querty string: " + request.getQueryString());
+				serviceCategoryId=Long.parseLong(URLDecoder.decode(request.getParameter("serviceCat"), "UTF-8"));
+				
+				if (request.getParameter("tpp")!=null)
+				{
+					tppId = Long.parseLong(URLDecoder.decode(request.getParameter("tpp"), "UTF-8"));
+				}
+				
+				serviceTypes = serviceSubscriptionService.getBusinessServiceForTppAndServiceCat(serviceCategoryId, tppId);
+			}
+			else
+			{
+				serviceTypes = serviceSubscriptionService.getAllServiceTypes();
+			}
+		}
+		
+		catch (NumberFormatException numException)
+		{
+			logger.error("Invalid Request parameter. Numeric value is expected.", numException);
+		}
+		catch (Exception ex)
+		{
+			logger.error("Failed to Retrieve List of Service Types. ", ex);
+			throw new TpiRepositoryException("Failed to Retrieve List of Service Types.");
+		}
+		
+		return ResponseEntity.status(HttpStatus.OK).body(serviceTypes);
+	}
+
+	
+	//save
+	@RequestMapping (value = { "/serviceSubscriptions" }, method = { RequestMethod.POST })
+	public ResponseEntity<ServiceSubscription> save(@RequestBody ServiceSubscription serviceSubscription) throws TpiValidationException, TpiRepositoryException
+	{
+
+		ServiceSubscription result = serviceSubscriptionService.saveServiceSubscription(serviceSubscription);
+		
+		for (com.abc.tpi.model.service.Service service: result.getServices())
+		{
+			
+			if (service.getTpp() !=null)
+			{
+				logger.debug("TPP: " + service.getTpp().getId());
+				
+			}
+		}
+		
+		return ResponseEntity.status(HttpStatus.OK).body(result);		
+	}
+	
+	@RequestMapping(value = {"/serviceCategories"}, method= {RequestMethod.GET})
+	public ResponseEntity<List<?>> getServiceCategories(HttpServletRequest request, HttpServletResponse response)
+	{
+		logger.debug("Invoked ServiceSubscriptionControllerRest.getServiceCategories()");
+		
+		List<ServiceCategory> serviceCategories=null;
+		
+		if (request.getParameter("name")!=null)
+		{
+			String name = request.getParameter("name");
+			serviceCategories = serviceSubscriptionService.findAllByCategoryName(name);
+		}
+		else
+		{
+			serviceCategories = serviceSubscriptionService.getAllServiceCategoriesOrderByName();
+		}
+		
+		return ResponseEntity.status(HttpStatus.OK).body(serviceCategories);
+	}
+	
+	@RequestMapping(value = {"/serviceCategories/distinctNames"}, method= {RequestMethod.GET})
+	public ResponseEntity<List<ServiceCategoryForDropDownProjection>> getDistinctServiceCategoryNames()
+	{
+		logger.debug("Invoked ServiceSubscriptionControllerRest.getDistinctServiceCategoryNames()");
+		
+		List<ServiceCategoryForDropDownProjection>  dropDownValues = serviceSubscriptionService.getServiceCategoriesForDropDown();
+		return ResponseEntity.status(HttpStatus.OK).body(dropDownValues);
+	}
+	
+	@RequestMapping(value = {"/serviceCategories"}, method= {RequestMethod.POST})
+	public ResponseEntity<ServiceCategory> saveServiceCategory(@RequestBody ServiceCategory serviceCategory) throws TpiRepositoryException
+	{
+		ServiceCategory result = serviceSubscriptionService.saveServiceCategory(serviceCategory);
+		return ResponseEntity.status(HttpStatus.OK).body(result);	
+	}
+	
+	@RequestMapping(value = {"/serviceSubscriptions"}, method= {RequestMethod.GET})
+	public ResponseEntity<List<?>> getServiceSubscriptions(HttpServletRequest request, HttpServletResponse response)
+	{
+		logger.debug("Invoked ServiceSubscriptionControllerRest.getServiceSubscriptions()");
+		
+		List<ServiceSubscription> serviceSubscriptions=null;
+		
+		if (request.getParameter("projection")!=null)
+		{
+			String projectionName=request.getParameter("projection");
+			switch (projectionName)
+			{
+			case "serviceSubscriptionListView":
+				List<ServiceSubscriptionListViewProjection>  dropDownValues = serviceSubscriptionService.getServiceSubscriptionsListView();
+				return ResponseEntity.status(HttpStatus.OK).body(dropDownValues);				
+			default:
+				serviceSubscriptions = null;
+				break;
+			}			
+		}
+		else
+		{
+			serviceSubscriptions = serviceSubscriptionService.getAllServiceSubscriptions();
+		}
+		
+		return ResponseEntity.status(HttpStatus.OK).body(serviceSubscriptions);
+	}
+	
+	@RequestMapping(value = {"/serviceSubscriptions/{subscriptionId}"}, method= {RequestMethod.GET})
+	public ResponseEntity<ServiceSubscription> getServiceSubscription(@PathVariable("subscriptionId") long subscriptionId) throws TpiRepositoryException 
+	{
+		logger.debug("Invoked ServiceSubscriptionControllerRest.getServiceSubscription()");
+		ServiceSubscription result = serviceSubscriptionService.getServiceSubscription(subscriptionId);
+		return ResponseEntity.status(HttpStatus.OK).body(result);
+	}
+	
+	@RequestMapping(value = { "/serviceSubscriptions/{subscriptionId}" }, method = { RequestMethod.DELETE })
+	public ResponseEntity<Void> deleteServiceSubscriptionByID(@PathVariable("subscriptionId") long subscriptionId) throws TpiRepositoryException {
+
+		Logger logger = LogManager.getLogger(PartnerGroupControllerRest.class);
+		logger.debug("Invoked PartnerController.deleteServiceSubscriptionByID()");
+
+		try 
+		{
+			long id = subscriptionId;
+			serviceSubscriptionService.deleteServiceSubscription(id);
+			return ResponseEntity.noContent().build();
+		} 
+		 catch (ResourceNotFoundException e) 
+		{
+		 	return ResponseEntity.notFound().build();
+		}
+		catch (Exception ex) {
+			logger.error("Failed to Delete Service Subscription with ID " + subscriptionId, ex);
+			throw new TpiRepositoryException("Failed to Delete Service Subscription with ID " + subscriptionId);
+		}
+	}
+	
+	@RequestMapping(value = { "/serviceCategories/{scID}" }, method = { RequestMethod.DELETE })
+	public ResponseEntity<Void> deleteServiceCategoryByID(@PathVariable("scID") long scID) throws TpiRepositoryException {
+
+		Logger logger = LogManager.getLogger(PartnerGroupControllerRest.class);
+		logger.debug("Invoked PartnerController.deleteServiceCategoryByID()");
+
+		try 
+		{
+			long id = scID;
+			serviceSubscriptionService.deleteServiceCategory(id);
+			return ResponseEntity.noContent().build();
+		} 
+		 catch (ResourceNotFoundException e) 
+		{
+		 	return ResponseEntity.notFound().build();
+		}
+		catch (Exception ex) {
+			logger.error("Failed to Delete Service Category with ID " + scID, ex);
+			throw new TpiRepositoryException("Failed to Delete Service Category with ID " + scID);
+		}
+	}
+	
+}

@@ -1,0 +1,17 @@
+package com.abc.tpi.service.soap;
+
+import java.util.List;
+
+import com.abc.tpi.domain.soap.Tpp;
+
+public class UploadTppsRequest {
+	List<Tpp> tpps;
+
+	public List<Tpp> getTpps() {
+		return tpps;
+	}
+
+	public void setTpps(List<Tpp> tpps) {
+		this.tpps = tpps;
+	}
+}

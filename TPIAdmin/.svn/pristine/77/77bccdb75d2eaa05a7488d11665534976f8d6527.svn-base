@@ -1,0 +1,16 @@
+package com.abc.tpi.model.poc;
+
+import javax.persistence.Entity;
+import javax.persistence.Table;
+
+import org.hibernate.envers.AuditOverride;
+import org.hibernate.envers.Audited;
+
+@Audited
+@Entity
+@AuditOverride(forClass=com.abc.tpi.model.poc.PocEntity.class,isAudited=true)
+@Table(name="ABC_TPI_POC")
+public class Poc extends PocEntity {
+	
+
+}

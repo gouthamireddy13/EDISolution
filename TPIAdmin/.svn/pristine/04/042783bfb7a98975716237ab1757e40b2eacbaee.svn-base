@@ -1,0 +1,11 @@
+package com.abc.tpi.service;
+
+import java.util.List;
+
+import com.abc.tpi.model.migrator.ServiceSubscriptionApprovalReview;
+
+public interface MigratorClientService {
+	
+	void migrateServiceSubscription(List<ServiceSubscriptionApprovalReview> serviceApproval) throws Exception;
+
+}

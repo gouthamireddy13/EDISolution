@@ -1,0 +1,106 @@
+package com.abc.tpi.model;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+
+@Entity
+@Table(name="ABC_TPI_TPP")
+public class Tpp {
+	@Id
+
+	@SequenceGenerator(name="ABC_TPI_TPP_GEN", sequenceName="ABC_TPI_TPP_SEQ",allocationSize=10)
+	@GeneratedValue(generator="ABC_TPI_TPP_GEN")
+	@Column(name="TPP_ID")
+	private Long id;
+	
+	//unidirectional
+	@ManyToOne(cascade=CascadeType.ALL)
+	@JoinColumn(name="TPP_TYPE_ID")
+	private TppType type;
+	
+	@Column(name="TPP_NAME",unique=true,nullable=false)
+	private String name;
+
+	@OneToMany(cascade=CascadeType.ALL,fetch=FetchType.LAZY, orphanRemoval=true)
+	@JoinTable(name="ABC_TPI_TPP_CONTACT",
+			joinColumns=@JoinColumn(name="TPP_ID"),
+			inverseJoinColumns=@JoinColumn(name="CONTACT_DETAIL_ID"))
+
+	private List<ContactDetail> contactDetails = new ArrayList<ContactDetail>();
+	
+	//unidirectional
+	@OneToMany(cascade=CascadeType.ALL,fetch=FetchType.LAZY, orphanRemoval=true)
+	@JoinTable(name="ABC_TPI_TPP_PROTOCOLS",
+			joinColumns=@JoinColumn(name="TPP_ID"),
+			inverseJoinColumns=@JoinColumn(name="PROTOCOL_ID"))
+	private List<Protocol> protocols = new ArrayList<Protocol>();
+	
+	//unidirectional
+	@OneToMany(cascade=CascadeType.ALL,fetch=FetchType.LAZY, orphanRemoval=true)
+	@JoinTable(name="ABC_TPI_TPP_TRANSACTIONS",
+			joinColumns=@JoinColumn(name="TPP_ID"),
+			inverseJoinColumns=@JoinColumn(name="TRANSACTION_ID"))
+	private List<Transaction> transactions = new ArrayList<Transaction>();
+	
+	@Embedded
+	private LightwellPartner lightwellPartner = new LightwellPartner();
+	
+	public Long getId() {
+		return id;
+	}
+	public LightwellPartner getLightWellPartner() {
+		return lightwellPartner;
+	}
+	public List<Protocol> getProtocols() {
+		return protocols;
+	}
+	public List<Transaction> getTransactions() {
+		return transactions;
+	}
+	public TppType getType() {
+		return type;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+	public void setLightWellPartner(LightwellPartner lightWellPartner) {
+		this.lightwellPartner = lightWellPartner;
+	}
+	public void setProtocols(List<Protocol> protocols) {
+		this.protocols = protocols;
+	}
+	public void setTransactions(List<Transaction> transactions) {
+		this.transactions = transactions;
+	}
+	public void setType(TppType type) {
+		this.type = type;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public LightwellPartner getLightwellPartner() {
+		return lightwellPartner;
+	}
+	public void setLightwellPartner(LightwellPartner lightwellPartner) {
+		this.lightwellPartner = lightwellPartner;
+	}
+	
+}

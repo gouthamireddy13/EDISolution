@@ -1,0 +1,135 @@
+package com.abc.tpi.model.service;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+
+@Entity
+@Table(name="ABC_TPI_SERVICE_CATEGORY")
+public class ServiceCategory {
+
+	@Id
+	@SequenceGenerator(name="ABC_TPI_SC_GEN", sequenceName="ABC_TPI_SC_SEQ",allocationSize=10)
+	@GeneratedValue(generator="ABC_TPI_SC_GEN")
+	@Column(name="SC_ID")
+	private Long id;
+	
+	@NotNull
+	@Column(name="CATEGORY")
+	private String category;
+	
+	@NotNull
+	@Column(name="NAME",nullable=false)
+	private String name;
+	
+	@NotNull
+	@Column(name="PARTNER_NAME",nullable=false)
+	private String partnerName;
+	
+	@NotNull
+	@Column(name="ISA_ID_PROD",nullable=false)
+	private String isaIdProd;
+	
+	@NotNull
+	@Column(name="GS_ID_PROD",nullable=false)
+	private String gsIdProd;
+
+	@NotNull
+	@Column(name="ISA_QUAL_PROD",nullable=false)
+	private String isaQualifierProd;
+	
+	@NotNull
+	@Column(name="ISA_ID_TEST",nullable=false)
+	private String isaIdTest;
+	
+	@NotNull
+	@Column(name="GS_ID_TEST",nullable=false)
+	private String gsIdTest;
+
+	@NotNull
+	@Column(name="ISA_QUAL_TEST",nullable=false)
+	private String isaQualifierTest;
+	
+	public String getCategory() {
+		return category;
+	}
+
+	public String getGsIdProd() {
+		return gsIdProd;
+	}
+
+	public String getGsIdTest() {
+		return gsIdTest;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public String getIsaIdProd() {
+		return isaIdProd;
+	}
+
+	public String getIsaIdTest() {
+		return isaIdTest;
+	}
+
+	public String getIsaQualifierProd() {
+		return isaQualifierProd;
+	}
+
+	public String getIsaQualifierTest() {
+		return isaQualifierTest;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public String getPartnerName() {
+		return partnerName;
+	}
+
+	public void setCategory(String category) {
+		this.category = category;
+	}
+
+	public void setGsIdProd(String gsIdProd) {
+		this.gsIdProd = gsIdProd;
+	}
+
+	public void setGsIdTest(String gsIdTest) {
+		this.gsIdTest = gsIdTest;
+	}
+
+	public void setIsaIdProd(String isaIdProd) {
+		this.isaIdProd = isaIdProd;
+	}
+
+	public void setIsaIdTest(String isaIdTest) {
+		this.isaIdTest = isaIdTest;
+	}
+
+	public void setIsaQualifierProd(String isaQualifierProd) {
+		this.isaQualifierProd = isaQualifierProd;
+	}
+
+	public void setIsaQualifierTest(String isaQualifierTest) {
+		this.isaQualifierTest = isaQualifierTest;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public void setPartnerName(String partnerName) {
+		this.partnerName = partnerName;
+	}
+	
+	
+	
+}

@@ -1,0 +1,2 @@
+partnerSubscriptionReport.(class)=com.abc.tpi.view.ExcelPartnerSubscriptionReport
+lightWellIdentityReport.(class)=com.abc.tpi.view.LightWellIdentityReport

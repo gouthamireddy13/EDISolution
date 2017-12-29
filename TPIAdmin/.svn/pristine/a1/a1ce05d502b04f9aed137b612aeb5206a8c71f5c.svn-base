@@ -1,0 +1,14 @@
+package com.abc.tpi.model.poc;
+
+import com.abc.tpi.model.master.Delimiter;
+import javax.annotation.Generated;
+import javax.persistence.metamodel.SingularAttribute;
+import javax.persistence.metamodel.StaticMetamodel;
+
+@Generated(value="Dali", date="2017-06-29T14:46:13.610-0400")
+@StaticMetamodel(PocEntity.class)
+public class PocEntity_ extends TpiManagedEntity_ {
+	public static volatile SingularAttribute<PocEntity, String> pocValue;
+	public static volatile SingularAttribute<PocEntity, String> description;
+	public static volatile SingularAttribute<PocEntity, Delimiter> delimiter;
+}

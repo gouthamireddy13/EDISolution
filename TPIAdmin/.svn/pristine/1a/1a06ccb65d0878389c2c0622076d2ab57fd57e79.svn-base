@@ -1,0 +1,104 @@
+package com.abc.tpi.service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.abc.tpi.model.master.Document;
+import com.abc.tpi.model.partner.ContactDetail;
+import com.abc.tpi.model.partner.Partner;
+import com.abc.tpi.model.partner.PartnerGroup;
+import com.abc.tpi.model.promotion.ServiceSubscriptionPromotion;
+import com.abc.tpi.model.reporting.LightWellPartnerRecord;
+import com.abc.tpi.model.reporting.PartnerRecord;
+import com.abc.tpi.model.reporting.PartnerSubscriptionRecord;
+import com.abc.tpi.model.service.ServiceSubscription;
+import com.abc.tpi.model.tpp.Transaction;
+import com.abc.tpi.repository.BusinessServiceRepository;
+import com.abc.tpi.repository.LightWellPartnerRepository;
+
+@Service
+public class ReportingServiceImpl implements ReportingService 
+{	
+	@Autowired
+	BusinessServiceRepository businessServiceRepository;
+	
+	@Autowired
+	PartnerService partnerService;
+	
+	@Autowired
+	LightWellPartnerRepository lightWellPartnerRepository;
+
+	@Override
+	public List<PartnerSubscriptionRecord> getPartnerSubscriptionRecordsByServiceSubscriptionId(long serviceSubscriptionId) 
+	{
+		return businessServiceRepository.namedInEnvelopeByServiceSubscriptionId(serviceSubscriptionId);
+	}
+	
+	@Override
+	public List<PartnerSubscriptionRecord> getPartnerSubscriptionRecordsBySrId(String srId) 
+	{
+		return businessServiceRepository.namedInEnvelopeBySrId(srId);
+	}
+
+	@Override
+	public List<PartnerSubscriptionRecord> getPartnerSubscriptionRecordsBySrIdBusinessSrvcId(String srId,
+			List<Long> businessServiceIds) {		
+		return businessServiceRepository.namedInEnvelopeBySrIdBusinessServiceIds(srId,businessServiceIds);
+	}
+	
+	//==================================================================
+	
+	
+	public List<PartnerRecord> getPartnerRecordsByPartnerId(long prId) {
+		
+		List<PartnerRecord> listprtnrrec = new ArrayList<PartnerRecord>();
+		Set<ContactDetail> contdetails = null ;
+		Partner prtnr = partnerService.findPartnerById(prId);
+		if(prtnr!= null){
+			 contdetails = prtnr.getContactDetails();
+		}
+		
+		PartnerGroup prtnrgrp = prtnr.getPartnerGroup();
+		if(contdetails != null){
+		for(ContactDetail contactDetail : contdetails) {
+			PartnerRecord prtnrrecord = new PartnerRecord();
+			prtnrrecord.setPartnerName(prtnr.getPartnerName());
+			prtnrrecord.setPartnerGroupName(prtnrgrp.getGroupName());
+			prtnrrecord.setPartnerSubGroupName(prtnrgrp.getSubGroupName());
+			
+			Document doc =contactDetail.getTransactionType();
+			prtnrrecord.setContactName(contactDetail.getContactName());
+			prtnrrecord.setBusinessCountry(contactDetail.getBusinessPhoneCountry());
+			prtnrrecord.setBusinessPhone(contactDetail.getBusinessPhone());
+			prtnrrecord.setBusinessExt(contactDetail.getBusinessPhoneExt());
+			
+			prtnrrecord.setMobileCountry(contactDetail.getMobilePhoneCountry());
+			prtnrrecord.setMobilePhone(contactDetail.getMobilePhone());
+			prtnrrecord.setMobileExt(contactDetail.getMobilePhoneExt());
+			prtnrrecord.setPersonalCountry(contactDetail.getPersonalPhoneCountry());
+			prtnrrecord.setPersonalPhone(contactDetail.getPersonalPhone());
+			prtnrrecord.setPersonalExt(contactDetail.getPersonalPhoneExt());
+			prtnrrecord.setPrimaryEmail(contactDetail.getContactEmail());
+			prtnrrecord.setSecondaryEmail(contactDetail.getContactEmail2());
+			prtnrrecord.setTitle(contactDetail.getContactTitle());
+			prtnrrecord.setTransactionType(doc.getDocumentType());
+			listprtnrrec.add(prtnrrecord);
+		}
+	}
+		return  listprtnrrec;
+	}
+
+	@Override
+	public List<PartnerSubscriptionRecord> getPartnerSubscriptionRecordsByPartnerName(String partnerName) {		
+		return businessServiceRepository.namedInEnvelopeByPartnerName(partnerName);
+	}
+
+	@Override
+	public List<LightWellPartnerRecord> getLightWellIdentityForLwIds(long partnerId, List<Long> lwIds) {
+		return lightWellPartnerRepository.namedFindLightWellIdentityByPartnerIdLwIds(partnerId, lwIds);
+	}
+}

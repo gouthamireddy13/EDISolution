@@ -1,0 +1,89 @@
+package com.abc.tpi.model.sd;
+import java.io.Serializable;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+
+import javax.persistence.Id;
+
+import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+@Entity
+@Table(name="ABC_SD_SERVICE_CATEGORY_DEF" )
+public class SDServiceCategoryDef {
+	
+
+	
+	
+	
+	@Id
+	
+	@Column(name="SERVICE_CATEGORY ")
+	private String serviceCategory;
+	
+	
+	@Column(name="CATEGORY_ID ")
+	private String categoryID;
+	
+	@Column(name="BUSINESS_UNIT")
+	private String businessUnit;
+	
+	
+	@Column(name="SUB_BUSINESS_UNIT")
+	private String subBusinessUnit;
+	
+	@Column(name="PARTNER_SUBSCRIPTION")
+	private String partnerSubscription;
+	
+	@Column(name="NOTES")
+	private String notes;
+
+	public String getServiceCategory() {
+		return serviceCategory;
+	}
+
+	public void setServiceCategory(String serviceCategory) {
+		this.serviceCategory = serviceCategory;
+	}
+
+	public String getCategoryID() {
+		return categoryID;
+	}
+
+	public void setCategoryID(String categoryID) {
+		this.categoryID = categoryID;
+	}
+
+	public String getBusinessUnit() {
+		return businessUnit;
+	}
+
+	public void setBusinessUnit(String businessUnit) {
+		this.businessUnit = businessUnit;
+	}
+
+	public String getSubBusinessUnit() {
+		return subBusinessUnit;
+	}
+
+	public void setSubBusinessUnit(String subBusinessUnit) {
+		this.subBusinessUnit = subBusinessUnit;
+	}
+
+	public String getPartnerSubscription() {
+		return partnerSubscription;
+	}
+
+	public void setPartnerSubscription(String partnerSubscription) {
+		this.partnerSubscription = partnerSubscription;
+	}
+
+	public String getNotes() {
+		return notes;
+	}
+
+	public void setNotes(String notes) {
+		this.notes = notes;
+	}
+
+}

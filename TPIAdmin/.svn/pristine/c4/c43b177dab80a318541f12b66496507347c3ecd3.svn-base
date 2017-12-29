@@ -1,0 +1,134 @@
+package com.abc.tpi.controller;
+
+import java.net.URLDecoder;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.abc.tpi.common.exceptions.TpiRepositoryException;
+import com.abc.tpi.common.exceptions.TpiValidationException;
+import com.abc.tpi.model.Tpp;
+import com.abc.tpi.service.TppService;
+
+@RestController
+@RequestMapping("/tpp")
+public class TPPControllerRest {
+
+	@Autowired
+	TppService tppService;
+	
+	//find all or by name
+	@RequestMapping (method = { RequestMethod.GET })
+	ResponseEntity<List<Tpp>> readTPPs(HttpServletRequest request, HttpServletResponse response)
+	{	
+		Logger logger = LogManager.getLogger(TPPControllerRest.class);
+		logger.debug("Invoked TPPControllerRest.readTPPs()");
+		
+		List<Tpp> result = null;
+		
+		String tppName = null;		
+		if (request.getParameter("tppName")!=null)
+		{
+			try 
+			{
+				tppName = URLDecoder.decode(request.getParameter("tppName"), "UTF-8");
+			} 
+			catch (Exception ex) {
+				logger.error("Invalid value passed for 'tppName' request parameter");
+				logger.error(ex);
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+			}		
+		}
+		
+		if (tppName == null)
+		{
+			result = tppService.findAllTpps(); 
+		}
+		else
+		{
+			result = tppService.findTppByName(tppName);
+		}
+		
+		return ResponseEntity.status(HttpStatus.OK).body(result);
+	}
+	
+	//save
+	@RequestMapping (method = { RequestMethod.POST })
+	ResponseEntity<Tpp> save(@RequestBody Tpp tpp) throws TpiValidationException, TpiRepositoryException
+	{
+		Logger logger = LogManager.getLogger(TPPControllerRest.class);
+		logger.debug("Invoked TPPControllerRest.save()");
+		
+		validateTppData(tpp);
+		
+		try
+		{
+			Tpp newTpp = tppService.saveTpp(tpp);
+			logger.debug("TPP saved with ID: " + tpp.getId());
+			return ResponseEntity.status(HttpStatus.OK).body(newTpp);
+		}
+		catch (Exception ex) 
+		{
+			logger.error("Failed to Save TPP object. ", ex);
+			throw new TpiRepositoryException("Failed to Save TPP object. ");
+		}
+	}
+	
+	@RequestMapping(value = { "/{tppID}" }, method = { RequestMethod.GET })
+	public ResponseEntity<Tpp> getTpp(@PathVariable("tppID") int tppId) throws TpiRepositoryException
+	{
+		Logger logger = LogManager.getLogger(TPPControllerRest.class);
+		logger.debug("Invoked TPPControllerRest.getTpp()");
+		
+		Tpp result = null;
+		
+		try
+		{
+			result = tppService.findTppById(tppId);
+			return ResponseEntity.status(HttpStatus.OK).body(result);
+		}
+		catch (Exception ex) 
+		{
+			logger.error("Failed to retrieve TPP object with ID: . " + tppId, ex);
+			throw new TpiRepositoryException("Failed to retrieve TPP object with ID: . " + tppId);
+		}
+	}
+
+	@RequestMapping(value = { "/{tppID}" }, method = { RequestMethod.DELETE })
+	public void deleteTppByID(@PathVariable("tppID") int tppID) throws TpiRepositoryException {
+
+		Logger logger = LogManager.getLogger(PartnerControllerRest.class);
+		logger.debug("Invoked PartnerController.deleteTppByID()");
+
+		try 
+			{
+				int id = tppID;
+				tppService.deleteTppById(id);
+			} 
+		catch (Exception ex) 
+		{
+			logger.error("Failed to delete TPP object with ID: . " + tppID, ex);
+			throw new TpiRepositoryException("Failed to delete TPP object with ID: . " + tppID);
+		}
+	}
+	
+	private void validateTppData(Tpp tpp) throws TpiValidationException
+	{
+		if (tpp == null) throw new TpiValidationException("TPP object is null");
+		if (tpp.getType()==null) throw new TpiValidationException("TPP type cannot be null");
+		if (tpp.getProtocols()==null || tpp.getProtocols().size()<1) throw new TpiValidationException("TPP definition must contain at least one Protocol");
+		
+	}
+}

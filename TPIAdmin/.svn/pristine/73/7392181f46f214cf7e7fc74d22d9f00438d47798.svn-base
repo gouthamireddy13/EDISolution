@@ -1,0 +1,103 @@
+package com.abc.tpi.controller;
+
+import java.net.URLDecoder;
+import java.util.Collection;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+
+import com.abc.tpi.common.exceptions.TpiRepositoryException;
+import com.abc.tpi.model.sd.BusinessUnit;
+import com.abc.tpi.model.sd.ServiceCategories;
+
+import com.abc.tpi.service.MasterDataService;
+
+@RestController
+public class ServiceDashboardControllerRest {
+
+	private static final Logger logger = LogManager.getLogger(ServiceDashboardControllerRest.class);
+	@Autowired
+	MasterDataService masterDataService;
+	
+	@RequestMapping(value = { "/findSDServiceCategoryRecords" }, method = { RequestMethod.GET })
+	public Collection<ServiceCategories> getSCRecords()throws TpiRepositoryException {
+
+		
+	
+		logger.debug("Invoked getSCRecords()");
+
+		
+		Collection<ServiceCategories> ServiceCategoryList=null;
+		try
+		{
+			ServiceCategoryList=masterDataService.findAllSDServiceCategory();
+		}
+		catch (Exception ex) 
+		{
+			logger.error("Failed to Retrieve List of Protocols. ", ex);
+			throw new TpiRepositoryException("Failed to Retrieve List of Protocols.");
+     //return new RestResponseEntityExceptionHandler(ex);
+		}
+		
+	 return ServiceCategoryList;
+	}
+	
+	
+	
+	@RequestMapping(value = { "/saveSdServiceCategories" }, method = { RequestMethod.POST })
+	public ResponseEntity<ServiceCategories> BussinesUnController(HttpServletRequest request, HttpServletResponse response,
+			@RequestBody ServiceCategories serviceCategory) throws TpiRepositoryException {
+
+		
+		ServiceCategories result = null;
+		try {
+			result = masterDataService.saveServiceCategories(serviceCategory);
+			return ResponseEntity.status(HttpStatus.OK).body(result);
+		} catch (Exception ex) {
+			logger.error("Failed to Save SDServiceCategory. ", ex);
+			throw new TpiRepositoryException("Failed to Save SDServiceCategory.");
+		}
+	}
+
+
+
+
+@RequestMapping(value = { "/SdServiceCategories/{serviceKey}" }, method = { RequestMethod.DELETE })
+public ResponseEntity<Void> deleteServiceCategoriesByID(@PathVariable("serviceKey") String serviceKey) throws TpiRepositoryException {
+
+	Logger logger = LogManager.getLogger(PartnerControllerRest.class);
+	logger.debug("Invoked ServiceDashboardController.deleteServiceCategories()");
+
+	try 
+	{
+		String id = serviceKey;
+		masterDataService.deleteServiceCategoriesById(id);
+		return ResponseEntity.noContent().build();
+	} 
+ 	catch (ResourceNotFoundException e) 
+	{
+ 		return ResponseEntity.notFound().build();
+	}
+	catch (Exception ex) 
+	{
+		logger.error(ex);
+		logger.error("Failed to Delete ServiceCategories with ID: . " + serviceKey, ex);
+		throw new TpiRepositoryException("Failed to Delete Partner.");
+	}
+}
+}

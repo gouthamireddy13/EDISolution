@@ -1,0 +1,153 @@
+package com.abc.tpi.db;
+
+import java.util.List;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.util.Assert;
+
+import com.abc.tpi.model.PartnerGroup;
+import com.abc.tpi.repository.PartnerGroupRepository;
+import com.abc.tpi.service.PartnerGroupService;
+
+@ContextConfiguration(locations={"classpath:resources/application-contexttest.xml"})
+@RunWith(SpringJUnit4ClassRunner.class)
+public class TpiPartnerGroupTest {
+
+	@Autowired
+	PartnerGroupRepository partnerGroupRepository;
+
+	@Autowired
+	PartnerGroupService partnerGroupService;
+	
+	@Test
+	public void addPartnerGroupTest() {
+		PartnerGroup partnerGroup = new PartnerGroup();
+		partnerGroup.setGroupName("Test Group");
+		partnerGroup.setSubGroupName("Test Sub Group");
+		partnerGroupRepository.save(partnerGroup);
+		
+		partnerGroup = new PartnerGroup();
+		partnerGroup.setGroupName("Test Group");
+		partnerGroup.setSubGroupName("Test Sub Group 1");
+		partnerGroupRepository.save(partnerGroup);
+		
+		partnerGroup = new PartnerGroup();
+		partnerGroup.setGroupName("Test Group");
+		partnerGroup.setSubGroupName("Test Sub Group 2");
+		partnerGroupRepository.save(partnerGroup);
+		
+		partnerGroup = new PartnerGroup();
+		partnerGroup.setGroupName("Test Group");
+		partnerGroup.setSubGroupName("Test Sub Group 3");
+		partnerGroupRepository.save(partnerGroup);
+		
+		partnerGroup = new PartnerGroup();
+		partnerGroup.setGroupName("Test Group");
+		partnerGroup.setSubGroupName("Test Sub Group 4");
+		partnerGroupRepository.save(partnerGroup);
+		
+		
+		partnerGroup = new PartnerGroup();
+		partnerGroup.setGroupName("Test Group 2");
+		partnerGroup.setSubGroupName("Test Sub Group_2 1");
+		partnerGroupRepository.save(partnerGroup);
+		
+		partnerGroup = new PartnerGroup();
+		partnerGroup.setGroupName("Test Group 2");
+		partnerGroup.setSubGroupName("Test Sub Group_2 2");
+		partnerGroupRepository.save(partnerGroup);
+		
+		partnerGroup = new PartnerGroup();
+		partnerGroup.setGroupName("Test Group 2");
+		partnerGroup.setSubGroupName("n/a");
+		partnerGroupRepository.save(partnerGroup);
+		
+		partnerGroup = new PartnerGroup();
+		partnerGroup.setGroupName("N/a");
+		partnerGroup.setSubGroupName("n/A");
+		partnerGroupRepository.save(partnerGroup);
+		
+	}
+
+	
+	@Test
+	public void findByGroupNameIgnoreCase()
+	{
+		List<PartnerGroup> partnerGroups = partnerGroupRepository.findByGroupNameIgnoreCaseOrderBySubGroupNameAsc("Test Group");
+
+		Assert.notNull(partnerGroups);
+	}
+	
+	@Test
+	public void findByGroupNameIgnoreCaseNegative()
+	{
+		List<PartnerGroup> partnerGroups = partnerGroupRepository.findByGroupNameIgnoreCaseOrderBySubGroupNameAsc("XYZ");
+		Assert.isNull(partnerGroups);
+	}
+	
+	@Test
+	public void findDistinctGroupNames()
+	{
+		List<String> partnerGroups = partnerGroupRepository.namedFindDistinctGroupNames();
+		Assert.notNull(partnerGroups);
+		
+		System.out.println("Found # of Distinct Partner Groups" + partnerGroups.size());
+		
+		for (String groupName: partnerGroups)
+		{
+			System.out.println(groupName);
+		}
+	}
+	
+	@Test
+	public void getSortedListOfGroups()
+	{
+		List<String> result =  partnerGroupService.getDistinctPartnerGroupNames();
+		Assert.notEmpty(result);
+		
+		for (String name: result)
+		{
+			System.out.println(name);
+		}
+	}
+	
+	@Test
+	public void getSortedListOfGroupsForDropDown()
+	{
+		List<String> result =  partnerGroupService.getDistinctPartnerGroupNamesForDropDown();
+		Assert.notEmpty(result);
+		
+		for (String name: result)
+		{
+			System.out.println(name);
+		}
+	}
+	
+	@Test
+	public void getSortedListOfSubGroups()
+	{
+		List<PartnerGroup> result =  partnerGroupService.getPartnerGroupsByGroupName("Test Group 2");
+		Assert.notEmpty(result);
+		
+		for (PartnerGroup group: result)
+		{
+			System.out.println(group.getSubGroupName());
+		}
+	}
+	
+	@Test
+	public void getSortedListOfSubGroupsForDropDown()
+	{
+		List<PartnerGroup> result =  partnerGroupService.getPartnerGroupsByGroupNameForDropDown("Test Group 2");
+		Assert.notEmpty(result);
+		
+		for (PartnerGroup group: result)
+		{
+			System.out.println(group.getSubGroupName());
+		}
+	}
+}

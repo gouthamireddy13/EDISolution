@@ -1,0 +1,256 @@
+package com.abc.tpi.controller;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import com.abc.tpi.model.partner.Partner;
+import com.abc.tpi.model.promotion.ServiceSubscriptionPromotion;
+import com.abc.tpi.model.reporting.PartnerSubscriptionRecord;
+import com.abc.tpi.model.service.BusinessService;
+import com.abc.tpi.model.service.Service;
+import com.abc.tpi.model.service.ServiceSubscription;
+import com.abc.tpi.model.tpp.Tpp;
+import com.abc.tpi.service.ServiceSubscriptionService;
+
+@Controller
+public class PromotionController {
+
+	private static final Logger logger = LogManager.getLogger(PromotionController.class);
+
+
+	@Autowired
+	ServiceSubscriptionService serviceSubscriptionService;
+
+	@RequestMapping(value = {"/promotionExport"}, method = RequestMethod.GET)
+	public String generatePartnerSubscriptionReportForSrId(@RequestParam(required = true, value = "id") String bservId, Model model) 
+	{
+		logger.debug("Invoked PromotionControllerRest.getPartnerSubscriptionReportForSrIdPrtnrId()");
+
+		/*		Collection<Long> serviceIds = serviceSubscriptionService.getServiceIdsForBusinessService(Long.parseLong(bsId));
+		for(Long servId : serviceIds) {
+			logger.debug("Long values: " + servId.toString());
+			Collection<Long> ssIds = serviceSubscriptionService.getServiceSubscriptionIdsForService(servId);
+			for(Long ssId : ssIds) {
+				logger.debug("Long values: " + ssId.toString());
+			}
+
+		}*/
+		//List<ServiceSubscription> serviceSubscriptions=null;
+		List<String> bsIds = null;
+		if(bservId.contains(",")) {
+			bsIds = Arrays.asList(bservId.split(","));	
+		} else {
+			bsIds = new ArrayList<>();
+			bsIds.add(bservId);
+		}
+		ServiceSubscription srvcSubscription = null;
+		List<ServiceSubscriptionPromotion> serviceSubscriptionPromotions = new ArrayList<ServiceSubscriptionPromotion>();
+		List<Partner> partners = new ArrayList<Partner>();
+		List<Tpp> tpps = new ArrayList<Tpp>();
+		ServiceSubscriptionPromotion serviceSubscriptionPromotion = null;
+		Partner partner = null;
+		Tpp tpp = null;		
+		for(String bsId : bsIds) {
+			Collection<Long> serviceIds = serviceSubscriptionService.getServiceIdsForBusinessService(Long.parseLong(bsId));
+			if(serviceIds != null && !serviceIds.isEmpty()) {
+				for(Long servId : serviceIds) {
+					logger.debug("Long values: " + servId.toString());
+					Collection<Long> ssIds = serviceSubscriptionService.getServiceSubscriptionIdsForService(servId);
+					if(ssIds != null && !ssIds.isEmpty()) {
+						for(Long ssId : ssIds) {
+							logger.debug("Long values: " + ssId.toString());
+
+							if (ssId !=null)
+							{
+								srvcSubscription = serviceSubscriptionService.findServiceSubscriptionById(ssId);
+							}
+							//------------------START of Service Subscription Loop ----------------------------
+							if(srvcSubscription != null) {
+								//for(ServiceSubscription srvcSubscription : serviceSubscriptions) {
+								Set<Service> services = srvcSubscription.getServices();
+								boolean duplicatePartnerChk = false;
+								for(Partner p : partners) {
+									if(p.getId().compareTo(srvcSubscription.getPartner().getId()) == 0) {
+										duplicatePartnerChk = true;
+									}
+								}
+								if(!duplicatePartnerChk) {
+									partners.add(srvcSubscription.getPartner());
+								}
+								if(services != null && !services.isEmpty()) {
+									for(Service srvc : services) {
+										if(srvc.getTpp() != null) {
+											boolean duplicateTppChk = false;
+											for(Tpp t : tpps) {
+												if(t.getId().compareTo(srvc.getTpp().getId()) == 0) {
+													duplicateTppChk = true;
+												}
+											}
+											if(!duplicateTppChk) {
+												tpps.add(srvc.getTpp());
+											}
+										}
+										Set<BusinessService> businessServices = srvc.getBusinessServices();
+										if(businessServices != null && !businessServices.isEmpty()) {
+											for(BusinessService bsSrvc : businessServices) {
+												if(bsSrvc.getId().compareTo(Long.parseLong(bsId)) == 0) {
+													logger.debug("Business Service Obejct: "+bsSrvc);
+													logger.debug("Service Obejct: "+ srvc);
+													logger.debug("Service Subscription Obejct: "+srvcSubscription);
+													serviceSubscriptionPromotion = new ServiceSubscriptionPromotion();
+													serviceSubscriptionPromotion.setPartnerName(srvcSubscription.getPartner().getPartnerName());
+													serviceSubscriptionPromotion.setSegmentDelimiter(srvc.getSegmentDelimiter().getDelimiter());
+													serviceSubscriptionPromotion.setElementDelimiter(srvc.getElementDelimiter().getDelimiter());												
+													serviceSubscriptionPromotion.setCompositeElementDelimiter(srvc.getCompositeElementDelimiter().getDelimiter());												
+													if(srvc.getRepeatDelimiter() != null && srvc.getRepeatDelimiter().getDelimiter().length() != 0) {
+														serviceSubscriptionPromotion.setRepeatDelimiter(srvc.getRepeatDelimiter().getDelimiter());
+													} else {
+														serviceSubscriptionPromotion.setRepeatDelimiter("");
+													}
+													serviceSubscriptionPromotion.setSrId(srvc.getSrId());
+													if(srvc.getNotes() != null) {
+														serviceSubscriptionPromotion.setNotes(srvc.getNotes());
+													} else {
+														serviceSubscriptionPromotion.setNotes("");
+													}
+													if(srvc.getTpp() != null && srvc.getTpp().getName() != null && srvc.getTpp().getName().length() != 0) {
+														serviceSubscriptionPromotion.setTppName(srvc.getTpp().getName());
+													} else {
+														serviceSubscriptionPromotion.setTppName("");
+													}
+
+
+													serviceSubscriptionPromotion.setTestIsaID(srvc.getLightWellPartner().getTestIsaID());
+													serviceSubscriptionPromotion.setTestIsaQualifier(srvc.getLightWellPartner().getTestIsaQualifier());
+													serviceSubscriptionPromotion.setTestGsId(srvc.getLightWellPartner().getTestGsId());
+													serviceSubscriptionPromotion.setProductionIsaID(srvc.getLightWellPartner().getProductionIsaID());
+													serviceSubscriptionPromotion.setProductionIsaQualifier(srvc.getLightWellPartner().getProductionIsaQualifier());
+													serviceSubscriptionPromotion.setProductionGsId(srvc.getLightWellPartner().getProductionGsId());
+
+													serviceSubscriptionPromotion.setAbcProductionGsId(bsSrvc.getLightWellPartner().getProductionGsId());
+													serviceSubscriptionPromotion.setVersionNumber(bsSrvc.getVersion().getVersionNumber());
+													if(bsSrvc.getGsIdVersion() != null) {
+														serviceSubscriptionPromotion.setGsIdVersion(bsSrvc.getGsIdVersion());
+													} else {
+														serviceSubscriptionPromotion.setGsIdVersion("");
+													}
+
+
+													serviceSubscriptionPromotion.setProtocolType(bsSrvc.getProtocol().getProtocolType());
+													if(bsSrvc.isAck()) {
+														serviceSubscriptionPromotion.setAck("Yes");
+														serviceSubscriptionPromotion.setAckPeriod(bsSrvc.getAckPeriod());
+													} else {
+														serviceSubscriptionPromotion.setAck("No");
+														serviceSubscriptionPromotion.setAckPeriod(bsSrvc.getAckPeriod());
+													}
+
+													if(bsSrvc.getStControlNum() != null) {
+														serviceSubscriptionPromotion.setStControlNum(bsSrvc.getStControlNum());
+													} else {
+														serviceSubscriptionPromotion.setStControlNum("");
+													}
+
+													if(bsSrvc.getIsaControlNum() != null) {
+														serviceSubscriptionPromotion.setIsaControlNum(bsSrvc.getIsaControlNum());
+													} else {
+														serviceSubscriptionPromotion.setIsaControlNum("");
+													}
+
+													if(bsSrvc.getStAcceptorLookUpAlias() != null) {
+														serviceSubscriptionPromotion.setStAcceptorLookUpAlias(bsSrvc.getStAcceptorLookUpAlias());
+													} else {
+														serviceSubscriptionPromotion.setStAcceptorLookUpAlias("");
+													}
+
+
+													if(bsSrvc.isComplianceCheck()) {
+														serviceSubscriptionPromotion.setComplianceCheck("Yes");
+														if(bsSrvc.getMap() != null) {
+															serviceSubscriptionPromotion.setMapName(bsSrvc.getMap().getMapName());
+														} else {
+															serviceSubscriptionPromotion.setMapName("");
+														}
+													} else {
+														serviceSubscriptionPromotion.setComplianceCheck("No");
+														serviceSubscriptionPromotion.setMapName("");
+													}
+													serviceSubscriptionPromotion.setBusinessServiceName(bsSrvc.getServiceType().getBusinessServiceName());
+													serviceSubscriptionPromotion.setBsSRId(bsSrvc.getSrId());
+
+													if(bsSrvc.getNotes() != null) {
+														serviceSubscriptionPromotion.setBsNotes(bsSrvc.getNotes());
+													} else {
+														serviceSubscriptionPromotion.setBsNotes("");
+													}
+
+
+													serviceSubscriptionPromotion.setServiceCategoryName(srvcSubscription.getServiceCategory().getName());
+
+													logger.debug("<=============================================================================>");					
+													logger.debug(serviceSubscriptionPromotion.getPartnerName());
+													logger.debug(serviceSubscriptionPromotion.getSegmentDelimiter());
+													logger.debug(serviceSubscriptionPromotion.getElementDelimiter());
+													logger.debug(serviceSubscriptionPromotion.getCompositeElementDelimiter());
+													logger.debug(serviceSubscriptionPromotion.getRepeatDelimiter());
+													logger.debug(serviceSubscriptionPromotion.getSrId());
+													logger.debug(serviceSubscriptionPromotion.getNotes());//null
+													logger.debug(serviceSubscriptionPromotion.getTppName());					
+													logger.debug(serviceSubscriptionPromotion.getTestIsaID());
+													logger.debug(serviceSubscriptionPromotion.getTestIsaQualifier());
+													logger.debug(serviceSubscriptionPromotion.getTestGsId());
+													logger.debug(serviceSubscriptionPromotion.getProductionIsaID());
+													logger.debug(serviceSubscriptionPromotion.getProductionIsaQualifier());
+													logger.debug(serviceSubscriptionPromotion.getProductionGsId());					
+													logger.debug(serviceSubscriptionPromotion.getAbcProductionGsId());
+													logger.debug(serviceSubscriptionPromotion.getVersionNumber());
+													logger.debug(serviceSubscriptionPromotion.getGsIdVersion());//null
+													logger.debug(serviceSubscriptionPromotion.getProtocolType());
+													logger.debug(serviceSubscriptionPromotion.getAck());
+													logger.debug(serviceSubscriptionPromotion.getAckPeriod());
+													logger.debug(serviceSubscriptionPromotion.getStControlNum()); //null
+													logger.debug(serviceSubscriptionPromotion.getIsaControlNum());//null
+													logger.debug(serviceSubscriptionPromotion.getStAcceptorLookUpAlias());		//null	
+													logger.debug(serviceSubscriptionPromotion.getComplianceCheck());
+													logger.debug(serviceSubscriptionPromotion.getMapName());
+													logger.debug(serviceSubscriptionPromotion.getBusinessServiceName());
+													logger.debug(serviceSubscriptionPromotion.getBsSRId());
+													logger.debug(serviceSubscriptionPromotion.getBsNotes());	//null				
+													logger.debug(serviceSubscriptionPromotion.getServiceCategoryName());
+													logger.debug("<=============================================================================>");
+
+													serviceSubscriptionPromotions.add(serviceSubscriptionPromotion);
+												}
+											}
+										}
+									}
+								}
+								//}
+							}
+							//-----------------------END of ServiceSubscription look-------------------------
+						}
+					}
+				}
+			}
+		}
+		model.addAttribute("serviceSubscription", serviceSubscriptionPromotions);
+		model.addAttribute("partners", partners);
+		model.addAttribute("tpps", tpps);
+		model.addAttribute("bservId", bservId);
+		return "promotionExportXlsx";
+	}
+}

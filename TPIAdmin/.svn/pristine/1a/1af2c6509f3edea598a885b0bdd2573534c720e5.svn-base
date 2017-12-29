@@ -1,0 +1,145 @@
+var ABApp = angular.module('ABApp');
+
+
+ABApp.controller('tppController', function($scope,$modal, $http, $window) {
+	
+	
+	$scope.tpplist=[];
+	$scope.ptcolList=[];
+	$scope.drList=[];
+	$scope.ttypeList=[];
+	$scope.versionList=[];
+	$scope.inittpp = function()
+	{
+		
+		
+		 $http.get('/TPIAdmin/app/tppTypes')
+	     .success(function (response, status, headers, config) {
+	    	 $scope.tpplist = angular.copy(response);
+	    	 
+	     })
+	     .error(function (data, status, header, config) {
+	         $scope.ResponseDetails = "Data: " + data +
+	             "<br />status: " + status ;
+	         //    "<br />headers: " + jsonFilter(header) +
+	           //  "<br />config: " + jsonFilter(config);
+	     })
+		 .then(function(response) {
+			 $scope.protocolList();
+		    });
+
+
+		
+		};
+	
+		$scope.updateSelection = function(position, entities) {
+		      angular.forEach(entities, function(ptcol, index) {
+		        if (position == index) 
+		        	ptcol.checked = true;
+		      });
+		    }
+
+		
+		
+		$scope.protocolList = function()
+		{
+			
+			
+			 $http.get('/TPIAdmin/app/protocols')
+		     .success(function (response, status, headers, config) {
+		    	 $scope.ptcolList = angular.copy(response);
+		    	 
+		     })
+		     .error(function (data, status, header, config) {
+		         $scope.ResponseDetails = "Data: " + data +
+		             "<br />status: " + status ;
+		         //    "<br />headers: " + jsonFilter(header) +
+		           //  "<br />config: " + jsonFilter(config);
+		     })
+			 .then(function(response) {
+				 $scope.directionList();
+			    });
+
+
+			
+			};
+			
+			
+			$scope.directionList = function()
+			{
+				
+				
+				 $http.get('/TPIAdmin/app/directions')
+			     .success(function (response, status, headers, config) {
+			    	 $scope.drList = angular.copy(response);
+			    	 
+			     })
+			     .error(function (data, status, header, config) {
+			         $scope.ResponseDetails = "Data: " + data +
+			             "<br />status: " + status ;
+			         //    "<br />headers: " + jsonFilter(header) +
+			           //  "<br />config: " + jsonFilter(config);
+			     })
+				 .then(function(response) {
+					 $scope.transactionTypeList();  
+				    });
+
+
+				
+				};
+				
+				$scope.transactionTypeList = function()
+				{
+					
+					
+					 $http.get('/TPIAdmin/app/documents')
+				     .success(function (response, status, headers, config) {
+				    	 $scope.ttypeList = angular.copy(response);
+				    	 
+				     })
+				     .error(function (data, status, header, config) {
+				         $scope.ResponseDetails = "Data: " + data +
+				             "<br />status: " + status ;
+				         //    "<br />headers: " + jsonFilter(header) +
+				           //  "<br />config: " + jsonFilter(config);
+				     })
+					 .then(function(response) {
+						 $scope.versList();
+					       
+					    });
+
+
+					
+					};
+					
+					
+					$scope.versList = function()
+					{
+						
+						
+						 $http.get('/TPIAdmin/app/versions')
+					     .success(function (response, status, headers, config) {
+					    	 $scope.versionList = angular.copy(response);
+					    	 
+					     })
+					     .error(function (data, status, header, config) {
+					         $scope.ResponseDetails = "Data: " + data +
+					             "<br />status: " + status ;
+					         //    "<br />headers: " + jsonFilter(header) +
+					           //  "<br />config: " + jsonFilter(config);
+					     })
+						 .then(function(response) {
+						       
+						    });
+
+
+						
+						};
+			
+		
+						
+						
+						
+						
+						
+});

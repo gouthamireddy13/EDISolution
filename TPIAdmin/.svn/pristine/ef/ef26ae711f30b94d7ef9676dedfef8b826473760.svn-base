@@ -1,0 +1,329 @@
+package com.abc.tpi.service;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.transaction.Transactional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.abc.tpi.model.migrator.BusinessServiceApprovalReview;
+import com.abc.tpi.model.migrator.ChangeType;
+import com.abc.tpi.model.migrator.ObjectTracker;
+import com.abc.tpi.model.migrator.ServiceApprovalReview;
+import com.abc.tpi.model.migrator.ServiceSubscriptionApprovalReview;
+import com.abc.tpi.model.service.BusinessService;
+import com.abc.tpi.model.service.ServiceSubscription;
+import com.abc.tpi.repository.BusinessServiceRepository;
+import com.abc.tpi.repository.ObjectTrackerRepository;
+import com.abc.tpi.repository.ServiceRepository;
+import com.abc.tpi.repository.ServiceSubscriptionRepository;
+
+@Service
+public class MigratorDataServiceImpl implements MigratorDataService {
+
+	@Autowired
+	ServiceSubscriptionRepository serviceSubscriptionRepository;
+	
+	@Autowired
+	ServiceRepository serviceRepository;
+	
+	@Autowired
+	BusinessServiceRepository businessServiceRepository;
+	
+	@Autowired
+	ServiceSubscriptionService serviceSubscriptionService;	
+
+	@Autowired
+	ObjectTrackerRepository objectTrackerRepository;
+	
+	@Override
+	@Transactional
+	public List<ObjectTracker> getDataForSrId(String srId) {
+		
+		//1. Get list of ServiceSubscriptions that need to be migrated;
+		//2. Get list of Services that might need to be migrated
+		//3. Get list of BusinessServices that might need to be migrated.
+		//4. Determine if the object has EVER been migrated (Note: on the receiving side, migration will be validated first)
+		//5. Put it all together in a structure.
+		
+		List<Long> serviceSubscriptionIds = serviceSubscriptionRepository.namedFindAllNotMigratedServiceSubscription();
+		List<Long> serviceIds = serviceRepository.namedFindNotMigratedServicesBySrId(srId);
+		List<Long> businessServicesIds = businessServiceRepository.namedFindNotMigratedBusinessServicesBySrId(srId);
+		
+		Map<Long,ObjectTracker> serviceSubscrptionMap = new HashMap<Long,ObjectTracker>();
+		
+		for (Long id: serviceSubscriptionIds)
+		{
+			ServiceSubscription ss = serviceSubscriptionService.findServiceSubscriptionById(id);						
+			ObjectTracker ot = new ObjectTracker();
+			ot.setClassName(ServiceSubscription.class.getName());
+			ot.setParentClassName(null);
+			ot.setSourceId(id);
+			ot.setSourceVersionNum(ss.getVersionNum());		
+			//ot.setObjectTrackers(new ArrayList<ObjectTracker>());
+			ot.setModificationStatus(ChangeType.C);
+			serviceSubscrptionMap.put(id, ot);
+			
+		}
+
+		for (Long id: serviceIds)
+		{
+			com.abc.tpi.model.service.Service service = serviceRepository.findOne(id);
+			
+			if (service !=null)
+			{
+				Long ssId = service.getServiceSubscription().getId();				
+
+				ObjectTracker ssOt = serviceSubscrptionMap.get(ssId);
+				
+				if (ssOt==null)
+				{
+					ServiceSubscription ss = serviceSubscriptionService.findServiceSubscriptionById(ssId);						
+					ssOt = new ObjectTracker();
+					ssOt.setClassName(ServiceSubscription.class.getName());
+					ssOt.setParentClassName(null);
+					ssOt.setSourceId(ssId);
+					ssOt.setSourceVersionNum(ss.getVersionNum());
+					ssOt.setModificationStatus(ChangeType.NA);
+					
+					ObjectTracker serviceOt = new ObjectTracker();
+					serviceOt.setClassName(com.abc.tpi.model.service.Service.class.getName());
+					serviceOt.setSourceId(id);
+					serviceOt.setSourceVersionNum(service.getVersionNum());
+					serviceOt.setParentClassName(ServiceSubscription.class.getName());
+					serviceOt.setParentId(ssId);
+					serviceOt.setParentVersionNum(ss.getVersionNum());
+					serviceOt.setModificationStatus(ChangeType.C);
+					ssOt.addObjectTracker(serviceOt);
+					
+					serviceSubscrptionMap.put(ssId, ssOt);
+				}
+				else
+				{
+					ObjectTracker serviceOt = new ObjectTracker();
+					serviceOt.setClassName(com.abc.tpi.model.service.Service.class.getName());
+					serviceOt.setSourceId(id);
+					serviceOt.setSourceVersionNum(service.getVersionNum());
+					serviceOt.setParentClassName(ServiceSubscription.class.getName());
+					serviceOt.setParentId(ssId);
+					serviceOt.setModificationStatus(ChangeType.C);
+					ssOt.addObjectTracker(serviceOt);
+				}			
+			}			
+		}
+		
+		for (Long bsId : businessServicesIds)
+		{
+			BusinessService businessService = businessServiceRepository.findOne(bsId);
+			Long ssId = null;
+			Long serviceId = null;
+			
+			if (businessService != null)
+			{
+				serviceId = businessService.getService().getId();
+				ssId = businessService.getService().getServiceSubscription().getId();
+				
+				ObjectTracker ssOt = serviceSubscrptionMap.get(ssId);
+				if (ssOt==null)
+				{
+					ServiceSubscription ss = serviceSubscriptionService.findServiceSubscriptionById(ssId);						
+					ssOt = new ObjectTracker();
+					ssOt.setClassName(ServiceSubscription.class.getName());
+					ssOt.setParentClassName(null);
+					ssOt.setSourceId(ssId);
+					ssOt.setSourceVersionNum(ss.getVersionNum());		
+					ssOt.setModificationStatus(ChangeType.NA);
+					
+					ObjectTracker serviceOt = new ObjectTracker();
+					serviceOt.setClassName(com.abc.tpi.model.service.Service.class.getName());
+					serviceOt.setSourceId(serviceId);
+					serviceOt.setSourceVersionNum(businessService.getService().getVersionNum());
+					serviceOt.setParentClassName(ServiceSubscription.class.getName());
+					serviceOt.setModificationStatus(ChangeType.NA);
+					serviceOt.setParentVersionNum(ss.getVersionNum());
+					serviceOt.setParentId(ssId);						
+					
+					ObjectTracker businessServiceOt = new ObjectTracker();
+					businessServiceOt.setClassName(BusinessService.class.getName());
+					businessServiceOt.setSourceId(bsId);
+					businessServiceOt.setParentClassName(com.abc.tpi.model.service.Service.class.getName());
+					businessServiceOt.setParentId(serviceId);
+					businessServiceOt.setSourceVersionNum(businessService.getVersionNum());
+					businessServiceOt.setModificationStatus(ChangeType.C);
+					
+					serviceOt.addObjectTracker(businessServiceOt);
+					ssOt.addObjectTracker(serviceOt);					
+					serviceSubscrptionMap.put(ssId, ssOt);
+					
+				}
+				else
+				{
+					ObjectTracker serviceObjectTracker = null;
+					for (ObjectTracker serviceOt: ssOt.getObjectTrackers())
+					{
+						if (serviceOt.getSourceId()==serviceId)
+						{
+							serviceObjectTracker = serviceOt;
+							break;
+						}
+					}
+					
+					if (serviceObjectTracker!=null)
+					{
+						
+						ObjectTracker businessServiceOt = new ObjectTracker();
+						businessServiceOt.setClassName(BusinessService.class.getName());
+						businessServiceOt.setSourceId(bsId);
+						businessServiceOt.setParentClassName(com.abc.tpi.model.service.Service.class.getName());
+						businessServiceOt.setParentId(serviceId);
+						businessServiceOt.setSourceVersionNum(businessService.getVersionNum());						
+						serviceObjectTracker.addObjectTracker(businessServiceOt);
+					}
+					else
+					{
+						ObjectTracker serviceOt = new ObjectTracker();
+						serviceOt.setClassName(com.abc.tpi.model.service.Service.class.getName());
+						serviceOt.setSourceId(serviceId);
+						serviceOt.setSourceVersionNum(businessService.getService().getVersionNum());
+						serviceOt.setParentClassName(ServiceSubscription.class.getName());
+						serviceOt.setParentId(ssId);
+						//serviceOt.setObjectTrackers(new ArrayList<ObjectTracker>());
+						serviceOt.setModificationStatus(ChangeType.NA);
+						
+						ObjectTracker businessServiceOt = new ObjectTracker();
+						businessServiceOt.setClassName(BusinessService.class.getName());
+						businessServiceOt.setSourceId(bsId);
+						businessServiceOt.setParentClassName(com.abc.tpi.model.service.Service.class.getName());
+						businessServiceOt.setParentId(serviceId);
+						businessServiceOt.setSourceVersionNum(businessService.getVersionNum());
+						
+						serviceOt.addObjectTracker(businessServiceOt);
+						ssOt.addObjectTracker(serviceOt);
+					}
+					
+				}
+				
+			}
+			
+		}
+		
+		List<ObjectTracker> result = new ArrayList<ObjectTracker>();
+
+		result.addAll(serviceSubscrptionMap.values());
+
+		return result;
+	}
+	
+	@Transactional
+	public List<ServiceSubscriptionApprovalReview> getApprovalReviewForSriId(String srId)
+	{
+		List<ServiceSubscriptionApprovalReview> result = new ArrayList<ServiceSubscriptionApprovalReview>();
+		List<ObjectTracker> objectTrackers =  getDataForSrId(srId);
+		
+		
+		for (ObjectTracker serviceSubscription: objectTrackers)
+		{
+			ServiceSubscriptionApprovalReview ssReview = new ServiceSubscriptionApprovalReview();
+			ssReview.setDeleted(false);
+			
+			ssReview.setName(serviceSubscriptionRepository.getOne(serviceSubscription.getSourceId()).getServiceCategory().getName());
+			ssReview.setObjectId(serviceSubscription.getSourceId());
+			ssReview.setSrId(srId);
+			ssReview.setToBeExported(true);
+			
+			if (serviceSubscription.getModificationStatus()!=null && serviceSubscription.getModificationStatus()==ChangeType.NA)
+			{
+				ssReview.setToBeExported(false);
+			}
+			ObjectTracker trackHistory = objectTrackerRepository.findOneByClassNameAndSourceId(ServiceSubscription.class.getName(), serviceSubscription.getSourceId());
+			
+			if (trackHistory==null)
+			{
+				ssReview.setNew(true);
+			}
+			
+			for (ObjectTracker serviceTracker: serviceSubscription.getObjectTrackers())
+			{
+				ServiceApprovalReview serviceReview = new ServiceApprovalReview();
+				serviceReview.setDeleted(false);
+				serviceReview.setObjectId(serviceTracker.getSourceId());
+				serviceReview.setSrId(srId);
+				serviceReview.setName(serviceRepository.getOne(serviceTracker.getSourceId()).getId().toString());
+				serviceReview.setToBeExported(true);
+				
+				if (serviceTracker.getModificationStatus()!=null && serviceTracker.getModificationStatus()==ChangeType.NA)					
+				{
+					ssReview.setToBeExported(false);
+				}
+				
+				trackHistory = objectTrackerRepository.findOneByClassNameAndSourceId(Service.class.getName(), serviceTracker.getSourceId());
+				
+				if (trackHistory==null)
+				{
+					serviceReview.setNew(true);
+				}
+				
+				for (ObjectTracker businessServiceTracker: serviceTracker.getObjectTrackers())
+				{
+					BusinessServiceApprovalReview businessServiceReview = new BusinessServiceApprovalReview();
+					businessServiceReview.setDeleted(false);
+					businessServiceReview.setObjectId(serviceTracker.getSourceId());
+					businessServiceReview.setSrId(srId);
+					businessServiceReview.setName(businessServiceRepository.getOne(businessServiceTracker.getSourceId()).getId().toString());
+					businessServiceReview.setToBeExported(true);
+					
+					if (businessServiceTracker.getModificationStatus()!=null && businessServiceTracker.getModificationStatus()==ChangeType.NA)					
+					{
+						businessServiceReview.setToBeExported(false);
+					}
+					
+					trackHistory = objectTrackerRepository.findOneByClassNameAndSourceId(BusinessService.class.getName(), businessServiceTracker.getSourceId());
+					
+					if (trackHistory==null)
+					{
+						businessServiceReview.setNew(true);
+					}
+					
+					serviceReview.addBussinessServiceReview(businessServiceReview);
+				}
+				ssReview.addServiceReview(serviceReview);
+			}
+			result.add(ssReview);
+		}
+		
+		return result;
+	}
+
+	@Override
+	@Transactional
+	public void migrateData(List<ObjectTracker> dataToMigrate) {
+		for (ObjectTracker ssTracker: dataToMigrate)
+		{
+			ssTracker.setDestId(123);
+			ssTracker.setDestVersionNum(0);
+			ssTracker.setMigratedOn(new Date());
+			
+			for (ObjectTracker sTracker : ssTracker.getObjectTrackers())
+			{
+				sTracker.setDestId(123);
+				sTracker.setDestVersionNum(0);
+				sTracker.setMigratedOn(new Date());
+				
+				for (ObjectTracker businessServiceTracker: sTracker.getObjectTrackers())
+				{
+					businessServiceTracker.setDestId(123);
+					businessServiceTracker.setDestVersionNum(0);
+					businessServiceTracker.setMigratedOn(new Date());
+				}
+			}
+			objectTrackerRepository.save(ssTracker);
+		}
+		
+	}
+
+}

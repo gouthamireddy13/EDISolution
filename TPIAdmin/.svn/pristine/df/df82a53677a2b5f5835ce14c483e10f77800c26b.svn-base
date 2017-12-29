@@ -1,0 +1,19 @@
+package com.abc.tpi.model.service;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.rest.core.config.Projection;
+
+@Projection(name="serviceCategoryForDropDown", types={ServiceCategory.class})
+public interface ServiceCategoryForDropDown {
+
+	@Value("#{target.category}_#{target.gsIdProd}_#{target.isaIdProd}")
+	String getNameforDropDown();
+	
+	Long getId();
+	
+	String getCategory();
+	
+	String getGsIdProd();
+	
+	String getIsaIdProd();
+}

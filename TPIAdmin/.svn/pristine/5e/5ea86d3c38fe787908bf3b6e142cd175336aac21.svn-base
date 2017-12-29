@@ -1,0 +1,51 @@
+package com.abc.tpi.model;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.NamedQuery;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
+
+@Entity
+@Table(name="ABC_TPI_PARTNER_GROUP",uniqueConstraints=@UniqueConstraint(columnNames={"GROUP_NAME","SUB_GROUP_NAME"}))
+
+@NamedQuery(name="PartnerGroup.namedFindDistinctGroupNames", query="SELECT DISTINCT(p.groupName) FROM PartnerGroup p ORDER BY p.groupName ASC")
+
+public class PartnerGroup {
+	
+	@Id
+	@SequenceGenerator(name="ABC_TPI_PARTNER_GROUP_GEN", sequenceName="ABC_TPI_PARTNER_GROUP_SEQ",allocationSize=10)
+	@GeneratedValue(generator="ABC_TPI_PARTNER_GROUP_GEN")
+	@Column(name="PARTNER_GROUP_ID")
+	private Long id;
+
+	@Column(name="GROUP_NAME", nullable=false)
+	private String groupName;
+	
+	@Column(name="SUB_GROUP_NAME",nullable=false)
+	private String subGroupName;
+	
+	public String getGroupName() {
+		return groupName;
+	}
+
+	public Long getId() {
+		return id;
+	}
+	public void setGroupName(String groupName) {
+		this.groupName = groupName;
+	}
+
+	public String getSubGroupName() {
+		return subGroupName;
+	}
+
+	public void setSubGroupName(String subGroupName) {
+		this.subGroupName = subGroupName;
+	}
+
+
+}

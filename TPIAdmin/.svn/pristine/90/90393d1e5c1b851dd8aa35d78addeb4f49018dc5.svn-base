@@ -1,0 +1,355 @@
+package com.abc.tpi.db;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.Assert;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import com.abc.tpi.model.master.Protocol;
+import com.abc.tpi.model.master.TpiMap;
+import com.abc.tpi.model.migrator.BusinessServiceApprovalReview;
+import com.abc.tpi.model.migrator.ServiceApprovalReview;
+import com.abc.tpi.model.migrator.ServiceSubscriptionApprovalReview;
+import com.abc.tpi.model.partner.ContactDetail;
+import com.abc.tpi.model.service.BusinessService;
+import com.abc.tpi.model.service.Service;
+import com.abc.tpi.model.service.ServiceCategory;
+import com.abc.tpi.model.service.ServiceSubscription;
+import com.abc.tpi.model.tpp.LightWellPartner;
+import com.abc.tpi.model.tpp.Transaction;
+import com.abc.tpi.repository.ServiceSubscriptionRepository;
+import com.abc.tpi.service.ServiceSubscriptionService;
+import com.abc.tpi.service.migrator.MigratorDataService;
+import com.abc.tpi.service.migrator.client.MigratorClientService;
+import com.abc.tpi.service.migrator.client.MigratorClientServiceImpl;
+
+@ContextConfiguration(locations={"classpath:application-contexttest.xml"})
+@RunWith(SpringJUnit4ClassRunner.class)
+
+public class TestTpiMigratorTest {
+
+	@Autowired
+	ServiceSubscriptionRepository serviceSubscriptionRepository;
+	
+	@Autowired
+	ServiceSubscriptionService serviceSubscriptionService;
+	
+	@Autowired
+	MigratorDataService migratorDataService;
+	
+	@Autowired
+	MigratorClientService migratorClientService;
+	
+	@Test
+	public void testFindingObjectsToBeMigrated()
+	{
+		List<ServiceSubscription> result = serviceSubscriptionRepository.namedFindAllNotMigratedServiceSubscription2();
+		
+		for (ServiceSubscription bs : result)
+		{
+			System.out.println(bs.getId());
+		}
+	}
+	
+	@Test
+	public void testGetServiceSubscriptionGraph()
+	{
+		long ssId = 1;
+		
+		ServiceSubscription ss = serviceSubscriptionService.findEntityUsingEntityGrpah(ServiceSubscription.class,ssId, "ServiceSubscriptionEntity.graphPartnerCategoryFull");
+		
+		for (ContactDetail contact: ss.getPartner().getContactDetails())
+		{
+			System.out.println(contact.getContactName());
+		}
+		
+		for (LightWellPartner lw: ss.getServiceCategory().getLightWellPartners())
+		{
+			{
+				System.out.println(lw.getId());
+			}
+		}
+		
+		for (Service s : ss.getServices())
+		{
+			System.out.println(s.getId());
+		}
+	}
+	
+	@Test
+	public void testGetServiceDetailsForMigrationGraph()
+	{
+		long serviceId = 202;
+		Service service = serviceSubscriptionService.findEntityUsingEntityGrpah(Service.class, serviceId, "ServiceEntity.graphMigrationReadyData");
+		
+		System.out.println("Business Services:");
+		for (BusinessService bs: service.getBusinessServices())
+		{
+			System.out.println(bs.getId());
+		}
+		
+		System.out.println("Light Well Partner:");
+		System.out.println(service.getLightWellPartner().getId() + "- " + service.getLightWellPartner().getOrganizationName());
+		
+		System.out.println("Tpp Protocols:");
+		for (Protocol protocol : service.getTpp().getProtocols())
+		{
+			System.out.println(protocol.getProtocolType());
+		}
+		
+		System.out.println("Tpp Contacts:");
+		for (ContactDetail contact : service.getTpp().getContactDetails())
+		{
+			System.out.println(contact.getContactName());
+		}
+		
+		System.out.println("Tpp Transactions:");		
+		for (Transaction transaction: service.getTpp().getTransactions())
+		{
+			System.out.println(transaction.getDocument().getDocumentType());
+		}
+	}
+	
+	@Test
+	public void testGetBusinessServiceForMigrationGraph()
+	{
+		long bsId = 212;
+		BusinessService businessService  = serviceSubscriptionService.findEntityUsingEntityGrpah(BusinessService.class, bsId, "BusinessServiceEntity.graphMigrationReadyData");
+		
+		System.out.println("Business Service " + businessService.getId() + " Change type: " + businessService.getChangeType());
+		
+		System.out.println("Business Service map: ");
+		if (businessService.getMap()!=null)
+		{
+			System.out.println("Business Service map: " + businessService.getMap().getMapName());
+		}
+		else
+		{
+			System.out.println("No map attached");
+		}
+		
+		System.out.println("Protocol: " + businessService.getProtocol().getProtocolType());
+		System.out.println("Service Type: " + businessService.getServiceType().getBusinessServiceName());
+		System.out.println("" + businessService.getVersion().getVersionNumber());
+
+		System.out.println("Business Service Lightwell Partner Id " + businessService.getLightWellPartner().getId());
+		
+		System.out.println("Map count for Service Type: " + businessService.getServiceType().getMaps().size());
+		System.out.println("Maps:");
+		for (TpiMap map : businessService.getServiceType().getMaps())
+		{
+			System.out.println(map.getMapName());
+		}
+		
+		System.out.println("Service Type company name " + businessService.getServiceType().getCompany());
+		System.out.println("Service Type direction name " + businessService.getServiceType().getDirection().getDirectionCode());
+		System.out.println("Service Type document name " + businessService.getServiceType().getDocument().getDocumentDescription());
+		System.out.println("Service Category Id " + businessService.getServiceType().getServiceCategory().getId());
+		
+		ServiceCategory sc = serviceSubscriptionService.findGenericEntityUsingEntityGrpah(ServiceCategory.class, businessService.getServiceType().getServiceCategory().getId(), "ServiceCategory.graphLW");
+		System.out.println("Service Category Light Well Partner Count " + sc.getLightWellPartners().size());
+		
+		for (LightWellPartner lw:sc.getLightWellPartners() )
+		{
+			System.out.println (lw.getOrganizationName());
+		}
+		
+	}
+	
+	@Test
+	public void testBuyildServiceSubscription()
+	{
+		Long ssId = (long) 192;
+		ServiceSubscription ss = serviceSubscriptionService.findEntityUsingEntityGrpah(ServiceSubscription.class,ssId, "ServiceSubscriptionEntity.graphPartnerServiceCat");
+		ServiceSubscription ssCopy = getServiceSubscriptionShallowCopy(ss);
+		System.out.println(ssCopy);
+	}
+	
+	@Test
+	public void testBuyildServiceForMigration()
+	{
+		Long ssId = (long) 202;
+		Service s = serviceSubscriptionService.findEntityUsingEntityGrpah(Service.class,ssId, "ServiceEntity.graphMigrationReadyData");
+		Service sCopy = Service.newMigrationInstance(s);
+		System.out.println(sCopy);
+	}
+	
+	@Test
+	public void testBuyildBusinessServiceForMigration()
+	{
+		Long ssId = (long) 212;
+		BusinessService s = serviceSubscriptionService.findEntityUsingEntityGrpah(BusinessService.class,ssId, "BusinessServiceEntity.graphMigrationReadyData");
+		BusinessService bs = BusinessService.newMigrationInstnace(s);
+		System.out.println(bs);
+	}
+	
+	//@Transactional
+	private ServiceSubscription getServiceSubscriptionShallowCopy(ServiceSubscription serviceSubscription)
+	{
+		return ServiceSubscription.newMigrationInstance(serviceSubscription);
+	}
+	
+	
+	@Test
+	public void testGetApprovalReviewForSriId()
+	{
+		String srId = "123123";
+		List<ServiceSubscriptionApprovalReview> data = migratorDataService.getApprovalReviewForSriId(srId);
+		for (ServiceSubscriptionApprovalReview review : data)
+		{
+			System.out.println(review.getName() + " object id: " + review.getObjectId() + " Srid: " + review.getSrId() + " To Be Exported: " + review.isToBeExported() + " is New: " + review.isNew());
+			for (ServiceApprovalReview sReview : review.getServices())
+			{
+				System.out.println(sReview.getName() + " object id: " + sReview.getObjectId() + " Srid: " + sReview.getSrId() + " To Be Exported: " + sReview.isToBeExported() + " is New: " + sReview.isNew());
+				
+				for (BusinessServiceApprovalReview bsReview : sReview.getBusinessServices())
+				{
+					System.out.println(bsReview.getName() + " object id: " + bsReview.getObjectId() + " Srid: " + bsReview.getSrId() + " To Be Exported: " + bsReview.isToBeExported() + " is New: " + bsReview.isNew());
+				}
+			}
+		}
+		
+		try {
+			//migratorClientService.migrateServiceSubscription(data);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	@Test
+	public void testRemoveNonExportableEntitiesCase1()
+	{
+		List<ServiceSubscriptionApprovalReview> originalList = new ArrayList<>();
+		List<ServiceSubscriptionApprovalReview> expectedList = new ArrayList<>();
+		
+		ServiceSubscriptionApprovalReview ss1 = new ServiceSubscriptionApprovalReview();
+		
+		
+		ss1.setName("SS Test One");
+		ss1.setToBeExported(true);
+		
+		ServiceApprovalReview s1 = new ServiceApprovalReview();
+		
+		s1.setName("S Test One");
+		s1.setToBeExported(true);
+		
+		BusinessServiceApprovalReview bs1 = new BusinessServiceApprovalReview();
+		bs1.setName("BS One");
+		bs1.setToBeExported(true);
+		
+		s1.addBussinessServiceReview(bs1);
+		ss1.addServiceReview(s1);
+		
+		originalList.add(ss1);		
+		expectedList.add(ss1);
+		
+		Assert.assertArrayEquals(expectedList.toArray(), originalList.toArray());
+		
+		MigratorClientServiceImpl testClient = new MigratorClientServiceImpl();
+		
+		testClient.removeNonExportableEntities(originalList);
+		
+		Assert.assertArrayEquals(expectedList.toArray(), originalList.toArray());
+	}
+	
+	@Test
+	public void testRemoveNonExportableEntitiesCase2()
+	{
+		List<ServiceSubscriptionApprovalReview> originalList = new ArrayList<>();
+		List<ServiceSubscriptionApprovalReview> expectedList = new ArrayList<>();
+
+		ServiceSubscriptionApprovalReview ss1 = new ServiceSubscriptionApprovalReview();
+		
+		ss1.setName("SS Test One");
+		ss1.setToBeExported(false);
+		
+		ServiceApprovalReview s1 = new ServiceApprovalReview();		
+		s1.setName("S Test One");
+		s1.setToBeExported(false);
+		
+		ServiceApprovalReview s2 = new ServiceApprovalReview();		
+		s2.setName("S Test Two");
+		s2.setToBeExported(false);
+		
+		
+		BusinessServiceApprovalReview bs1 = new BusinessServiceApprovalReview();
+		bs1.setName("BS One");
+		bs1.setToBeExported(false);
+
+		BusinessServiceApprovalReview bs2 = new BusinessServiceApprovalReview();
+		bs2.setName("BS Two");
+		bs2.setToBeExported(true);
+		
+		
+		BusinessServiceApprovalReview bs12 = new BusinessServiceApprovalReview();
+		bs12.setName("BS One");
+		bs12.setToBeExported(false);
+
+		BusinessServiceApprovalReview bs22 = new BusinessServiceApprovalReview();
+		bs22.setName("BS Two");
+		bs22.setToBeExported(false);
+		
+		s1.addBussinessServiceReview(bs1);
+		s1.addBussinessServiceReview(bs2);
+		ss1.addServiceReview(s1);
+		
+		s2.addBussinessServiceReview(bs12);
+		s2.addBussinessServiceReview(bs22);
+		ss1.addServiceReview(s2);
+		
+		
+		originalList.add(ss1);
+		expectedList.add(ss1);
+		
+		if (!originalList.isEmpty())
+		printServiceSubscriptionArray("Original List",originalList);
+
+		MigratorClientServiceImpl testClient = new MigratorClientServiceImpl();
+		testClient.removeNonExportableEntities(originalList);
+
+		printServiceSubscriptionArray("Clean List",originalList);
+
+		System.out.println("");
+		System.out.println("");
+
+	}
+	
+	private void printServiceSubscriptionArray(String label, List<ServiceSubscriptionApprovalReview> list)
+	{
+		
+		System.out.println("");
+		System.out.println(label);
+		System.out.println("");
+		
+		if (!list.isEmpty())
+		for (ServiceSubscriptionApprovalReview ssReview : list)
+		{	
+			String tbe = ssReview.isToBeExported()?"(T)":"(F)";
+			System.out.println(ssReview.getName() + tbe);
+			if (ssReview.getServices()!=null && !ssReview.getServices().isEmpty())
+			{
+				for (ServiceApprovalReview serviceReview: ssReview.getServices())
+				{
+					System.out.println("|");
+					tbe = serviceReview.isToBeExported()?"(T)":"(F)";
+					System.out.println("----" + serviceReview.getName() + tbe);
+					if (serviceReview.getBusinessServices()!=null && !serviceReview.getBusinessServices().isEmpty())
+					{				
+						for (BusinessServiceApprovalReview bsReview:serviceReview.getBusinessServices())
+						{
+							System.out.println("    |");
+							tbe = bsReview.isToBeExported()?"(T)":"(F)";
+							System.out.println("     -----" + bsReview.getName() + tbe);							
+						}
+					}
+				}
+			}
+		}
+	}
+}

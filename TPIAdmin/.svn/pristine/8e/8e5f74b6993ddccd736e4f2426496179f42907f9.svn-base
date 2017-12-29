@@ -1,0 +1,116 @@
+var ABApp = angular.module('ABApp');
+
+
+ABApp.controller('migrationController', function($scope,$modal, $http, $window,$interval,$filter) {
+	
+	
+	$scope.emptyList = [];
+	$scope.items = [];
+	$scope.idrequest=[];
+	$scope.bussidrequest=[];
+	
+	
+	
+	
+		 
+		// }
+		// $scope.idrequest.length=0;
+		
+	
+	
+	$scope.table = function(srid)
+	{
+		 $scope.items = angular.copy($scope.emptyList) ;
+		var tableList=[];
+		 $http.get('/TPIAdmin/app/migrate?srId='+srid)
+	     .success(function (response, status, headers, config) {
+	    	
+	    	 tableList=angular.copy(response);
+	    	 
+	    	// console.log("inputdata "+JSON.stringify(tempList));
+	     })
+	     .error(function (data, status, header, config) {
+	    	
+	         $scope.ResponseDetails = "Data: " + data +
+	             "<br />status: " + status ;
+	         //    "<br />headers: " + jsonFilter(header) +
+	           //  "<br />config: " + jsonFilter(config);
+	     })
+	     	
+		 .then(function(response) {
+			
+			 angular.forEach(tableList, function (item) {
+				 var obj=
+				 {  
+					name: item.name,
+					layer:"parent",
+					srId : item.srId,
+					show:false,
+					nodes:[]
+					 };
+				 angular.forEach(item.services, function (item1) {
+				 
+				 try
+				 {var innerobj=
+				 {  
+					name: item1.name,
+					layer:"service",
+					srId : item1.srId,
+					show:false,
+					nodes:[]
+					 };
+				 angular.forEach(item1.businessServices, function (item2) {
+					 var nestedobj=
+					 {  
+						name: item2.name,
+						layer:"businessService",
+						srId : item2.srId,
+						show:false,
+						nodes:[]
+						 };
+					 innerobj.nodes.push(nestedobj);
+					 
+				 });
+				 
+				
+				 }catch(e)
+				 {}
+				 obj.nodes.push(innerobj);
+			 });
+				 
+				
+				 $scope.items.push(obj);
+		 });
+			
+			 console.log("list "+JSON.stringify($scope.items) );
+		 });
+		
+		 
+	
+	};
+	
+	
+	$scope.Show=function(data,layer)
+	{
+		data.show=!data.show;
+		 angular.forEach(data.nodes, function (item) {
+			 item.show=!item.show;
+			/* if(data.nodes.length>0&&data.show==false)
+				 {
+				 item.show=false;
+				 }
+			*/
+			 if(item.nodes.length>0&&item.show==false)
+				 {
+			 angular.forEach(item.nodes, function (item1) {
+				 item1.show=item.show; 
+			 });
+				 }
+		 });
+		if( layer !='parent')
+			{
+			data.show=true;
+			}
+	}
+	
+});

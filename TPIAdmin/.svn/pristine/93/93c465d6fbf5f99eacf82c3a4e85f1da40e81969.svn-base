@@ -1,0 +1,21 @@
+<persistence xmlns="http://java.sun.com/xml/ns/persistence"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd"
+	version="2.1">
+
+	<persistence-unit name="punit">
+	<properties>	
+	<!--<property name="org.hibernate.envers.revision_on_collection_change" value="false" />-->
+	</properties>
+	</persistence-unit>
+<!-- 	<property name="javax.persistence.schema-generation.scripts.action"
+		value="drop-createcreate" />
+	<property name="javax.persistence.schema-generation.scripts.create-target"
+		value="file:///c:/scripts/create.ddl" />
+	<property name="javax.persistence.schema-generation.scripts.action"
+		value="drop" />
+	<property name="javax.persistence.schema-generation.scripts.drop-target"
+		value="file:///c:/scripts/drop.ddl" /> -->
+		 
+</persistence>
+

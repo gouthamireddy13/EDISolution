@@ -1,0 +1,17 @@
+package com.abc.dashboard.service;
+
+import java.util.List;
+
+import com.abc.dashboard.model.SdServiceCategoryDef;
+import com.abc.dashboard.model.projections.SdServiceCategoryDefProjection;
+
+public interface SdServiceCategoryService {
+
+	SdServiceCategoryDef saveSdServiceCategoryDef(SdServiceCategoryDef sdServiceCategoryDef);
+	<T> T findSdServiceCategoryByName(String name,Class<T> entityCls);
+	SdServiceCategoryDef findSdServiceCategoryById(long id);
+	<T> List<T> getAllSdServiceCategoryDefs(Class<T> entityCls);
+	void deleteSdServiceCategoryDef(long id);
+	void deleteSdServiceCategoryDef(SdServiceCategoryDef sdServiceCategoryDef);
+	<T> T findGenericEntityUsingEntityGrpah(Class<T> entityCls, Long id, String entityGraphName);
+}

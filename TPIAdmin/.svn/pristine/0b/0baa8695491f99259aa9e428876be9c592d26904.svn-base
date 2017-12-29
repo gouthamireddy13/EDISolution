@@ -1,0 +1,212 @@
+package com.abc.tpi.model.service;
+
+import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
+import javax.persistence.NamedAttributeNode;
+import javax.persistence.NamedEntityGraph;
+import javax.persistence.NamedEntityGraphs;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.NamedSubgraph;
+import javax.persistence.Table;
+
+import org.hibernate.envers.Audited;
+
+import com.abc.tpi.model.master.Delimiter;
+import com.abc.tpi.model.tpp.LightWellPartner;
+import com.abc.tpi.model.tpp.Tpp;
+import com.abc.tpi.service.TpiManagedEntityListener;
+
+/**
+ * @author a061313
+ *
+ */
+@Entity
+@Audited
+@NamedQueries({
+	@NamedQuery(name = "Service.namedFindByServiceSubscriptionIdAndId", 
+			query = "select s from ServiceSubscription ss join ss.services s "
+					+ "	where ss.id =:ssId and s.id =:sId"),	
+	@NamedQuery(name = "Service.namedFindByAbcId", 
+				query = "select t.id from Service t "
+						+ " where t.lightWellPartner.testIsaID = :testIsaId "
+						+ " or t.lightWellPartner.testGsId = :testGsId "
+						+ "	or t.lightWellPartner.productionIsaID = :prodIsaId "
+						+ "	or t.lightWellPartner.productionGsId = :prodGsId"),
+	
+	@NamedQuery(name = "Service.namedFindByAbcIdAndServiceId", 
+				query = "select t.id from Service t "
+						+ "	where ( t.lightWellPartner.testIsaID = :testIsaId "
+						+ "	or t.lightWellPartner.testGsId = :testGsId "
+						+ "	or t.lightWellPartner.productionIsaID = :prodIsaId "
+						+ "	or t.lightWellPartner.productionGsId =:prodGsId) "
+						+ "	and t.id <> :serviceId"),
+	@NamedQuery(name="Service.namedFindAllNotMigratedServices",
+	query="select s.id " 
+			+ " from Service s "
+			+ " where NOT EXISTS "
+			+ " (select 1 "
+			+ "		from ObjectTracker ot "
+			+ "			where s.id = ot.sourceId "
+			+ "			and s.versionNum = ot.sourceVersionNum "
+			+ "			and ot.className = 'com.abc.tpi.model.service.Service')"),
+	@NamedQuery(name="Service.namedFindNotMigratedServicesBySrId",
+	query="select s.id " 
+			+ " from Service s "
+			+ " where NOT EXISTS "
+			+ " (select 1 "
+			+ "		from ObjectTracker ot "
+			+ "			where s.id = ot.sourceId "
+			+ "			and s.versionNum = ot.sourceVersionNum "
+			+ "			and ot.className = 'com.abc.tpi.model.service.Service')"
+			+ "	and s.srId = :srId"),
+	@NamedQuery(name="Service.namedGetBusinessServicesForServiceById",
+	query="select bs.id from Service s join s.businessServices bs where s.id =:sId"),
+	@NamedQuery(name = "Service.namedFindVersionNumById", 
+	query = "select s.versionNum from ServiceSubscription ss join ss.services s "
+			+ "	where s.id =:sId")
+})
+
+@Table(name="ABC_TPI_SERVICE")
+@EntityListeners({TpiManagedEntityListener.class})
+
+@NamedEntityGraphs
+({
+	@NamedEntityGraph(name="ServiceEntity.graphServiceId",
+	attributeNodes=
+	{
+			@NamedAttributeNode(value="serviceSubscription",subgraph="serviceSubscription")
+	},
+	subgraphs={
+			@NamedSubgraph(name="serviceSubscription",
+					attributeNodes={
+							@NamedAttributeNode("id")
+				})
+			}
+	),
+	
+	@NamedEntityGraph(name="ServiceEntity.graphMigrationReadyData",
+	attributeNodes=
+	{
+			@NamedAttributeNode(value="tpp",subgraph="tpp"),
+			@NamedAttributeNode(value="lightWellPartner"),
+			@NamedAttributeNode(value="repeatDelimiter"),
+			@NamedAttributeNode(value="elementDelimiter"),
+			@NamedAttributeNode(value="segmentDelimiter")
+	},
+	subgraphs=
+	{
+			@NamedSubgraph(name="tpp",
+					attributeNodes={
+							@NamedAttributeNode("name")
+				})
+	}
+	)
+})
+
+
+public class Service extends ServiceEntity
+{
+	public static Service newInstance(Service service)
+	{
+		if (service==null)
+		{
+			return null;
+		}
+		
+		Service clone = newMigrationInstance(service);
+		
+		//replace shallow copy of Tpp with full copy
+		clone.setTpp(Tpp.newInstance(service.getTpp()));
+		
+		if (service.getBusinessServices()!=null)
+		{
+			for (BusinessService bs: service.getBusinessServices())
+			{
+				clone.addBusinessService(BusinessService.newInstance(bs));
+			}
+		}
+		
+		
+		return clone;
+	}
+	
+	/**
+	 * Returns shallow copy of Service object ready for migration.
+	 */
+	public static Service newMigrationInstance(Service service)
+	{
+		if (service==null)
+		{
+			return null;
+		}
+		
+		Service clone = new Service();
+		clone.setCompositeElementDelimiter(Delimiter.newInstance(service.getCompositeElementDelimiter()));
+		clone.setElementDelimiter(Delimiter.newInstance(service.getElementDelimiter()));
+		clone.setLightWellPartner(LightWellPartner.newInstance(service.getLightWellPartner()));
+		clone.setNotes(service.getNotes());
+		clone.setRepeatDelimiter(Delimiter.newInstance(service.getRepeatDelimiter()));
+		clone.setSegmentDelimiter(Delimiter.newInstance(service.getSegmentDelimiter()));
+		
+		if (service.getTpp()!=null)
+		{
+			Tpp tppShallowCopy = new Tpp();
+			tppShallowCopy.setName(service.getTpp().getName());		
+			clone.setTpp(tppShallowCopy);
+		}
+
+		return clone;
+	}
+	
+	@Override
+	public boolean equals(Object o)
+	{
+		if (this==o) return true;
+		if (!(o instanceof Service)) return false;
+		Service that = (Service)o;
+		
+		boolean result = true;
+		
+		if (this.getBusinessServices()==null && that.getBusinessServices()!=null) return false;
+		if (this.getCompositeElementDelimiter()==null && that.getCompositeElementDelimiter()!=null) return false;
+		if (this.getElementDelimiter()==null && that.getElementDelimiter()!=null) return false;
+		if (this.getLightWellPartner()==null && that.getLightWellPartner()!=null) return false;
+		if (this.getNotes()==null && that.getNotes()!=null) return false;
+		if (this.getRepeatDelimiter()==null && that.getRepeatDelimiter()!=null) return false;
+		if (this.getSegmentDelimiter()==null && that.getSegmentDelimiter()!=null) return false;
+		if (this.getSrId()==null && that.getSrId()!=null) return false;
+		if (this.getTpp()==null && that.getTpp()!=null) return false;
+
+		if (this.getBusinessServices()!=null && !this.getBusinessServices().equals(that.getBusinessServices())) return false;
+		if (this.getCompositeElementDelimiter()!=null && !this.getCompositeElementDelimiter().equals(that.getCompositeElementDelimiter())) return false;
+		if (this.getElementDelimiter()!=null && !this.getElementDelimiter().equals(that.getElementDelimiter())) return false;
+		if (this.getLightWellPartner()!=null && !this.getLightWellPartner().equals(that.getLightWellPartner())) return false;
+		if (this.getNotes()!=null && !this.getNotes().equals(that.getNotes())) return false;
+		if (this.getRepeatDelimiter()!=null && !this.getRepeatDelimiter().equals(that.getRepeatDelimiter())) return false;
+		if (this.getSegmentDelimiter()!=null && !this.getSegmentDelimiter().equals(that.getSegmentDelimiter())) return false;
+		if (this.getSrId()!=null && !this.getSrId().equals(that.getSrId())) return false;
+		if (this.getTpp()!=null && !this.getTpp().equals(that.getTpp())) return false;
+
+		return result;
+	}
+	
+	@Override
+	public int hashCode() 
+	{
+		int prime = 2;
+		int result = 1;
+
+		result = prime * result + ((this.getBusinessServices() == null) ? 0 : this.getBusinessServices().hashCode());
+		result = prime * result + ((this.getCompositeElementDelimiter() == null) ? 0 : this.getCompositeElementDelimiter().hashCode());
+		result = prime * result + ((this.getElementDelimiter() == null) ? 0 : this.getElementDelimiter().hashCode());
+		result = prime * result + ((this.getLightWellPartner() == null) ? 0 : this.getLightWellPartner().hashCode());
+		result = prime * result + ((this.getNotes() == null) ? 0 : this.getNotes().hashCode());
+		result = prime * result + ((this.getRepeatDelimiter() == null) ? 0 : this.getRepeatDelimiter().hashCode());
+		result = prime * result + ((this.getSegmentDelimiter() == null) ? 0 : this.getSegmentDelimiter().hashCode());
+		result = prime * result + ((this.getSrId() == null) ? 0 : this.getSrId().hashCode());
+		result = prime * result + ((this.getSrId() == null) ? 0 : this.getSrId().hashCode());
+		
+		return result;
+	}
+}

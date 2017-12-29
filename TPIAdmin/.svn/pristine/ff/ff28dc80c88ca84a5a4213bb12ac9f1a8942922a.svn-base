@@ -1,0 +1,6 @@
+#Default parent view.
+partnerSubscriptionReport.(class)=com.abc.tpi.view.excel.ExcelPartnerSubscriptionReport
+lightWellIdentityReport.(class)=com.abc.tpi.view.excel.LightWellIdentityReport
+partnerReport.(class)=com.abc.tpi.view.excel.ExcelPartnerReport
+promotionExportXlsx.(class)=com.abc.tpi.view.excel.PromotionExportXlsx
+tppReport.(class)=com.abc.tpi.view.excel.ExcelTPPReport

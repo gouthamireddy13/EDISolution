@@ -1,0 +1,104 @@
+package com.abc.tpi.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.abc.tpi.common.exceptions.TpiRepositoryException;
+import com.abc.tpi.model.service.ServiceSubscription;
+import com.abc.tpi.model.service.ServiceType;
+import com.abc.tpi.model.tpp.Tpp;
+import com.abc.tpi.model.tpp.Transaction;
+import com.abc.tpi.repository.ServiceCategoryRepository;
+import com.abc.tpi.repository.ServiceSubscriptionRepository;
+import com.abc.tpi.repository.ServiceTypeRepository;
+import com.abc.tpi.repository.TppRepository;
+@Service
+public class ServiceSubscriptionServiceImpl implements ServiceSubscriptionService {
+
+	@Autowired
+	ServiceCategoryRepository serviceCategoryRepository;
+	
+	@Autowired
+	ServiceTypeRepository servivceTypeRepository;
+	
+	@Autowired
+	TppRepository tppRepository;
+	
+	@Autowired
+	TppService	tppService;
+	
+	@Autowired
+	ServiceSubscriptionRepository serviceSubscriptionRepository;
+	
+	@Transactional
+	public List<ServiceType> getBusinessServiceForTppAndServiceCat(long serviceCategoryId, long tppId) throws TpiRepositoryException {
+		
+		List<ServiceType> result = null;
+		if (tppId<=0) 
+		{
+			result = servivceTypeRepository.namedFindAllServiceTypesByServiceCategoryId(serviceCategoryId);
+		}
+		else
+		{
+			//get Transactions associated with the TPP
+			Tpp tpp = tppService.findTppById(tppId);
+			
+			if (tpp != null)
+			{
+				for (Transaction transaction : tpp.getTransactions()) {
+					List<ServiceType> serviceTypes = servivceTypeRepository
+													.namedFindServiceTypesForServiceCategoryAndTransaction(serviceCategoryId,
+															transaction.getDirection().getId(), 
+															transaction.getDocument().getId(),
+															transaction.getVersion().getId());
+					if (serviceTypes!=null)
+					{
+						if (result==null)
+						{
+							result = serviceTypes;
+						}
+						else
+						{
+							result.addAll(serviceTypes);
+						}						
+					}
+				}
+			}
+			else
+			{
+				throw new TpiRepositoryException("Tpp with id : " + tppId + " not found");
+			}
+		}
+		
+		return result;
+	}
+	
+	@Transactional
+	public ServiceSubscription saveServiceSubscription(ServiceSubscription serviceSubscription) throws TpiRepositoryException
+	{
+		for (com.abc.tpi.model.service.Service service: serviceSubscription.getServices())
+		{
+			if (service.getTpp().getLightWellPartner()!=null)
+			{
+				service.setLightWellPartner(service.getTpp().getLightWellPartner());
+			}
+		}
+		return serviceSubscriptionRepository.save(serviceSubscription);
+	}
+
+	@Override
+	public List<ServiceSubscription> getAllServiceSubscriptions() 
+	{
+		return serviceSubscriptionRepository.findAll();
+	}
+
+	@Override
+	public List<ServiceType> getAllServiceTypes() {
+		return servivceTypeRepository.findAll();
+	}
+	
+
+}

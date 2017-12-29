@@ -1,0 +1,27 @@
+package com.abc.tpi.repository;
+
+import java.util.Collection;
+import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+
+import com.abc.tpi.model.search.projections.ServiceSubscription.BusinessServiceWithParentInfo;
+import com.abc.tpi.model.search.projections.ServiceSubscription.ServiceSubscriptionWithGsIdIsaId;
+import com.abc.tpi.model.service.ServiceSubscription;
+import com.abc.tpi.model.service.ServiceSubscriptionListViewProjection;
+@Repository("serviceSubscriptionRepository")
+public interface ServiceSubscriptionRepository extends JpaRepository<ServiceSubscription, Long> {
+	List<ServiceSubscriptionListViewProjection> findAllByOrderByPartnerPartnerName();
+	List<Long> namedFindByParnterIdAndServiceCategoryId(@Param("partnerId") long partnerId, @Param("serviceCategoryId") long serviceCategoryId);
+	List<ServiceSubscriptionWithGsIdIsaId> namedGetServiceSubscriptionWithGsIdIsaId();
+	List<ServiceSubscription> namedFindBySRId(@Param("srID") String srID);
+	List<BusinessServiceWithParentInfo> namedFindBusinessServicesForSrId(@Param("srID") String srID);
+	List<BusinessServiceWithParentInfo> namedFindBusinessServicesByPartnerName(@Param("partnerName") String partnerName);
+	List<Long> namedFindAllNotMigratedServiceSubscription();
+	List<ServiceSubscription> namedFindAllNotMigratedServiceSubscription2();
+	Integer namedGetVersionNumberById(@Param("ssId") long ssId);
+	Collection<Long> namedGetServicesIdsById(@Param("ssId") long ssId);
+	
+}

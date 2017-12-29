@@ -1,0 +1,139 @@
+package com.abc.tpi.service;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.abc.tpi.model.partner.PartnerGroup;
+import com.abc.tpi.repository.PartnerGroupRepository;
+
+@Service
+public class PartnerGroupServiceImpl implements PartnerGroupService {
+
+	@Autowired
+	PartnerGroupRepository partnerGroupRepository;
+	
+	@Transactional
+	public void deletePartnerGroup(PartnerGroup partnerGroup) {
+		partnerGroupRepository.delete(partnerGroup);
+
+	}
+
+	@Transactional
+	public void deletePartnerGroupByID(long id) {
+		partnerGroupRepository.delete(id);
+
+	}
+
+	@Override
+	public List<String> getDistinctPartnerGroupNames() {
+
+		List<String> result = partnerGroupRepository.namedFindDistinctGroupNames();
+		if (result==null)
+		{
+			result = new ArrayList<String>();
+		}
+		return result;
+	}
+
+	@Override
+	/**
+	 *Sorts results with "N/A" value moved to the top of the list (if found)
+	 */
+	public List<String> getDistinctPartnerGroupNamesForDropDown() {
+		
+		List<String> sortedList = this.getDistinctPartnerGroupNames();		
+		String caseSensitiveName = "";
+		
+		//find "N/A" (case insensitive search
+		for (String name: sortedList)
+		{
+			if (name.equalsIgnoreCase("N/A"))
+			{
+				caseSensitiveName = name;
+			}
+		}
+		
+		//move to the top
+		if (!caseSensitiveName.isEmpty())
+		{
+			int index = sortedList.indexOf(caseSensitiveName);
+			sortedList.remove(index);
+			sortedList.add(0,caseSensitiveName);
+		}
+		
+		return sortedList;
+	}
+
+	@Override
+	public PartnerGroup getPartnerGroupById(long id) {
+		return partnerGroupRepository.findOne(id);
+	}
+
+	@Override
+	public List<PartnerGroup> getPartnerGroupsByGroupName(String groupName) {
+		List<PartnerGroup> result = partnerGroupRepository.findByGroupNameIgnoreCaseOrderBySubGroupNameAsc(groupName);
+		if (result==null)
+		{
+			result = new ArrayList<PartnerGroup>();
+		}
+		return result;
+	}
+
+	@Override
+	/**
+	 *Sorts results with "N/A" value moved to the top of the list (if found)
+	 */
+	public List<PartnerGroup> getPartnerGroupsByGroupNameForDropDown(String groupName) {
+		
+		List<PartnerGroup> sortedList = this.getPartnerGroupsByGroupName(groupName);
+		PartnerGroup naSubGroup = null;
+		
+		for(PartnerGroup partnerGroup: sortedList)
+		{
+			if (partnerGroup.getSubGroupName().equalsIgnoreCase("N/A"))
+			{
+				naSubGroup = partnerGroup;
+			}
+		}
+		
+		if (naSubGroup!=null)
+		{
+			int index = sortedList.indexOf(naSubGroup);
+			sortedList.remove(index);
+			sortedList.add(0,naSubGroup);
+		}
+		
+		return sortedList;
+	}
+
+	@Override
+	public List<PartnerGroup> getAllPartnerGroups() {
+		return partnerGroupRepository.findAll();
+	}
+
+	@Transactional
+	public PartnerGroup savePartnerGroup(PartnerGroup partnerGroup) {
+		return partnerGroupRepository.save(partnerGroup);
+	}
+
+	@Override
+	public boolean isPartnerGroupExists(String groupName, String subGroupName) {
+		boolean result;
+		PartnerGroup partnerGroup = partnerGroupRepository.findOneByGroupNameAndSubGroupNameIgnoreCase(groupName, subGroupName);
+		if (partnerGroup!=null)
+			{result = true;}
+		else
+			{result=false;}
+		return result;
+	}
+
+	@Override
+	public PartnerGroup getPartnerGroupByGroupSubGroupName(String groupName, String subGroupName) {
+		return partnerGroupRepository.findOneByGroupNameAndSubGroupNameIgnoreCase(groupName, subGroupName);
+	}
+
+}

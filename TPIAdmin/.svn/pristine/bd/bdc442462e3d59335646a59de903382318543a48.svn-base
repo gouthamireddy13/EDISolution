@@ -1,0 +1,6 @@
+var ABApp = angular.module('ABApp');
+
+
+ABApp.controller('abcIdMaintenanceController', function($scope,$modal,$filter, $http, $window,$interval,$filter) {
+	
+});

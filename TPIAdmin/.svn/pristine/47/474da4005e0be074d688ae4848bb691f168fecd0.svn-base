@@ -1,0 +1,251 @@
+var ABApp = angular.module('ABApp');
+
+
+ABApp.controller('abcIdMaintenanceController', function($scope,$modal,$filter, $http, $window,$interval,$filter) {
+	$scope.ErrorMsg = false;
+	$scope.scList = [];
+	$scope.initSC = function()
+	{
+		
+		
+		 $http.get('/TPIAdmin/app/serviceCategories')
+	     .success(function (response, status, headers, config) {
+	    	 
+	    	 $scope.scList=angular.copy(response);
+	    	// console.log("inputdata "+JSON.stringify(tempList));
+	     })
+	     .error(function (data, status, header, config) {
+	    	
+	         $scope.ResponseDetails = "Data: " + data +
+	             "<br />status: " + status ;
+	         //    "<br />headers: " + jsonFilter(header) +
+	           //  "<br />config: " + jsonFilter(config);
+	     })
+	     	
+		 .then(function(response) {
+			
+		 });
+			
+	};
+	
+
+	
+	$scope.saveABC = function(){
+		$scope.ErrorMsg=true;
+		var submitObj=
+			{
+				category : $scope.serviceCategory,
+				name : $scope.name,
+			    partnerName: $scope.partnerName,
+			    isaIdProd: $scope.productionIsaID,
+			    gsIdProd: $scope.productionGsId,
+			    isaQualifierProd: $scope.productionIsaQualifier,
+			    isaIdTest: $scope.testIsaID,
+			    gsIdTest: $scope.testGsId,
+			    isaQualifierTest: $scope.testIsaQualifier
+				
+				
+			};
+				$http.post("/TPIAdmin/app/serviceCategories",submitObj)
+				.success(function (response, status, headers, config) {
+					 //$scope.grouplist = angular.copy(response);
+					 console.log(JSON.stringify(response));
+					 
+				 })
+				 .error(function (data, status, header, config) {
+					
+				     $scope.ResponseDetails = "Data: " + data +
+				         "<br />status: " + status ;
+				     //    "<br />headers: " + jsonFilter(header) +
+				       //  "<br />config: " + jsonFilter(config);
+				 })
+				.then(function(response) {
+					 $scope.myWelcome = response;
+					 $scope.clickModal();
+				    
+				});
+						
+						
+					}
+	
+	
+	$scope.clearabc = function(){
+		$scope.ErrorMsg=false;
+		 $scope.serviceCategory = null;
+		 $scope.name = null;
+	     $scope.partnerName = null;
+	    $scope.productionIsaID = null;
+	     $scope.productionGsId = null;
+	     $scope.productionIsaQualifier = null;
+	   $scope.testIsaID = null;
+	    $scope.testGsId = null;
+	     $scope.testIsaQualifier = null;
+		
+	};
+	
+	$scope.userData = [
+        {
+            name: 'John Doe',
+            selectedProducts: [
+                'coffee',
+                'beer',
+                'wine']
+        },
+        {
+            name: 'Jane Doe',
+            selectedProducts: [
+                'coffee',
+                'tea']
+        }
+    ];
+  $scope.products = ['coffee', 'beer', 'wine', 'tea', 'milk'];
+
+
+$scope.clickModal=function()
+{
+	var txt="hello";
+	
+		
+		$scope.user.msg=$scope.serviceCategory+" has been added";
+		
+	
+	if($scope.user.del)
+	{
+		$scope.user.msg="Are you sure to delete the "+$scope.partnerName+" Partner ?";	
+	}
+	if($scope.user.edit)
+	{
+		$scope.user.msg="Are you sure to delete the contact ?";	
+	}
+	
+	var modalInstance = $modal.open({
+        templateUrl: 'myModalContent.html',
+        controller: 'ModalInstanceCtrl',
+        size: 'sm',
+    
+        
+        //size: size,
+        resolve: {
+            user: function() {
+                return $scope.user;
+            },
+            
+            selectedProducts: function() {
+                return $scope.userData.selectedProducts;
+            },
+            products: function () {
+                //console.log($scope.selectedProducts);
+                return $scope.products; // get all available products
+            }
+        }
+    });
+    
+    modalInstance.result.then(function (selectedItems) {
+    	if(selectedItems=="delete")
+    		{
+    	 console.log('eventX found on Controller1 $scope');
+         $http.delete('/TPIAdmin/app/partners/' + $scope.id)
+         .success(function (data, status, headers) {
+        	 location.reload();
+         })
+         .error(function (data, status, header, config) {
+             $scope.ServerResponse = htmlDecode("Data: " + data +
+                 "\n\n\n\nstatus: " + status +
+                 "\n\n\n\nheaders: " + header +
+                 "\n\n\n\nconfig: " + config);
+         });
+    		}
+    	else	if(selectedItems=="edit")
+		{
+    		var index = $scope.contactList.indexOf($scope.localdel);
+	    	  $scope.contactList.splice(index, 1);  
+	    	  $scope.localdel=null;
+		}
+    	
+    }, function () {
+     
+    });
+};
+
+
+
+
+
+
+});
+
+ABApp.controller('ModalInstanceCtrl', function ($scope, $http, $modalInstance, products, selectedProducts, user) {
+
+  //console.log('user', user);
+  $scope.products = products;
+    $scope.user=user;
+  $scope.selected = selectedProducts;
+  $scope.cancel = function (flag,editf,trans) {
+	    
+	    if(flag!=undefined&&flag==true)
+    	{
+	    	  $scope.deletef();
+    	}
+	    else if(editf!=undefined &&editf==true)
+	    	{
+	    	$scope.Editfuc();
+	    	}
+	    else if(trans!=undefined &&trans==true)
+    	{
+    	$scope.transFuc();
+    	}
+	    else
+	    	{
+	    	location.reload();
+	    	}
+	    
+	  };
+	  
+	  $scope.Editfuc = function () {
+		  $modalInstance.close("edit");
+		   
+		  };
+		  $scope.transFuc = function () {
+			  $modalInstance.close("transedit");
+			   
+			  };
+		  
+	  $scope.deletef = function () {
+		  $modalInstance.close("delete");
+		   
+		  };
+		  $scope.close = function () {
+			//  user.del=false;
+			//  user.edit=false;
+			  $modalInstance.close('cancel');
+			   
+			  };
+		  
+			  
+  $scope.chkChange = function(item) {
+      console.log(item);
+      var index  = $scope.selected.indexOf(item);
+      if (index > -1) {
+          $scope.selected.splice(index, 1);
+      }
+      else {
+          // not selected --> we have to add it
+          $scope.selected.push(item);
+      }
+      console.log($scope.selected);
+  };
+  //console.log(selectedProducts);
+  $scope.ok = function () {
+      // prepare everything for sending to sever
+      // --> probably check here if the data have changed or not (not implemented yet)
+      
+      
+    var data = $.param({
+            json: JSON.stringify({
+                user: user.name,
+                products: $scope.selected
+            })
+        });
+       
+  };
+});

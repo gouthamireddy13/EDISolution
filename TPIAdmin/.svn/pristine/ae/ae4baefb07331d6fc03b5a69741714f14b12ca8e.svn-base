@@ -1,0 +1,8 @@
+var ABApp = angular.module('ABApp');
+
+
+ABApp.controller('serviceController', function($scope,$modal, $http, $window) {
+	
+						
+						
+});

@@ -1,0 +1,80 @@
+package com.abc.tpi.service;
+
+import java.io.IOException;
+import java.util.List;
+
+import org.springframework.web.multipart.MultipartFile;
+
+import com.abc.dashboard.model.SdBusinessUnit;
+import com.abc.dashboard.model.SdServiceType;
+import com.abc.tpi.model.master.Ack;
+import com.abc.tpi.model.master.Delimiter;
+import com.abc.tpi.model.master.Direction;
+import com.abc.tpi.model.master.Document;
+import com.abc.tpi.model.master.PartnerType;
+import com.abc.tpi.model.master.Protocol;
+import com.abc.tpi.model.master.TpiMap;
+import com.abc.tpi.model.master.TppType;
+import com.abc.tpi.model.master.Version;
+import com.abc.tpi.model.partner.ContactDetail;
+import com.abc.tpi.model.partner.Partner;
+import com.abc.tpi.model.partner.PartnerGroup;
+import com.abc.tpi.model.service.ServiceType;
+import com.abc.tpi.model.tpp.LightWellPartner;
+import com.abc.tpi.utils.ABCIDReturnMsgBean;
+import com.abc.tpi.utils.SSReturnMsgBean;
+import com.abc.tpi.utils.SeedDataInsertStatMsg;
+import com.abc.tpi.utils.ComplianceMapReturnMsgBean;
+import com.abc.tpi.utils.SAReturnMsgBean;
+import com.abc.tpi.utils.SeedDataRespMsg;
+import com.abc.tpi.utils.TPPReturnMsgBean;
+
+public interface SeedDataLoadService {
+	Delimiter getDelimiterFromCsvString(String delimiter);
+	Ack getAckFromCsvString(String ack);
+	Direction getDirectionFromCsvString(String direction);
+	Document getDocumentFromCsvString(String document);
+	PartnerType getPartnerTypeFromCsvString(String partnerType);
+	Protocol getProtocolFromCcvString(String protocol);
+	TppType	getTppTypeFromCsvString(String tppType);
+	Version getVersionFromCsvString(String version);
+	PartnerGroup getPartnerGroupFromCsvString(String text);	
+	ServiceType getServiceTypeFromCsvString(String text);
+	SeedDataRespMsg processSeedDataCSVFile(MultipartFile file, String entityName) throws IOException;   //Updated by Arindam Sikdar for Dynamic Data Load process - Partner Load
+	TpiMap getMapFromCsvString(String text);
+	LightWellPartner getLightWellPartnerFromCsvString(String text);
+	ServiceType loadMapsForServiceCategory(String text);
+	SdBusinessUnit getSdBusinessUnitFromString(String text);
+	SdServiceType getSdServiceTypeFromString(String text);
+	
+	//Added by Arindam Sikdar for Dynamic Data Load process
+	ContactDetail getContactDetailFromCsvString(String contactString);
+	
+	//Added by Arindam Sikdar for Dynamic Data Load process - Partner Load
+	Partner getPartnerFromXlsxString(String partnerString);
+	
+	//Added by Arindam Sikdar for Dynamic Data Load process - TPP Load
+	//TPPReturnMsgBean getTPPFromXlsxString(String tppString);
+	
+	//Added by Pappu Prasad for Dynamic Data Load process - ABC ID Maintenance Load
+	ABCIDReturnMsgBean getIDMFromXlsxString(String idmString);
+	
+	//Added by Arindam Sikdar for Dynamic Data Load process - Compliance Map Load
+	ComplianceMapReturnMsgBean getComplainceMapFromXlsxString(String cMapString);
+
+	//Added by Pappu Prasad for Dynamic Data Load process - SERVICE SUBSCRIPTION Load
+	SSReturnMsgBean getSSFromXlsxString(String ssString);
+	
+	//Added by Pappu Prasad for Dynamic Data Load process - SD Service Access Load
+		SAReturnMsgBean getSAFromXlsxString(String saString);
+	
+	TPPReturnMsgBean getTPPFromXlsxStringForPromotion(String tppString, List<String> tppList);
+	
+	String validatePartnerString(String partnerString);
+	
+	SeedDataInsertStatMsg performUploadAbcIdMaintenance(String rowLine);
+	
+	SeedDataInsertStatMsg performUploadThroughAPI(String rowLine, String entityName);
+	
+	SeedDataInsertStatMsg makeApiCallForUploadToHigherEnv(String rowLine, String entityName);
+}

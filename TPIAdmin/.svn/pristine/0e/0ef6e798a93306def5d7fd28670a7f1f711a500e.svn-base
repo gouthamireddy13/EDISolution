@@ -1,0 +1,285 @@
+<div  >
+<div class="dashboard-wrap">
+<div class="breadcrumbs">
+	
+	<h2>{{message}}</h2>	
+</div>
+</div>	
+<style>input:required:invalid {
+    outline: none;
+}
+</style>
+ <div style="width:95%;" >
+ <div class="panel panel-default" style="background-color: #404951;" >
+ <div style="padding-top:20px;padding-left:20px;" ng-init="initgroup();initPartnerList();initTransactionTypeList();">
+      <div class="panel-heading" >PARTNER NAME</div>
+      </div>
+      <div class="panel-body " style="padding-top:0px; padding-left:20px" >
+      	
+		
+		<input class="form-control"  id="panelsearch" type="text" name="search"  ng-model="search.partnerName"> 
+      
+      </div>
+      <div class=" panel-body pull-right col-sm-12" style=" background-color:#59626b ;">	
+
+  
+		  <!-- Trigger the modal with a button -->
+		  <button type="button" class="btn btn-primary pull-right"   data-toggle="modal" data-target="#myModal" ng-click="clearContact();" id="panelbtn"><img src="assets/AddPartner.png" id="panellogo">&nbsp;&nbsp;&nbsp; NEW PARTNER</button>
+
+</div>
+</div>
+
+<table class="table table-striped">
+
+	        <thead id="partnerhead">
+	        <tr>
+	            
+	            <th id="partnerrow"> <a id="sortlink"
+	             ng-click="sortType = 'partnerName'; sortReverse = !sortReverse">PARTNER NAME
+            
+            <span ng-show="sortType == 'partnerName' && !sortReverse" ><img src="assets/up.png" id="sort"></span>
+            <span ng-show="sortType == 'partnerName' && sortReverse" ><img src="assets/down.png" id="sort"></span></a>
+	             </th>
+	           
+	            <th id="partnerrow"><a id="sortlink"
+	             ng-click="sortType = 'group'; sortReverse = !sortReverse">
+           
+         GROUP    <span ng-show="sortType == 'group' && !sortReverse" ><img src="assets/up.png" id="sort"></span>
+            <span ng-show="sortType == 'group' && sortReverse" ><img src="assets/down.png" id="sort"></span></a>
+	            </th>
+	            <th id="partnerrow"> <a id="sortlink"
+	            ng-click="sortType = 'subGroup'; sortReverse = !sortReverse">SUB GROUP
+           
+            <span ng-show="sortType == 'subGroup' && !sortReverse"><img src="assets/up.png" id="sort"></span>
+            <span ng-show="sortType == 'subGroup' && sortReverse" ><img src="assets/down.png" id="sort"></span></a>
+	            </th>
+	               
+	            
+	           
+	        </tr>
+	        </thead>
+	        <tbody>
+	        
+	        <tr ng-repeat="item in items  | orderBy:sortType:sortReverse  | filter:search" ng-click="showData(item.data)" data-toggle="modal" data-target="#myModal">
+	       
+	          <td id="partnerrow">{{item.partnerName}}</td>
+	          
+	          <td id="partnerrow">{{item.group}}</td>
+	          <td id="partnerrow">{{item.subGroup}}</td>
+	        
+	        </tr>
+	        </tbody>
+	      </table>
+	      
+	      </div>
+
+
+		  <!-- Modal -->
+		  <div class="modal fade" id="myModal" role="dialog"  data-backdrop="static" >
+		    <div class="modal-dialog modal-megamenu" >
+		    
+		    
+		    
+		      <!-- Modal content-->
+		      <div class="modal-content" style="background-color: rgb(240, 240, 240);">
+		        <div class="modal-header" style="background-color:#004c75;">
+		         <!-- <button type="button" class="close" data-dismiss="modal">&times;</button>-->
+				 <h1 class="modal-title" id="modtitle">Partner - New Partner
+				  <button type="button" class="close" id="close1" ng-click="clear();" data-dismiss="modal">&times;</button> </h1>
+				 
+		        </div>
+		        <div  class="extra1">
+		        <div class="modal-wrap"style="margin-top:20px;background-color:#fff;">
+		        <form name="partnerDetails" class="form-horizontal">
+		        <div class="modal-body" style="text-align:left">
+		          
+                     
+					    <div class="form-group" >
+					      <label class="control-label col-sm-4" id="contactfields" for="partnerName" >Partner Name<font color="red">*</font>:</label>
+					      <div class="col-sm-8">
+					        <input style="width: 250px;" class="form-control" id="partnerName"  name="partnerName" ng-disabled="hideEdit" ng-model="partnerName" required > 
+					        <span><font color="red"  ng-show="ErrorMsg&&partnerDetails.partnerName.$error.required  || emptyNm">Partner Name is Required</font></span>
+					         <span><font color="red"  ng-show="validName">Partner Name Already Exist</font></span>
+					      </div>
+					     </div>
+					     <div class="form-group">
+					      <label class="control-label col-sm-4"  id="contactfields" for="group">Partner Group: </label>
+					      <div class="col-sm-8">
+							<select class="form-control" style="width: 250px;" ng-disabled="hideEdit"  ng-options="item as item for item in grouplist" name="group" ng-model="contactGroup" ng-change="subgroupList(contactGroup)">
+							<option value="">Please Select Group</option>
+							</select>
+					         <span><font color="red"  ng-show="ErrorMsg&&partnerDetails.group.$error.required">Contact Group is Required</font></span>
+					      </div>
+					    </div>
+					    <div class="form-group">
+					      <label class="control-label col-sm-4"  id="contactfields" for="subgroup">Partner Sub Group: </label>
+					      
+					      <div class="col-sm-8">
+					        <select class="form-control" style="width: 250px;" ng-disabled="hideEdit" ng-options="item.id as item.subGroupName for item in subgrouplist" ng-model="contactSubGroup"  name="group" ng-disabled='subgroupdisable'><option value="">Please Select SubGroup</option></select>
+					        <span><font color="red"  ng-show="ErrorMsg&&subgpreq">Contact Sub-Group is Required</font></span>
+					      </div>
+					    </div>	
+						
+
+                        <h3 class="titlehead" > CONTACT DETAILS </h3>
+                        
+                       <div id="extra" ng-show="showTable">
+                        <table class="table table-striped "  ng-show="showTable&&contactList.length!=0" >
+                         
+                 
+	        <thead id="partnerhead">
+	        <tr>
+	            <th class="row-name">Name</th>
+	            <th class="row-title">Title</th>
+	             <th class="row-phone">Phone</th>
+	            <th class="row-email">Email</th>
+	            <th class="row-email">Transaction</th>
+	             <th class="row-action">Action</th>
+	            
+	            <!-- <th></th> -->
+	        </tr>
+	        </thead>
+	        
+	        <tbody>
+	        <tr  ng-repeat="contact in contactList">
+	          
+	          <td ><div class="email">{{contact.contactName}}</div></td>
+	          <td ><div class="email">{{contact.contactTitle}}</div></td>
+	          <td ><div class="email">{{contact.contactPhone}}</div></td>
+	          <td ><div class="email">{{contact.contactEmail}}</div></td>
+	          <td ><div class="email" >{{showName(contact.transactionType.id)}}</div></td>
+	          <td><a href="" ng-click="editcontact(contact)"  ng-show="!upbt&&!hideEdit" > <span class="glyphicon glyphicon-pencil"  ></span></a>&nbsp; 
+	         <a href="" ng-click="deletecontactt(contact)"   ng-show="contactList.length>1&&!upbt&&!hideEdit"> <span class="glyphicon glyphicon-remove"  >
+	          
+	          </span></a></td>
+	          
+	         <!--  <td><button class="btn btn-primary" ng-click="edit(item)">Edit</button></td> -->
+	        </tr>
+	        </tbody>
+	       
+	     </table>
+	      </div>
+	      
+					
+					    <div class="form-group" style="padding-top:20px;">
+					      <label class="control-label col-sm-4" id="contactfields" for="ContactName">Name<font color="red">*</font>:</label>
+					      <div class="col-sm-8">          
+					        <input class="form-control" style="width: 250px;" id="contactName" name="contactName" ng-disabled="hideEdit" ng-model="contact.contactName"  required></input>
+					      <span><font color="red"  ng-show="ErrorMsg&&partnerDetails.contactName.$error.required">Contact Name is Required</font></span>
+					      </div>
+					    </div>
+
+					    <div class="form-group">
+					      <label class="control-label col-sm-4"  id="contactfields" for="ContactTitle">Title:</label>
+					      <div class="col-sm-8">          
+					        <input  class="form-control" style="width: 250px;" id="ContactTitle"  name="contactTitle" ng-disabled="hideEdit"  ng-model="contact.contactTitle"></input>
+					         <span><font color="red"  ng-show="ErrorMsg&&partnerDetails.contactTitle.$error.required">Contact title is Required</font></span>
+					      </div>
+					    </div>
+                         
+                         
+                         
+                         
+						<div class="form-group">
+					      <label class="control-label col-sm-4"  id="contactfields" for="ContactPhone">Phone<font color="red">*</font>:</label>
+					      <div class="col-sm-8" >          
+					        
+					        <input  class="form-control" style="width: 250px;"  id="ContactPhone"  ng-disabled="hideEdit"   name="ContactPhone" maxlength="80" ng-model="contact.contactPhone" required></input>
+					            <span><font color="red"  ng-show="ErrorMsg&&partnerDetails.ContactPhone.$error.required">Contact Phone is Required</font></span>
+					      
+					      
+					      
+					      </div>
+					    </div>
+
+					<div class="form-group">
+					      <label class="control-label col-sm-4"  id="contactfields" for="email">Email<font color="red">*</font>:</label>
+					      <div class="col-sm-8">
+					        <input class="form-control" style="width: 250px;" type="email" id="email" name="Contactemail"  ng-disabled="hideEdit" ng-model="contact.contactEmail" required></input>
+					            <span><font color="red"  ng-show="ErrorMsg&&partnerDetails.Contactemail.$error.required">Contact Email is Required</font></span>
+					              <span><font color="red"  ng-show="ErrorMsg&&partnerDetails.Contactemail.$error.email">Invalid Email</font></span>
+					     
+					      </div>
+					    </div>
+					    
+					    <div class="form-group">
+					      <label class="control-label col-sm-4"  id="contactfields" >Transaction Type<font color="red">*</font>:</label>
+					      <div class="col-sm-8">
+					        <select class="form-control" style="width: 250px;" ng-disabled="hideEdit" ng-options="item.id as item.documentDescription for item in ttypeList" ng-model="contact.transactionType.id"  name="transactionType" onmousedown="if(this.options.length>7){this.size=7;}"  onchange='this.size=0;' onblur="this.size=0; " required><option value="">Please Select </option></select>
+					            <span><font color="red"  ng-show="ErrorMsg&&partnerDetails.transactionType.$error.required">Transaction Type is Required</font></span>
+					              
+					     
+					      </div>
+					    </div>	
+							
+										
+					   
+					  
+		        </div>
+				 <div class="wrapper" style="text-align:center; padding-bottom:20px;padding-right:10px;" ng-show="!upbt">
+				
+		        	 <button type="submit" class="btn btn-primary pull-right" id="primary" ng-disabled="hideEdit" ng-click="addContact(partnerDetails.$valid,contact);"  formnovalidate>ADD CONTACT</button> 
+					 <div class="divider" ></div>
+					 
+		      
+				</div>
+				 <div class="wrapper" style="text-align:center; padding-bottom:20px;padding-right:10px;" ng-show="upbt">
+				
+		        	 <button type="submit" class="btn btn-default pull-right" id="warning" ng-click="revertAll();"   formnovalidate>CANCEL</button> <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
+		        	 <button type="submit" class="btn btn-primary pull-right" style="font-size:10px;font-weight:400;margin-right: 6px;" ng-click="addContact(partnerDetails.$valid,contact);"  formnovalidate>UPDATE CONTACT</button> 
+					   
+					 <div class="divider" ></div>
+					 
+		      
+				</div>
+				</form>
+				</div>
+				</div>
+		        <div class="modal-footer" style="text-align:center;">
+		        	 <button type="button" class="btn btn-primary pull-left" id="primary"  ng-show="!hideEdit" ng-disabled="contactList.length<1||upbt||disablesave" ng-click="checkpartnerNameandSubmit(partnerName,partnerDetails.$valid);hide();">SAVE</button>
+		        	  <button type="button" class="btn btn-primary pull-left" id="primary" ng-show="hideEdit" ng-click="EditPartner();">EDIT</button>
+		        	   <button type="button" class="btn btn-default"  ng-hide="onlyNew" id="warning" ng-click="deletePartner();" >REMOVE</button>
+		          <button type="button" class="btn btn-default pull-right" id="warning" ng-click="clear();" data-dismiss="modal">CANCEL</button>
+		        </div>
+		      </div>		      
+		    </div>
+		  </div>
+		 
+    <!-- Modal -->
+    <script type="text/ng-template" id="myModalContent.html">
+    
+   
+		   
+       
+            <div class="modal-content" style="background-color: #f0f0f0 ;height:auto;" >
+                <div class="modal-header" style="background-color:#004c75;">
+                    <h1 class="modal-title" id="modtitle"> Partner 
+                    <button type="button" class="close" data-dismiss="modal" ng-click="cancel()" style="color: #fff; font-weight: 400; font-size: 24px;" aria-hidden="true">&times;</button> </h1>
+                    
+                </div>
+               
+<div class="modal-body" style="border: 1px solid;margin:15px;background-color:#fff; text-align:center;  " >
+              <span style="font-family:arial;font-weight:700;"><b> {{user.msg}} </b> </span>
+ </div>
+
+               <div class="modal-footer">
+                       <button type="button" class="btn btn-primary pull-left"   id="primary" ng-click="cancel(user.del,user.edit)">OK</button>
+<button type="button" class="btn btn-default pull-right" ng-show="user.edit||user.del"   id="warning" ng-click="close(false)">CANCEL</button>
+
+   </div>     
+     
+            </div><!-- /.modal-content -->
+       
+     
+      
+    
+		</script>  
+      </div>
+
+    
+
+
+	   
+   
+
+ 

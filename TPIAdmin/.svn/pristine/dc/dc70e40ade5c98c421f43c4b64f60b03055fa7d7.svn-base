@@ -1,0 +1,167 @@
+	// create the module and name it ABApp
+	var ABApp = angular.module('ABApp', ['ngRoute']);
+
+	// configure our routes
+	ABApp.config(function($routeProvider) {
+		$routeProvider
+
+			// route for the Dashboard
+			.when('/', {
+				templateUrl : 'pages/home.html',
+				controller  : 'mainController'
+			})
+
+			// route for the about page
+			.when('/partnerManagement', {
+				templateUrl : 'pages/partnerManagement.html',
+				controller  : 'patnerManagementController'
+			})
+
+		});
+
+	// create the controller and inject Angular's $scope
+	ABApp.controller('mainController', function($scope) {
+		// create a message to display in our view
+		
+	});
+
+	
+ABApp.controller('patnerManagementController', function($scope, $http, $window) {
+	$scope.message = ' Partner Management ';
+	$scope.ErrorMsg=false;
+	$scope.items = [
+			        {id: '123', partnerName: 'foo desc',contact:'foo',group:'grp1',subGroup:'subgrop1'},
+			        {id: '111', partnerName: 'boo desc',contact:'boo',group:'grp1',subGroup:'subgrop1'},
+			        {id: '333', partnerName: 'boo desc',contact:'boo',group:'grp1',subGroup:'subgrop1'},
+			        {id: '555', partnerName: 'boo desc',contact:'boo',group:'grp1',subGroup:'subgrop1'},
+			        {id: '222', partnerName: 'eco desc',contact:'eco',group:'grp1',subGroup:'subgrop1'}
+			      ];
+    $scope.OpenPopupWindow = function () {
+               $window.open("pages/addPartnerDetails.html", "popup", "width=500, height=500");
+           }
+  
+    $scope.submitPartnerDetails = function()
+    {
+    	
+    	
+    	$scope.message = 'submit Partner Details ';
+
+		$scope.items.push({
+			 	id : "111",
+		        partnerName:  $scope.partnerNameINP,
+		        contact: $scope.contactlist[0].contactTitleINP,
+		        group :  'group1',
+				subGroup :  'subgrop1',
+		    });
+    }
+	$scope.contactList=[];
+	$scope.addContact=function(flag,contact)
+	{
+		$scope.ErrorMsg=true;
+		//$scope.tableshow=true;
+		//$scope.contactlist.push({contactNameINP:'',contactTitleINP:'',contactPhoneINP:'',contactEmailINP:'',contactGroup:1,contactSubGroup:1});	
+if(!flag)
+	{
+	return false;
+	}
+var temp=angular.copy(contact);
+	
+		$scope.contactList.push(temp);
+		$scope.contact.contactName = null;
+		$scope.contact.contactTitle = null;
+		$scope.contact.contactPhone = null;
+		$scope.contact.contactEmail = null;
+		$scope.showTable=true;
+		console.log(JSON.stringify($scope.contactList));
+		$scope.ErrorMsg=false;
+	};
+	$scope.SubmitcontactList=function(flag)
+	{
+		$scope.ErrorMsg=true;
+		//$scope.tableshow=true;
+		//$scope.contactlist.push({contactNameINP:'',contactTitleINP:'',contactPhoneINP:'',contactEmailINP:'',contactGroup:1,contactSubGroup:1});	
+if(!flag)
+	{
+	return false;
+	}
+
+$http.post("/TPIAdmin/addContact.json",$scope.contact)
+.then(function(response) {
+    $scope.myWelcome = response;
+    
+});
+		
+		
+	}
+	
+	$scope.grouplist=[];
+	$scope.subgrouplist=[];
+	$scope.initgroup = function()
+	{
+		
+		
+		
+		 $http.get('/TPIAdmin/getPartnerGroupNames.json')
+	     .success(function (response, status, headers, config) {
+	    	 $scope.grouplist = angular.copy(response);
+	    	 console.log(JSON.stringify($scope.grouplist));
+	     })
+	     .error(function (data, status, header, config) {
+	         $scope.ResponseDetails = "Data: " + data +
+	             "<br />status: " + status ;
+	         //    "<br />headers: " + jsonFilter(header) +
+	           //  "<br />config: " + jsonFilter(config);
+	     })
+		 .then(function(response) {
+		        $scope.myWelcome = response.data;
+		    });
+
+
+		
+		};
+		
+		
+		$scope.subgroupList=function(gpName)
+		{
+			console.log("hello");
+			$http.get('/TPIAdmin/getPartnerSubGroups.json?groupName='+gpName)
+		     .success(function (response, status, headers, config) {
+		    	 $scope.subgroupdisable=false;
+		    	 $scope.subgrouplist = angular.copy(response);
+		    	 console.log(JSON.stringify($scope.subgrouplist));
+		     })
+		     .error(function (data, status, header, config) {
+		         $scope.ResponseDetails = "Data: " + data +
+		             "<br />status: " + status ;
+		         //    "<br />headers: " + jsonFilter(header) +
+		           //  "<br />config: " + jsonFilter(config);
+		     })
+			 .then(function(response) {
+			        $scope.myWelcome = response.data;
+			     $scope.print(gpName);
+			    });
+
+		}
+		
+		
+		$scope.print=function(gpname)
+		{
+			if(gpname=='N/a'|| gpname=='n/A')
+				{
+				$scope.contact.contactSubGroup=$scope.subgrouplist[0].id;
+				}
+			 console.log(JSON.stringify($scope.contact.contactSubGroup));
+		}
+	
+
+	
+	
+	
+	
+	$scope.subgroupdisable=true;
+	$scope.tableshow=false;
+	$scope.contactlist=[];
+	$scope.group=[{id:1,label:'Group1'},{id:2,label:'Group2'},{id:3,label:'Group3'},{id:4,label:'Group4'},{id:5,label:'Group5'}];
+	$scope.subgroup=[{id:1,label:'SubGr1'},{id:2,label:'SubGr2'},{id:3,label:'SubGr3'},{id:4,label:'SubGr4'},{id:5,label:'SubGr5'}];
+});
+	

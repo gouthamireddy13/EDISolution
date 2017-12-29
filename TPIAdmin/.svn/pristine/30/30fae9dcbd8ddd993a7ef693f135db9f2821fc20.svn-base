@@ -1,0 +1,85 @@
+var ABApp = angular.module('ABApp');
+
+
+ABApp.controller('abcIdMaintenanceController', function($scope,$modal,$filter, $http, $window,$interval,$filter) {
+	$scope.ErrorMsg = false;
+	$scope.scList = [];
+	$scope.initSC = function()
+	{
+		
+		
+		 $http.get('/TPIAdmin/app/serviceCategories')
+	     .success(function (response, status, headers, config) {
+	    	 
+	    	 $scope.scList=angular.copy(response);
+	    	// console.log("inputdata "+JSON.stringify(tempList));
+	     })
+	     .error(function (data, status, header, config) {
+	    	
+	         $scope.ResponseDetails = "Data: " + data +
+	             "<br />status: " + status ;
+	         //    "<br />headers: " + jsonFilter(header) +
+	           //  "<br />config: " + jsonFilter(config);
+	     })
+	     	
+		 .then(function(response) {
+			
+			  
+		 });
+			
+	};
+	
+
+	
+	$scope.saveABC = function(){
+		var submitObj=
+			{
+				category : $scope.serviceCategory,
+				name : $scope.name,
+			    partnerName: $scope.partnerName,
+			    isaIdProd: $scope.productionIsaID,
+			    gsIdProd: $scope.productionGsId,
+			    isaQualifierProd: $scope.productionIsaQualifier,
+			    isaIdTest: $scope.testIsaID,
+			    gsIdTest: $scope.testGsId,
+			    isaQualifierTest: $scope.testIsaQualifier
+				
+				
+			};
+				$http.post("/TPIAdmin/app/serviceCategories",submitObj)
+				.success(function (response, status, headers, config) {
+					 //$scope.grouplist = angular.copy(response);
+					 console.log(JSON.stringify(response));
+					 
+				 })
+				 .error(function (data, status, header, config) {
+					
+				     $scope.ResponseDetails = "Data: " + data +
+				         "<br />status: " + status ;
+				     //    "<br />headers: " + jsonFilter(header) +
+				       //  "<br />config: " + jsonFilter(config);
+				 })
+				.then(function(response) {
+					
+				    
+				});
+						
+						
+					}
+	
+	
+	$scope.clearabc = function(){
+		
+		 $scope.serviceCategory = null;
+		 $scope.name = null;
+	     $scope.partnerName = null;
+	    $scope.productionIsaID = null;
+	     $scope.productionGsId = null;
+	     $scope.productionIsaQualifier = null;
+	   $scope.testIsaID = null;
+	    $scope.testGsId = null;
+	     $scope.testIsaQualifier = null;
+		
+	};
+	
+});

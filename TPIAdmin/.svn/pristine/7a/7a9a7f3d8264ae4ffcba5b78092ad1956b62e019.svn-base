@@ -1,0 +1,167 @@
+package com.abc.tpi.db;
+
+import java.util.List;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.abc.tpi.domain.TpiDirection;
+import com.abc.tpi.model.master.Document;
+import com.abc.tpi.model.master.Protocol;
+import com.abc.tpi.model.master.Version;
+import com.abc.tpi.model.partner.ContactDetail;
+import com.abc.tpi.model.tpp.LightWellPartner;
+import com.abc.tpi.model.tpp.Tpp;
+import com.abc.tpi.model.tpp.Transaction;
+import com.abc.tpi.repository.DocumentRepository;
+import com.abc.tpi.repository.ProtocolRepository;
+import com.abc.tpi.repository.TppTypeRepository;
+import com.abc.tpi.repository.VersionRepository;
+import com.abc.tpi.service.TppService;
+
+@ContextConfiguration(locations={"classpath:resources/application-contexttest.xml"})
+@RunWith(SpringJUnit4ClassRunner.class)
+public class TppSeviceTest {
+	
+	@Autowired
+	TppService tppService;
+	
+	@Autowired 
+	ProtocolRepository protocolRepository;
+	
+	@Autowired
+	DocumentRepository documentRepository;
+	
+	@Autowired
+	VersionRepository versionRepository;
+	
+	@Autowired
+	TppTypeRepository tppTypeRepository;
+	
+	@Test
+	@Transactional
+	@Rollback(false)
+	public void testSaveTPPEntity()
+	{
+		
+		Tpp tpp = new Tpp();
+		tpp.setName("Test TPP Four");
+		
+		tpp.setType(tppTypeRepository.findOneByTypeCode((short)1));
+		
+		ContactDetail tppContactDetail = new ContactDetail();
+		
+		
+		tppContactDetail.setContactName("Test Contact Four");
+		tppContactDetail.setContactEmail("Test Email One");
+		tppContactDetail.setContactTitle("Test Title One");
+		tppContactDetail.setContactPhone("1234567890");
+		tpp.getContactDetails().add(tppContactDetail);
+		
+		Protocol protocol = protocolRepository.findOneByProtocolTypeIgnoreCase("AS2/GHX");		
+		tpp.getProtocols().add(protocol);
+		protocol = protocolRepository.findOneByProtocolTypeIgnoreCase("AS2 Direct");
+		tpp.getProtocols().add(protocol);
+		
+		Document document = documentRepository.findOneByDocumentType(810);
+		Version version = versionRepository.findOneByVersionNumber(4010);
+		
+		Transaction trans = new Transaction();
+		//trans.setDirection(TpiDirection.INBOUND);
+		trans.setDocument(document);
+		trans.setVersion(version);
+		
+		LightWellPartner lwPartner = new LightWellPartner();
+		lwPartner.setActive(true);
+		lwPartner.setNotes("Test Notes");
+		lwPartner.setOrganizationName("ABC");
+		lwPartner.setProductionGsId("123456");
+		lwPartner.setProductionIsaID("123456");
+		lwPartner.setProductionIsaQualifier("PROD");
+		lwPartner.setTestGsId("7890");
+		lwPartner.setTestIsaID("7890");
+		lwPartner.setTestIsaQualifier("TEST");
+		
+		tpp.getTransactions().add(trans);
+		tpp.setLightWellPartner(lwPartner);
+		tppService.saveTpp(tpp);
+		
+		
+		tpp = new Tpp();
+		tpp.setName("Test TPP Three");
+		
+		tpp.setType(tppTypeRepository.findOneByTypeCode((short)1));
+		
+		tppContactDetail = new ContactDetail();
+		
+		
+		tppContactDetail.setContactName("Test Contact Three");
+		tppContactDetail.setContactEmail("Test Email Three");
+		tppContactDetail.setContactTitle("Test Title Three");
+		tppContactDetail.setContactPhone("1234567890");
+		tpp.getContactDetails().add(tppContactDetail);
+		
+		protocol = protocolRepository.findOneByProtocolTypeIgnoreCase("FTP");		
+		tpp.getProtocols().add(protocol);
+		protocol = protocolRepository.findOneByProtocolTypeIgnoreCase("SFTP");
+		tpp.getProtocols().add(protocol);
+		protocol = protocolRepository.findOneByProtocolTypeIgnoreCase("AS2 Direct");
+		tpp.getProtocols().add(protocol);
+		
+		
+		document = documentRepository.findOneByDocumentType(856);
+		version = versionRepository.findOneByVersionNumber(5010);
+		
+		trans = new Transaction();
+		//trans.setDirection(TpiDirection.OUTBOUND);
+		trans.setDocument(document);
+		trans.setVersion(version);
+		tpp.getTransactions().add(trans);
+		
+		document = documentRepository.findOneByDocumentType(810);
+		version = versionRepository.findOneByVersionNumber(3010);
+		
+		trans = new Transaction();
+		//trans.setDirection(TpiDirection.INBOUND);
+		trans.setDocument(document);
+		trans.setVersion(version);
+		tpp.getTransactions().add(trans);
+		
+		lwPartner = new LightWellPartner();
+		lwPartner.setActive(true);
+		lwPartner.setNotes("Test Notes");
+		lwPartner.setOrganizationName("ABC TWO");
+		lwPartner.setProductionGsId("123456");
+		lwPartner.setProductionIsaID("123456");
+		lwPartner.setProductionIsaQualifier("PROD");
+		lwPartner.setTestGsId("7890");
+		lwPartner.setTestIsaID("7890");
+		lwPartner.setTestIsaQualifier("TEST");
+		
+
+		
+		
+		
+		tpp.setLightWellPartner(lwPartner);
+		tppService.saveTpp(tpp);
+	}
+	
+	@Test
+	@Transactional
+	@Rollback(false)
+	public void testDeleteAllTPPs()
+	{
+		List<Tpp> results = tppService.findAllTpps();
+		
+		for (Tpp result : results)
+		{
+			tppService.deleteTpp(result);
+		}
+		
+	}
+}

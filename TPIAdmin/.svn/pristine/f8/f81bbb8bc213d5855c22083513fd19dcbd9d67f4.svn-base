@@ -1,0 +1,96 @@
+package com.abc.tpi.db;
+
+import static org.junit.Assert.assertNotNull;
+
+import java.util.ArrayList;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import com.abc.tpi.domain.TpiDirection;
+import com.abc.tpi.model.Document;
+import com.abc.tpi.model.LightwellPartner;
+import com.abc.tpi.model.Protocol;
+import com.abc.tpi.model.Tpp;
+import com.abc.tpi.model.TppDetail;
+import com.abc.tpi.model.TppType;
+import com.abc.tpi.model.Transaction;
+import com.abc.tpi.model.Version;
+import com.abc.tpi.repository.TppRepository;
+
+@ContextConfiguration(locations={"classpath:com/abc/tpi/db/application-contexttest.xml"})
+@RunWith(SpringJUnit4ClassRunner.class)
+public class TpiPersistanceTest {
+
+	
+	@Autowired
+	private TppRepository tppRepository;
+	
+	@Test
+	public void testTppDetailSave()
+	{
+		TppDetail tppDetail = new TppDetail();
+		tppDetail.setContactName("Alex Test");
+		tppDetail.setContactPhoneNumber("2158221224");
+		tppDetail.setEmailAddress("somethin@something.com");
+		tppDetail.setTitle("Mr.");			
+		//tppDetail = tppDetailRepository.save(tppDetail);
+		assertNotNull(tppDetail);
+	}
+	
+	@Test
+	public void testTppSave()
+	{
+		TppDetail tppDetail = new TppDetail();
+		tppDetail.setContactName("Alex Test2");
+		tppDetail.setContactPhoneNumber("2158221224");
+		tppDetail.setEmailAddress("somethin@something.com");
+		tppDetail.setTitle("Mr.");			
+
+		TppType tppType = new TppType();
+		tppType.setTypeCode((short) 12345);
+		tppType.setDescription("12345");
+		
+		
+		Protocol protocol = new Protocol();
+		protocol.setProtocolType("test type");
+		
+		Transaction transaction = new Transaction();
+		transaction.setDirection(TpiDirection.INBOUND);
+		
+		Document doc = new Document();
+		doc.setDocumentCode("some code");
+		doc.setDocumentType(1);
+		transaction.setDocument(doc);
+		
+		Version ver = new Version();
+		ver.setVersionNumber(0);
+		
+		transaction.setVersion(ver);
+		
+		LightwellPartner lp = new LightwellPartner();
+		lp.setActive(true);
+		lp.setNotes("some notes");
+		lp.setOrganizationName("Organization name");
+		lp.setProductionGsId("GS ID");
+		lp.setTestGsId("something");
+		
+		Tpp tpp = new Tpp();
+		//tpp.setDetails(tppDetail);
+		tpp.setLightWellPartner(lp);
+		tpp.setName("Some name");
+		ArrayList<Protocol> protocols = new ArrayList<Protocol>();
+		tpp.setProtocols(protocols);
+		ArrayList<Transaction> transactions = new ArrayList<Transaction>();
+		tpp.setTransactions(transactions);
+		
+		tpp.setType(tppType);
+		
+		tppRepository.save(tpp);
+		
+		assertNotNull(tppDetail);
+	}
+}

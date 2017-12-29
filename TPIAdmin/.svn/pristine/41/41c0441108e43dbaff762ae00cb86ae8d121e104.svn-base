@@ -1,0 +1,150 @@
+package com.abc.dashboard.model;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+
+
+@Entity
+@Table(name="ABC_SERVICE_CATEGORY_LOOKUP" ,  schema = "PCCE")
+public class SdServiceCategory {
+	
+	@Id
+	@NotNull
+	@Column(name="SERVICE_KEY",nullable=false)
+	private String serviceKey;
+	
+	@NotNull
+	@Column(name="SERVICE_CATEGORY",nullable=false)
+	private String serviceCategory;
+	
+	@Column(name="CATEGORY_ID")
+	private String categoryID;
+	
+	
+	@Column(name="SERVICE_LEVEL")
+	private String serviceLevel;
+	
+	@Column(name="SERVICE_LEVEL_ID")
+	private String serviceLevelID;
+	
+	@Column(name="BUSINESS_UNIT")
+	private String businessUnit;
+	
+	@Column(name="BUSINESS_SUB_UNIT")
+	private String businessSubUnit;
+	
+	@Column(name="SEVICE_PREAMBLE")
+	private String servicePreamble;
+	
+	@Column(name="TRANSACTION_TYPE")
+	private String transactionType;
+	
+	@Column(name="DIRECTION")
+	private String direction;
+	
+	
+	@Column(name="SERVICE_TYPE")
+	private String serviceType;
+	
+	@Column(name="INTERCOMPANY_SENDTO_BU")
+	private String intercompanySendToBU;
+
+	public String getServiceKey() {
+		return serviceKey;
+	}
+
+	public void setServiceKey(String serviceKey) {
+		this.serviceKey = serviceKey;
+	}
+
+	public String getServiceCategory() {
+		return serviceCategory;
+	}
+
+	public void setServiceCategory(String serviceCategory) {
+		this.serviceCategory = serviceCategory;
+	}
+
+	public String getCategoryID() {
+		return categoryID;
+	}
+
+	public void setCategoryID(String categoryID) {
+		this.categoryID = categoryID;
+	}
+
+	public String getServiceLevel() {
+		return serviceLevel;
+	}
+
+	public void setServiceLevel(String serviceLevel) {
+		this.serviceLevel = serviceLevel;
+	}
+
+	public String getServiceLevelID() {
+		return serviceLevelID;
+	}
+
+	public void setServiceLevelID(String serviceLevelID) {
+		this.serviceLevelID = serviceLevelID;
+	}
+
+	public String getBusinessUnit() {
+		return businessUnit;
+	}
+
+	public void setBusinessUnit(String businessUnit) {
+		this.businessUnit = businessUnit;
+	}
+
+	public String getBusinessSubUnit() {
+		return businessSubUnit;
+	}
+
+	public void setBusinessSubUnit(String businessSubUnit) {
+		this.businessSubUnit = businessSubUnit;
+	}
+
+	public String getServicePreamble() {
+		return servicePreamble;
+	}
+
+	public void setServicePreamble(String servicePreamble) {
+		this.servicePreamble = servicePreamble;
+	}
+
+	public String getTransactionType() {
+		return transactionType;
+	}
+
+	public void setTransactionType(String transactionType) {
+		this.transactionType = transactionType;
+	}
+
+	public String getDirection() {
+		return direction;
+	}
+
+	public void setDirection(String direction) {
+		this.direction = direction;
+	}
+
+	public String getServiceType() {
+		return serviceType;
+	}
+
+	public void setServiceType(String serviceType) {
+		this.serviceType = serviceType;
+	}
+
+	public String getIntercompanySendToBU() {
+		return intercompanySendToBU;
+	}
+
+	public void setIntercompanySendToBU(String intercompanySendToBU) {
+		this.intercompanySendToBU = intercompanySendToBU;
+	}
+
+}

@@ -1,0 +1,359 @@
+package com.abc.tpi.model.reporting;
+
+import com.abc.tpi.model.service.CompanyEnum;
+import com.abc.tpi.model.service.PartnerCategoryEnum;
+
+/**
+ * @author a061313
+ *
+ */
+public class PartnerSubscriptionRecord {
+
+	private String partnerName;
+	private int transactionId;
+	private String functionalCode;
+	private String directionCode;
+	private String businessUnit;
+	private String serviceTestQual;
+	private String serviceTestIsaId;
+	private String serviceTestGsId;	
+	private String serviceProdQualifier;
+	private String serviceProdIsaId;
+	private String serviceProdGsId;	
+	private String serviceSegementDelim;
+	private String serviceElementDelim;
+	private String serviceCompositeDelim;
+	private String serviceRepeatDelim;
+	private String translationMapName;
+	private int businessServiceVersion;
+	private boolean complianceChecking;
+	private String businessServiceTestQual;
+	private String businessServiceTestIsaId;
+	private String businessServiceTestGsId;
+	private String businessServiceProdQualifier;	
+	private String businessServiceProdIsId;
+	private String businessServiceProdGsId;
+	private String businessServiceSegementDelim;
+	private String businessServiceElementDelim;
+	private String businessServiceCompositeDelim;
+	private String businessServiceRepeatDelim;
+	private String comments;
+	private int ackOverdueHours;
+	private int ackOverdueMinutes=0;
+	private boolean ack;
+	private CompanyEnum companyName;
+	private PartnerCategoryEnum partnerCategory;
+	
+
+
+	public PartnerSubscriptionRecord(String partnerName, 
+									int transactionId, 
+									String directionCode,
+									String serviceTestQual, 
+									String serviceTestIsaId, 
+									String serviceTestGsId, 
+									String serviceProdQualifier,
+									String serviceProdIsaId, 
+									String serviceProdGsId, 
+									String serviceSegementDelim, 
+									String serviceElementDelim,
+									String serviceCompositeDelim, 
+									String serviceRepeatDelim, 
+									int businessServiceVersion,
+									String businessServiceTestQual, 
+									String businessServiceTestIsaId,
+									String businessServiceTestGsId, 
+									String businessServiceProdQualifier, 
+									String businessServiceProdIsId,
+									String businessServiceProdGsId, 
+									int ackOverdueHours, 
+									boolean ack,
+									boolean complainceCheck,
+									String mapName,
+									CompanyEnum companyName,
+									PartnerCategoryEnum partnerCategory
+									) 
+	{
+		super();
+		this.partnerName = partnerName;
+		this.transactionId = transactionId;
+		this.directionCode = directionCode;
+		this.serviceTestQual = serviceTestQual;
+		this.serviceTestIsaId = serviceTestIsaId;
+		this.serviceTestGsId = serviceTestGsId;
+		this.serviceProdQualifier = serviceProdQualifier;
+		this.serviceProdIsaId = serviceProdIsaId;
+		this.serviceProdGsId = serviceProdGsId;
+		this.serviceSegementDelim = serviceSegementDelim;
+		this.serviceElementDelim = serviceElementDelim;
+		this.serviceCompositeDelim = serviceCompositeDelim;
+		this.serviceRepeatDelim = serviceRepeatDelim;
+		this.businessServiceVersion = businessServiceVersion;
+		this.businessServiceTestQual = businessServiceTestQual;
+		this.businessServiceTestIsaId = businessServiceTestIsaId;
+		this.businessServiceTestGsId = businessServiceTestGsId;
+		this.businessServiceProdQualifier = businessServiceProdQualifier;
+		this.businessServiceProdIsId = businessServiceProdIsId;
+		this.businessServiceProdGsId = businessServiceProdGsId;
+		this.ackOverdueHours = ackOverdueHours;
+		this.ack = ack;
+		this.translationMapName = mapName;
+		this.complianceChecking = complainceCheck;
+		this.companyName = companyName;
+		this.partnerCategory = partnerCategory;
+		
+	}
+	public int getAckOverdueHours() {
+		return ackOverdueHours;
+	}
+	public int getAckOverdueMinutes() {
+		return ackOverdueMinutes;
+	}
+	public String getBusinessServiceCompositeDelim() {
+		return businessServiceCompositeDelim;
+	}
+	public String getBusinessServiceElementDelim() {
+		return businessServiceElementDelim;
+	}
+	public String getBusinessServiceProdGsId() {
+		return businessServiceProdGsId;
+	}
+	public String getBusinessServiceProdIsId() {
+		return businessServiceProdIsId;
+	}
+	public String getBusinessServiceProdQualifier() {
+		return businessServiceProdQualifier;
+	}
+	public String getBusinessServiceProdSaId() {
+		return businessServiceProdIsId;
+	}
+	public String getBusinessServiceRepeatDelim() {
+		return businessServiceRepeatDelim;
+	}
+	public String getBusinessServiceSegementDelim() {
+		return businessServiceSegementDelim;
+	}
+	public String getBusinessServiceTestGsId() {
+		return businessServiceTestGsId;
+	}
+	public String getBusinessServiceTestIsaId() {
+		return businessServiceTestIsaId;
+	}
+	public String getBusinessServiceTestQual() {
+		return businessServiceTestQual;
+	}
+	public String getBusinessServiceTestSaId() {
+		return businessServiceTestIsaId;
+	}
+	public int getBusinessServiceVersion() {
+		return businessServiceVersion;
+	}
+	public String getBusinessUnit() {
+		return businessUnit;
+	}
+	public String getComments() {
+		return comments;
+	}
+	public CompanyEnum getCompanyName() {
+		return companyName;
+	}
+	public boolean getComplianceChecking() {
+		return complianceChecking;
+	}
+	public String getCustomerSupplierIndicator() 
+	{
+		if (this.getPartnerCategory()==PartnerCategoryEnum.Customer)
+		{
+			return "C";
+		}
+		else if (this.getPartnerCategory()==PartnerCategoryEnum.Supplier)
+		{
+			return "S";
+		}
+		else
+		{
+			return "";
+		}
+			
+
+	}
+	public String getDirectionCode() {
+		return directionCode;
+	}
+	public String getFunctionalCode() {
+		return functionalCode;
+	}
+	public PartnerCategoryEnum getPartnerCategory() {
+		return partnerCategory;
+	}
+	public String getPartnerName() {
+		return partnerName;
+	}
+	public String getServiceCompositeDelim() {
+		return serviceCompositeDelim;
+	}
+	public String getServiceElementDelim() {
+		return serviceElementDelim;
+	}
+	public String getServiceProdGsId() {
+		return serviceProdGsId;
+	}
+	public String getServiceProdIsaId() {
+		return serviceProdIsaId;
+	}
+	public String getServiceProdQualifier() {
+		return serviceProdQualifier;
+	}
+	public String getServiceProdSaId() {
+		return serviceProdIsaId;
+	}
+	public String getServiceRepeatDelim() {
+		return serviceRepeatDelim;
+	}
+	public String getServiceRepeateDelim() {
+		return businessServiceRepeatDelim;
+	}
+	public String getServiceSegementDelim() {
+		return serviceSegementDelim;
+	}
+	public String getServiceTestGsId() {
+		return serviceTestGsId;
+	}
+	public String getServiceTestIsaId() {
+		return serviceTestIsaId;
+	}
+	public String getServiceTestQual() {
+		return serviceTestQual;
+	}
+	public String getServiceTestSaId() {
+		return serviceTestIsaId;
+	}
+	public int getTransactionId() {
+		return transactionId;
+	}
+	public String getTranslationMapName() {
+		return translationMapName;
+	}
+	public boolean isAck() {
+		return ack;
+	}
+	public void setAck(boolean ack) {
+		this.ack = ack;
+	}
+	public void setAckOverdueHours(int ackOverdueHours) {
+		this.ackOverdueHours = ackOverdueHours;
+	}
+	public void setAckOverdueMinutes(int ackOverdueMinutes) {
+		this.ackOverdueMinutes = ackOverdueMinutes;
+	}
+	public void setBusinessServiceCompositeDelim(String businessServiceCompositeDelim) {
+		this.businessServiceCompositeDelim = businessServiceCompositeDelim;
+	}
+	public void setBusinessServiceElementDelim(String businessServiceElementDelim) {
+		this.businessServiceElementDelim = businessServiceElementDelim;
+	}
+	public void setBusinessServiceProdGsId(String businessServiceProdGsId) {
+		this.businessServiceProdGsId = businessServiceProdGsId;
+	}
+	public void setBusinessServiceProdIsId(String businessServiceProdIsId) {
+		this.businessServiceProdIsId = businessServiceProdIsId;
+	}
+	public void setBusinessServiceProdQualifier(String businessServiceProdQualifier) {
+		this.businessServiceProdQualifier = businessServiceProdQualifier;
+	}
+	public void setBusinessServiceProdSaId(String businessServiceProdSaId) {
+		this.businessServiceProdIsId = businessServiceProdSaId;
+	}
+	public void setBusinessServiceRepeatDelim(String businessServiceRepeatDelim) {
+		this.businessServiceRepeatDelim = businessServiceRepeatDelim;
+	}
+	public void setBusinessServiceSegementDelim(String businessServiceSegementDelim) {
+		this.businessServiceSegementDelim = businessServiceSegementDelim;
+	}
+	public void setBusinessServiceTestGsId(String businessServiceTestGsId) {
+		this.businessServiceTestGsId = businessServiceTestGsId;
+	}
+	public void setBusinessServiceTestIsaId(String businessServiceTestIsaId) {
+		this.businessServiceTestIsaId = businessServiceTestIsaId;
+	}
+	public void setBusinessServiceTestQual(String businessServiceTestQual) {
+		this.businessServiceTestQual = businessServiceTestQual;
+	}
+	public void setBusinessServiceTestSaId(String businessServiceTestSaId) {
+		this.businessServiceTestIsaId = businessServiceTestSaId;
+	}
+	public void setBusinessServiceVersion(int businessServiceVersion) {
+		this.businessServiceVersion = businessServiceVersion;
+	}
+	public void setBusinessUnit(String businessUnit) {
+		this.businessUnit = businessUnit;
+	}
+	public void setComments(String comments) {
+		this.comments = comments;
+	}
+	public void setCompanyName(CompanyEnum companyName) {
+		this.companyName = companyName;
+	}
+	public void setComplianceChecking(boolean complianceChecking) {
+		this.complianceChecking = complianceChecking;
+	}
+
+	public void setDirectionCode(String directionCode) {
+		this.directionCode = directionCode;
+	}
+	public void setFunctionalCode(String functionalCode) {
+		this.functionalCode = functionalCode;
+	}
+	public void setPartnerCategory(PartnerCategoryEnum partnerCategory) {
+		this.partnerCategory = partnerCategory;
+	}
+	public void setPartnerName(String partnerName) {
+		this.partnerName = partnerName;
+	}
+	public void setServiceCompositeDelim(String serviceCompositeDelim) {
+		this.serviceCompositeDelim = serviceCompositeDelim;
+	}
+	public void setServiceElementDelim(String serviceElementDelim) {
+		this.serviceElementDelim = serviceElementDelim;
+	}
+	public void setServiceProdGsId(String serviceProdGsId) {
+		this.serviceProdGsId = serviceProdGsId;
+	}
+	public void setServiceProdIsaId(String serviceProdIsaId) {
+		this.serviceProdIsaId = serviceProdIsaId;
+	}
+	public void setServiceProdQualifier(String serviceProdQualifier) {
+		this.serviceProdQualifier = serviceProdQualifier;
+	}
+	public void setServiceProdSaId(String serviceProdSaId) {
+		this.serviceProdIsaId = serviceProdSaId;
+	}
+	public void setServiceRepeatDelim(String serviceRepeatDelim) {
+		this.serviceRepeatDelim = serviceRepeatDelim;
+	}
+	public void setServiceRepeateDelim(String serviceRepeateDelim) {
+		this.businessServiceRepeatDelim = serviceRepeateDelim;
+	}
+	public void setServiceSegementDelim(String serviceSegementDelim) {
+		this.serviceSegementDelim = serviceSegementDelim;
+	}
+	public void setServiceTestGsId(String serviceTestGsId) {
+		this.serviceTestGsId = serviceTestGsId;
+	}
+	public void setServiceTestIsaId(String serviceTestIsaId) {
+		this.serviceTestIsaId = serviceTestIsaId;
+	}
+	public void setServiceTestQual(String serviceTestQual) {
+		this.serviceTestQual = serviceTestQual;
+	}
+	public void setServiceTestSaId(String serviceTestSaId) {
+		this.serviceTestIsaId = serviceTestSaId;
+	}
+	public void setTransactionId(int transactionId) {
+		this.transactionId = transactionId;
+	}
+	public void setTranslationMapName(String translationMapName) {
+		this.translationMapName = translationMapName;
+	}
+	
+}

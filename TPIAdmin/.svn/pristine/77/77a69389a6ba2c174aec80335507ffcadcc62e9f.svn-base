@@ -1,0 +1,50 @@
+package com.abc.tpi.db;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import com.abc.tpi.model.service.ServiceCategory;
+import com.abc.tpi.repository.ServiceCategoryRepository;
+
+@ContextConfiguration(locations={"classpath:resources/application-contexttest.xml"})
+@RunWith(SpringJUnit4ClassRunner.class)
+public class TpiServiceCategoryTest {
+	
+	@Autowired 
+	ServiceCategoryRepository serviceCategoryRepository;
+	
+	@Test
+	public void testAddServiceCategory()
+	{
+		ServiceCategory serviceCategory = new ServiceCategory();
+		serviceCategory.setCategory("ABDC-ABDC Supplier");
+		serviceCategory.setName("ABDC");
+		serviceCategory.setPartnerName("Supplier");
+		serviceCategory.setGsIdProd("GSPROD");
+		serviceCategory.setGsIdTest("GSIDTEST");
+		serviceCategory.setIsaIdProd("ISAIDPROD");
+		serviceCategory.setIsaIdTest("isaIdTest");
+		serviceCategory.setIsaQualifierProd("isaQualifierProd");
+		serviceCategory.setIsaQualifierTest("isaQualifierTest");
+		
+		serviceCategoryRepository.save(serviceCategory);
+		
+		serviceCategory = new ServiceCategory();
+		serviceCategory.setCategory("ABDC-ABDC Supplier");
+		serviceCategory.setName("ABDC");
+		serviceCategory.setPartnerName("Supplier");
+		serviceCategory.setGsIdProd("GSPROD2");
+		serviceCategory.setGsIdTest("GSIDTEST2");
+		serviceCategory.setIsaIdProd("ISAIDPROD2");
+		serviceCategory.setIsaIdTest("isaIdTest2");
+		serviceCategory.setIsaQualifierProd("isaQualifierProd2");
+		serviceCategory.setIsaQualifierTest("isaQualifierTest2");
+		
+		serviceCategoryRepository.save(serviceCategory);
+		
+	}
+
+}

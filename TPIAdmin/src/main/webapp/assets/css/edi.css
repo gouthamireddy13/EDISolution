@@ -1,0 +1,131 @@
+BODY {
+	BACKGROUND-COLOR: #FFFFFF;
+	COLOR: black;
+	font-family: Tahoma, Geneva, sans-serif;
+}
+
+.form-inline .datepicker, .form-inline .timepicker, .form-inline .form-control
+	{
+	width: 200px !Important;
+}
+
+.container-with-border {
+	margin-top: 10px;
+	box-shadow: 0 0 15px gray;
+	padding: 5px 15px 20px 15px;
+}
+
+.edi-search-row {
+	padding: 5px;
+}
+
+.edi-search-label {
+	width: 150px;
+}
+
+.page-header {
+	margin: 10px 0 20px;
+}
+
+.btn-edi {
+	width: 150px;
+}
+
+.alert, .margin-added {
+	margin: 20px;
+}
+
+.edi-table-contrainer {
+	display: block;
+	max-width: 90%;
+	margin: auto;
+}
+
+.edi-table-small {
+	font-size: 12px;
+	font-family: Tahoma, Geneva, sans-serif;
+}
+
+.submit-progress {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	height: 6em;
+	padding-top: 2.3em;
+	/* The following rules are the
+     ones most likely to change */
+	width: 20em;
+	/* Set 'margin-left' to a negative number
+     that is 1/2 of 'width' */
+	margin-left: -10em;
+	padding-left: 2.1em;
+	background-color: black;
+	color: white;
+	-webkit-border-radius: 0.3em;
+	-moz-border-radius: 0.3em;
+	border-radius: 0.3em;
+	box-shadow: 0.3em 0.3em rgba(0, 0, 0, 0.6);
+	-webkit-box-shadow: 0.3em 0.3em rgba(0, 0, 0, 0.6);
+	-moz-box-shadow: 0.3em 0.3em rgba(0, 0, 0, 0.6);
+}
+
+.submit-progress i {
+	margin-right: 0.5em;
+}
+
+.submit-progress-bg {
+	background-color: lightgray;
+	opacity: .4;
+}
+
+.edi-table-small.table-striped>tbody>tr:nth-of-type(odd) {
+	background-color: #ffffe6;
+}
+
+.red-font {
+	color: red;
+}
+
+pre.x12
+{
+	font-family: monospace;
+}
+
+nav.nav-edi
+{
+	
+	padding:5px 10px 5px 10px;
+}
+
+.row-header
+{
+	background:lightgray;
+	font-weight: bold;
+}
+
+#first
+{
+    
+    position:absolute;
+    bottom:0;
+    left:0;
+    right:0;
+    top:0;  
+    opacity:0.5;
+    background-color:#000;
+    color:#fff;
+    z-index:9999;
+}
+
+.load
+{
+    height:600px;
+    width:600px;
+    background-image:url('http://images2.layoutsparks.com/1/235919/walle-galaxy-sky-image.jpg');
+}
+
+.large-menu-button
+{
+	height:100px;
+	padding:5px 10px 5px 10px;
+}

@@ -1,0 +1,7 @@
+package com.abc.tpi.service;
+import java.util.List;
+import com.abc.tpi.model.reporting.PartnerSubscriptionRecord;
+
+public interface ReportingService {
+	List<PartnerSubscriptionRecord> getPartnerSubscriptionRecordsByServiceSubscriptionId(long serviceSubscriptionId);
+}

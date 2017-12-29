@@ -1,0 +1,11 @@
+package com.abc.tpi.service;
+
+import java.util.List;
+
+import com.abc.tpi.model.migrator.ObjectTracker;
+import com.abc.tpi.model.migrator.ServiceSubscriptionApprovalReview;
+
+public interface MigratorDataService {
+	List<ObjectTracker> getDataForSrId(String srId);
+	List<ServiceSubscriptionApprovalReview> getApprovalReviewForSriId(String srId);
+}

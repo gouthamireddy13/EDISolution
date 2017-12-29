@@ -1,0 +1,95 @@
+package com.abc.tpi.model;
+
+import javax.persistence.Access;
+import javax.persistence.AccessType;
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
+
+@Embeddable @Access(AccessType.FIELD)
+public class LightwellPartner {
+
+	@Column(name="ORG_NAME",nullable=false)
+	private String organizationName;
+	
+	@Column(name="TEST_ISA_ID",nullable=false)
+	private String testIsaID;
+	
+	@Column(name="TEST_ISA_QUAL",nullable=false)
+	private String testIsaQualifier;
+	
+	@Column(name="TEST_GS_ID",nullable=false)
+	private String testGsId;
+	
+	@Column(name="PROD_ISA_ID",nullable=false)
+	private String productionisaID;
+	
+	@Column(name="PROD_ISA_QUAL",nullable=false)
+	private String productionIsaQualifier;
+	
+	@Column(name="PROD_GS_ID",nullable=false)
+	private String productionGsId;
+	
+	@Column(name="ACTIVE",nullable=false)
+	private boolean isActive;
+	
+	@Column(name="NOTES",nullable=false)
+	private String notes;
+	
+
+	public String getNotes() {
+		return notes;
+	}
+	public String getOrganizationName() {
+		return organizationName;
+	}
+	public String getProductionGsId() {
+		return productionGsId;
+	}
+	public String getProductionisaID() {
+		return productionisaID;
+	}
+	public String getProductionIsaQualifier() {
+		return productionIsaQualifier;
+	}
+	public String getTestGsId() {
+		return testGsId;
+	}
+	public String getTestIsaID() {
+		return testIsaID;
+	}
+	public String getTestIsaQualifier() {
+		return testIsaQualifier;
+	}
+	public boolean isActive() {
+		return isActive;
+	}
+	public void setActive(boolean isActive) {
+		this.isActive = isActive;
+	}
+	public void setNotes(String notes) {
+		this.notes = notes;
+	}
+	public void setOrganizationName(String organizationName) {
+		this.organizationName = organizationName;
+	}
+	public void setProductionGsId(String productionGsId) {
+		this.productionGsId = productionGsId;
+	}
+	public void setProductionisaID(String productionisaID) {
+		this.productionisaID = productionisaID;
+	}
+	public void setProductionIsaQualifier(String productionIsaQualifier) {
+		this.productionIsaQualifier = productionIsaQualifier;
+	}
+	public void setTestGsId(String testGsId) {
+		this.testGsId = testGsId;
+	}
+	public void setTestIsaID(String testIsaID) {
+		this.testIsaID = testIsaID;
+	}
+	public void setTestIsaQualifier(String testIsaQualifier) {
+		this.testIsaQualifier = testIsaQualifier;
+	}
+	
+
+}

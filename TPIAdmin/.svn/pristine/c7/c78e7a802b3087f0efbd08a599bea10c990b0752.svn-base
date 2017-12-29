@@ -1,0 +1,125 @@
+<div>
+
+<style>input:required:invalid {
+    outline: none;
+}
+</style>
+
+
+<div style="margin:15px 20px 15px 20px; border:1px solid black;" >
+ <div  style="background-color: #404951;border:#404951" >
+
+
+      
+   
+				<div class = "row">	
+				<div class = "col-6 col-md-4">   
+				<div class="form-group" >
+					      
+					      <label class="control-label"  id="contactfieldsI" for="subgroup">Select table to update: </label>
+					     
+					     <div class = "col">
+					      <div class="panel-body " style="padding-top:2px; padding-left:30px" >
+					        <select class="form-control" style="width: 170px;" ng-disabled="hideEdit" ng-model="partner"  name="partner" >
+					        <option value="">Please select</option>
+					        <option value="PARTNER">PARTNER</option>
+					        
+					        </select>
+					      
+					    </div>
+					    </div>
+		
+		 </div>
+		 </div>
+				      		      
+		</div>
+		<span >			     
+		<input class="place"  type="file" accept=".xlsx" name="file" id="file" file-model="myFile"/> 
+		
+		</span>			  
+					      
+	<div class=" panel-body pull-left col-sm-12" style=" background-color:#59626b ; padding-left:30px;">				        
+	 <button class="btn btn-primary" id="panelbtn1" ng-click="uploadFile()">SUBMIT</button>				      
+					  
+	</div>
+    <span style="color:#fff;padding-left:30px;">{{ResponseData.message}}</span>  
+      
+</div>
+<div style="background-color:#fff;">
+  <!-- <table class="table table-striped">
+
+	        <thead id="partnerhead">
+	        
+	            
+	            <tr>
+	            <th style="width:20px;"></th>
+	            <th id="partnerrow"> <a id="sortlink"
+	             ng-click="sortType = 'partnerName'; sortReverse = !sortReverse">PARTNER NAME 
+            
+            <span ng-show="sortType == 'partnerName' && !sortReverse" ><img src="assets/up.png" id="sort"></span>
+            <span ng-show="sortType == 'partnerName' && sortReverse" ><img src="assets/down.png" id="sort"></span></a>
+	             </th>
+	            <th id="partnerrow"> <a id="sortlink"
+	             ng-click="sortType = 'serviceCategoryName'; sortReverse = !sortReverse">PARTNER GROUP 
+	              <span ng-show="sortType == 'serviceCategoryName' && !sortReverse" ><img src="assets/up.png" id="sort"></span>
+                 <span ng-show="sortType == 'serviceCategoryName' && sortReverse" ><img src="assets/down.png" id="sort"></span></a> </th>
+	        <th id="partnerrow"> <a id="sortlink"
+	             ng-click="sortType = 'partnerName'; sortReverse = !sortReverse">PARTNER SUB GROUP
+            
+            <span ng-show="sortType == 'partnerName' && !sortReverse" ><img src="assets/up.png" id="sort"></span>
+            <span ng-show="sortType == 'partnerName' && sortReverse" ><img src="assets/down.png" id="sort"></span></a>
+	             </th>
+	             
+	        </tr>
+	        </thead>
+	        <tbody>
+	        <tr  ng-repeat="item in items  |    orderBy:sortType:sortReverse   |    filter:search "  data-toggle="modal" data-target="#myModal"  >
+	       <td ><input type = "checkbox"    ng-model="item.checked"  ng-click="getExcel(item.id,item.checked)" ></td>
+	          <td id="partnerrow">{{item.partnerName}}</td>
+	          
+	          <td id="partnerrow">{{item.partnerGroup}}</td>
+	          <td id="partnerrow">{{item.partnerSubGroup}}</td>
+	         
+	        
+	        </tr>
+	        </tbody>
+	      </table> -->
+	      </div>
+	      </div>
+	      
+	      <!-- Modal -->
+	       
+		
+		  
+		 </div>				    
+					   
+					    
+					    
+					    
+                        
+                     
+                 
+
+	      
+	      
+	      
+					
+					   
+					   
+		         
+				 
+		      
+					      
+					      
+		      
+				
+				
+				
+				
+		
+				
+	     
+	      
+				
+				 
+		  

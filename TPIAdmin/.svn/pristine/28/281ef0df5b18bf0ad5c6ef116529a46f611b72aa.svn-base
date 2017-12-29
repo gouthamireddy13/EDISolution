@@ -1,0 +1,146 @@
+package com.abc.tpi.db;
+
+import java.util.List;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import com.abc.tpi.common.exceptions.TpiRepositoryException;
+import com.abc.tpi.model.master.Direction;
+import com.abc.tpi.model.master.Document;
+import com.abc.tpi.model.master.Version;
+import com.abc.tpi.model.service.ServiceCategory;
+import com.abc.tpi.model.service.ServiceType;
+import com.abc.tpi.repository.DirectionRepository;
+import com.abc.tpi.repository.DocumentRepository;
+import com.abc.tpi.repository.ServiceCategoryRepository;
+import com.abc.tpi.repository.ServiceTypeRepository;
+import com.abc.tpi.repository.VersionRepository;
+import com.abc.tpi.service.ServiceSubscriptionService;
+
+@ContextConfiguration(locations={"classpath:resources/application-contexttest.xml"})
+@RunWith(SpringJUnit4ClassRunner.class)
+public class TpiServiceCategoryTest {
+	
+	@Autowired 
+	ServiceCategoryRepository serviceCategoryRepository;
+	
+	@Autowired
+	ServiceTypeRepository serviceTypeRepository;
+	
+	@Autowired
+	DocumentRepository documentRepository;
+	
+	@Autowired
+	VersionRepository versionRepository;
+	
+	@Autowired
+	DirectionRepository directionRepository;
+	
+	@Autowired
+	ServiceSubscriptionService subscriptionService;
+	
+	@Test
+	public void testAddServiceCategory()
+	{
+		ServiceCategory serviceCategory = new ServiceCategory();
+		serviceCategory.setCategory("ABDC-ABDC Supplier");
+		serviceCategory.setName("ABDC");
+		serviceCategory.setPartnerName("Supplier");
+		serviceCategory.setGsIdProd("GSPROD");
+		serviceCategory.setGsIdTest("GSIDTEST");
+		serviceCategory.setIsaIdProd("ISAIDPROD");
+		serviceCategory.setIsaIdTest("isaIdTest");
+		serviceCategory.setIsaQualifierProd("isaQualifierProd");
+		serviceCategory.setIsaQualifierTest("isaQualifierTest");
+		
+		serviceCategoryRepository.save(serviceCategory);
+		
+		serviceCategory = new ServiceCategory();
+		serviceCategory.setCategory("ABDC-ABDC Supplier");
+		serviceCategory.setName("ABDC");
+		serviceCategory.setPartnerName("Supplier");
+		serviceCategory.setGsIdProd("GSPROD2");
+		serviceCategory.setGsIdTest("GSIDTEST2");
+		serviceCategory.setIsaIdProd("ISAIDPROD2");
+		serviceCategory.setIsaIdTest("isaIdTest2");
+		serviceCategory.setIsaQualifierProd("isaQualifierProd2");
+		serviceCategory.setIsaQualifierTest("isaQualifierTest2");
+		
+		serviceCategoryRepository.save(serviceCategory);
+		
+	}
+	
+	@Test
+	public void testAddServiceType()
+	{
+		ServiceType serviceType = new ServiceType();
+		
+		//get Service Category
+		ServiceCategory serviceCategory = serviceCategoryRepository.findOne((long) 1);
+		
+		//get Document		
+		Document document = documentRepository.findOneByDocumentType(810);
+		
+		//get Version		
+		Version version = versionRepository.findOneByVersionNumber(3010);
+				
+		//get Direction
+		Direction direction = directionRepository.findOneByDirectionCodeIgnoreCase("inbound");
+		
+		serviceType.setServiceCategory(serviceCategory);
+		serviceType.setDirection(direction);
+		serviceType.setVersion(version);
+		serviceType.setDocument(document);
+		serviceType.setBusinessServiceName("ABDC - 855 In - PO Ack from Suppliers");
+		
+		serviceTypeRepository.save(serviceType);
+	}
+	
+	@Test
+	public void testFindServiceTypeByServiceCategory()
+	{
+		List<ServiceType> serviceType = serviceTypeRepository.namedFindAllServiceTypesByServiceCategoryId(1);
+		
+		for (ServiceType service : serviceType)
+		{
+			System.out.println(service.getBusinessServiceName());
+		}
+	}
+	
+	
+	@Test
+	public void testFindServiceTypeByServiceCategoryAndTppAttributes()
+	{
+
+		List<ServiceType> serviceType = serviceTypeRepository.namedFindServiceTypesForServiceCategoryAndTransaction(1, 1, 1, 3);
+		
+		
+		for (ServiceType service : serviceType)
+		{
+			System.out.println(service.getBusinessServiceName());
+		}
+	}
+	
+	@Test
+	public void testFindServiceTypeByServiceCategoryAndTppObject()
+	{
+
+		List<ServiceType> serviceType;
+		try {
+			serviceType = subscriptionService.getBusinessServiceForTppAndServiceCat(1,1);
+			for (ServiceType service : serviceType)
+			{
+				System.out.println(service.getBusinessServiceName());
+			}
+		} catch (TpiRepositoryException e) {
+			
+			e.printStackTrace();
+		}
+		
+
+	}	
+}

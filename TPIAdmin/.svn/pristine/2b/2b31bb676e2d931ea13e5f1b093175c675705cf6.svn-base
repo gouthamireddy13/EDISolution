@@ -1,0 +1,572 @@
+<div>
+
+<style>input:required:invalid {
+    outline: none;
+}
+</style>
+
+<div style="margin:15px 20px 15px 20px; border:1px solid black;" >
+ <div  style="background-color: #404951;border:#404951" >
+
+<div class="row">
+<div class="col-6 col-md-4">
+ <div style="padding-top:20px;padding-left:20px;" ng-init="initstate();inittpp();initname();inittable();initSendToBuList();">
+      
+      <div class="panel-heading ">PARTNER NAME</div>
+      </div>
+      <div class="panel-body " style="padding-top:0px; padding-left:20px" >
+      	
+		
+		<input class="form-control" id="panelsearch" type="text" name="spName"  ng-model="spName" ng-change = "searchPage(spName,prodISA,prodGS);"> 
+      
+      </div>
+      </div>
+      
+      <div class="col-6 col-md-4">
+ <div style="padding-top:20px;padding-left:20px;" >
+      
+      <div class="panel-heading ">PROD ISA ID</div>
+      </div>
+      <div class="panel-body " style="padding-top:0px; padding-left:20px" >
+      	
+		
+		<input class="form-control" id="panelsearch" type="text" name="prodISA"  ng-model="prodISA" ng-change = "searchPage(spName,prodISA,prodGS);"> 
+      
+      </div>
+      </div>
+      
+      <div class="col-6 col-md-4">
+ <div style="padding-top:20px;padding-left:20px;" >
+      
+      <div class="panel-heading ">PROD GS ID</div>
+      </div>
+      <div class="panel-body " style="padding-top:0px; padding-left:20px" >
+      	
+		
+		<input class="form-control" id="panelsearch" type="text" name="prodGS"  ng-model="prodGS" ng-change = "searchPage(spName,prodISA,prodGS);"> 
+      
+      </div>
+      </div>
+    <!--   <div class="col-6 col-md-4">
+      <div style="padding-top:20px;padding-left:20px;" >
+      <div class="panel-heading ">PARTNER GS ID</div>
+      </div>
+      
+      <div class="panel-body " style="padding-top:0px; padding-left:20px" >
+      	
+		
+		<input class="form-control" id="panelsearch" type="text" name="search"  ng-model="search.gsIdProd"> 
+      
+      </div>
+      </div> --> 
+      </div>
+      
+      <div class=" panel-body pull-right col-sm-12" style=" background-color:#59626b ;">	
+
+  
+		  <!-- Trigger the modal with a button -->
+		  <button type="button" class="btn btn-primary pull-right"   ng-click="hidefield();" data-toggle="modal" data-target="#myModal" ng-disabled="state == 'Y'" id="panelbtn"><img src="assets/AddPartner.png" id="panellogo">&nbsp;&nbsp;&nbsp; NEW SUBSCRIPTION</button>
+
+</div>
+</div>
+<div style="background-color:#fff;">
+ <table class="table table-striped">
+
+	        <thead id="partnerhead">
+	        <tr>
+	            
+	            <tr>
+	            
+	            <th id="partnerrow"> <a id="sortlink"
+	             ng-click="sortData('partnerName')">PARTNER NAME
+            
+            <span ng-show="sortType == 'partnerName' && !sortReverse" ><img src="assets/up.png" id="sort"></span>
+            <span ng-show="sortType == 'partnerName' && sortReverse" ><img src="assets/down.png" id="sort"></span></a>
+	             </th>
+	            <th id="partnerrow"> <a id="sortlink"
+	             ng-click="sortData('serviceCategoryName')">SERVICE CATEGORY 
+	              <span ng-show="sortType == 'serviceCategoryName' && !sortReverse" ><img src="assets/up.png" id="sort"></span>
+                 <span ng-show="sortType == 'serviceCategoryName' && sortReverse" ><img src="assets/down.png" id="sort"></span></a> </th>
+	        </tr>
+	        </thead>
+	        <tbody>
+	        <tr ng-repeat="item in filteredTodos " ng-click="initdisplay(item)"  data-toggle="modal" data-target="#myModal"  >
+	        
+	       
+	          <td id="partnerrow" ng-show="item.show">{{item.partnerName}}</td>
+	          
+	          <td id="partnerrow" ng-show="item.show">{{item.serviceCategoryName}}</td>
+	        
+	        </tr>
+	        </tbody>
+	      </table>
+	      <pagination ng-show="items.length" ng-model="currentPage"    total-items="items.length && repeatList.length " max-size="maxSize"  boundary-links="true" items-per-page="numPerPage"></pagination> 
+	      </div>
+	      </div>
+	      
+	      <!-- Modal -->
+	       
+		  <div class="modal fade" id="myModal" role="dialog"  data-backdrop="static" >
+		    <div class="modal-dialog modal-megamenu" >
+		    <div class="centered">
+		    <div class="modal-content" style="background-color: rgb(240, 240, 240);">
+		    <div class="modal-header" style="background-color:#004c75;">
+		         <!-- <button type="button" class="close" data-dismiss="modal">&times;</button>-->
+				 <h1 class="modal-title" id="modtitle">Service - New Subscription
+				  <button type="button" class="modal-title pull-right" id="close1"  ng-click="cdata();" data-dismiss="modal">&times;</button> </h1>
+		    </div>
+		    <div id="extra1" class="extra1" >
+		     <div id="SHhErrMsg"  style="display: none;margin-top: 4%;padding-left:35%;">
+    <strong class="alert alert-danger">{{ServerErrorMsg}}</strong>
+  </div>
+		    <div class="modal-wrap" style="margin-top:20px;background-color:#fff;">
+		       
+		        <div class="modal-body" style="text-align:left; "> 	
+		         <form name="serviceDetails" class="form-horizontal" autocomplete="off" 
+		         ng-init="findPartner('');inittableList();">	
+		              
+		               
+		              
+					    <div class="row" id="row1">
+					   
+					    <div class="form-group" >
+					     <div class = "col-sm-5 col-md-6 ">
+					      <label class="control-label col-sm-4" id="contactfields1" for="" >Partner Name<font color="red">*</font>:</label>
+					      
+					        <div class="col-sm-8"> 
+					        
+					        <input class="form-control" type="text"   typeahead="item as item.partnerName for item in partnerlist | filter:$viewValue | limitTo:8" id="partnerName" typeahead-editable="enabletypeEdit"
+					         name="partnerName"  ng-model="selected"   ng-keypress="partChange(selected);" ng-change="partChange(selected);" typeahead-on-select="partChange(selected);"  ng-disabled="hideEdit||ServiceobjList.length>0" required >
+					         
+                              <span style= "color:red;" >{{message}}</span>    
+    
+					          
+					         
+					         <span><font color="red"  ng-show="ErrorMsg&&serviceDetails.partnerName.$error.required">Partner Name is Required</font></span>
+					         </div>
+					      
+					    
+					     </div>
+					   
+					     </div>
+					     </div>
+					     
+					     <div class="row" id="row1">
+					     <div class="form-group" >
+					     <div class="col-sm-5 col-md-6">
+					      <label class="control-label col-sm-4"  id="contactfields1" >Service Category<font color="red">*</font>: </label> 
+					      <div class="col-sm-8">
+							<select class="form-control "   ng-options="item.id as item.name for item in serviceNameList" name="scname" ng-model="scname" ng-disabled="selectAllDisabled||hideEdit||ServiceobjList.length>0" ng-change="disableId(scname);serviceId(scname);bsList(scname);scNull();"  onmousedown="if(this.options.length>7){this.size=7;}"  onchange='this.size=0;' onblur="this.size=0;" required>
+							
+							<option value="">Please Select</option>
+							</select>
+							 <span><font color="red"  ng-show="ErrorMsg&&serviceDetails.scname.$error.required">Service Category is Required</font></span> 
+							
+							</div>
+							<span><font color="red"  ng-show="combo">This subscription already exists </font></span>
+							</div>
+							</div>
+					    </div>
+					    
+					    
+					      
+					    </form>
+					   <div class="titlehead" >   </div> 
+					   <div id="extraSG" ng-show="ServiceobjList.length!=0" >
+                        <table class="table table-striped"  >
+                         
+                 
+	        <thead id="partnerhead">
+	        <tr>
+	             <th class="row-version" id="contactrowXY">BusinessService</th>
+	            
+	            <th class="row-version" id="contactrowXY">ID T</th>
+	            <th class="row-version" id="contactrowXY">ID P</th>
+	             <th class="row-version" id="contactrowXY">ABC_ID</th>
+	           
+	             <th class="row-version" id="contactrowXY">Service Request ID</th>
+	             <th class="row-version" id="contactrowXY">Service Comments</th>
+	           
+	           
+	            
+	            <th class="row-version" id="contactrowXY">BusinessService Request ID</th>
+	             <th class="row-version" id="contactrowXY">Comments</th>
+	            
+	            <th class="row-action" id="contactrowXY">Action</th> 
+	            
+	            
+	         </tr>
+	        </thead>
+	        
+	        <tbody ng-repeat="item in ServiceobjList">
+	        
+	        <tr  ng-repeat="item1 in item.businessServices" >
+	          <td id="contactrow">{{item1.businessService.businessServiceName}}</td>
+	          
+	          <td id="contactrow">{{item.services.lightWellPartner.testGsId}}</td>
+	          <td id="contactrow">{{item.services.lightWellPartner.productionGsId}}</td>
+	          <td id="contactrow">{{showName(serviceList,item1.lightWellPartner.id)}}</td>
+	        
+	          <td id="contactrow">{{item.services.srId}}</td>
+	          <td id="contactrow">{{item.services.notes}}</td>
+	         
+	          
+	    
+	           <td id="contactrow">{{item1.srId}}</td>
+	           <td id="contactrow">{{item1.notes}}</td>
+	          
+	          
+	          
+	          <td ><a href="" ng-show="!upgrbt && !hideEdit"  ng-click="editServiceCategory(item)" > <img src="assets/edit.png" id="panellogo1"></a>&nbsp; 
+	         <a href=""   ng-show="!upgrbt && !hideEdit"  ng-click="deleteServiceCategory(item1,item)" > <img src="assets/remove.png" id="panellogo1"></a></td>  
+	          
+	         </tr>
+	        
+	        </tbody>
+	      
+	     </table>
+	      </div>
+					   
+				<div ng-show="!hideEdit">	   
+					 <form name="linkForm" class="form-horizontal">
+					 
+					
+				<div class="row" id="row1" style = "padding-top:20px;">
+					   
+					    <div class="form-group" >
+					     <div class = "col-sm-5 col-md-6 ">
+					      <label class="control-label col-sm-4" id="contactfields1" for="" >Receiving Sub BU<font color="red">*</font>:</label>
+					      
+					        <div class="col-sm-8"> 
+					        <select class="form-control"  ng-disabled="hideEdit" ng-options="item.id as item.subUnitName for item in subBsList"  name="sendToSBU" ng-model="sendToBU" ng-change="initSource();idConversion(subBsList,sendToBU);" onmousedown="if(this.options.length>7){this.size=7;}"  onchange='this.size=0;' onblur="this.size=0;" required>
+							<option value="">Please select</option>
+							</select>
+					        
+					         
+                                 
+    
+					          
+					         
+					         <span><font color="red"  ng-show="ErrorMsg&&serviceDetails.sendToBU.$error.required">Send-To Sub BU is Required</font></span>
+					         </div>
+					      
+					    
+					     </div>
+					   
+					     </div>
+					     </div>
+					   
+					      
+				
+				<div class="row" id="row2">
+					
+					    <div class="form-group" >
+					 <div class = "col-sm-5 col-md-6 " id="test"><b>Test</b></div>
+					 <div class = "col-sm-5 col-md-6" id="test"><b>Production</b></div>
+					
+					    
+ 
+					   
+					      </div>
+					      
+					      
+					       <div class="form-group" >
+					      <div class = "col-sm-5 col-md-6 " id="space1">      
+					      <label class="control-label col-sm-4" id="contactfields1" >ID<font color="red">*</font>:</label>
+					         <div class="col-sm-8">
+					         <select class="form-control"  ng-disabled="hideEdit" ng-options="item.testGsId as item.testGsId for item in SourceList"  name="id1" ng-model="lightWellPartner.testGsId" ng-change="showID(SourceList,lightWellPartner.testGsId)" onmousedown="if(this.options.length>7){this.size=7;}"  onchange='this.size=0;' onblur="this.size=0;" required>
+							<option value="">Please select</option>
+							</select>
+					      <span><font color="red"  ng-show="ErrorMsg1&&linkForm.id1.$error.required"> ID is Required</font></span>
+					      </div>
+					      </div>
+					      
+					      <div class = "col-sm-5 col-md-6 " id="space1">      
+					      <label class="control-label col-sm-4" id="contactfields1" >ID<font color="red">*</font>:</label>
+					         <div class="col-sm-8">
+					         <select class="form-control"  ng-disabled="hideEdit||id2Disabled" ng-options="item.productionGsId as item.productionGsId for item in SourceList"  name="id2" ng-model="lightWellPartner.productionGsId" ng-change="" onmousedown="if(this.options.length>7){this.size=7;}"  onchange='this.size=0;' onblur="this.size=0;" required>
+							<option value="">Please select</option>
+							</select>
+					      <span><font color="red"  ng-show="ErrorMsg1&&linkForm.id2.$error.required">Production ID is Required</font></span>
+					      </div>
+					      </div>
+					      </div>
+					      
+					      
+					      
+					      
+					      <div class="form-group" >
+					      <div class = "col-sm-5 col-md-6 " id="space1">      
+					      <label class="control-label col-sm-4" id="contactfields1" for="" >Service Request ID<font color="red">*</font>:</label>
+					         <div class="col-sm-8">
+					         <input class="form-control" type="text"   name="srId"  ng-model="srId"    ng-change="defaultSr(srId);"  ng-disabled="scSelectDisabled||hideEdit||idsDisabled" uppercased required >
+					      <span><font color="red"   ng-show="ErrorMsg1&&linkForm.srId.$error.required">Service Request ID is Required</font></span>
+					      </div>
+					      </div>
+					      
+					      <div class = "col-sm-5 col-md-6 " id="space1">      
+					      <label class="control-label col-sm-4" id="contactfields1" >Service Comments:</label>
+					         <div class="col-sm-8">
+					         <input class="form-control"   name="serviceComments" ng-model="notes" ng-disabled="scSelectDisabled||hideEdit||idsDisabled" uppercased ></input>
+					      
+					      </div>
+					      </div>
+					      </div>
+					     
+					      </div>
+					   
+					    <span style="padding-left:150px"><font color="red"  ng-show="validName">Partner ID already exist</font></span>
+					   
+		
+
+					      </form>
+					      
+					 
+		      
+				
+				
+				 
+		      <div class="titlehead" >   </div>
+		      </div>
+		      
+		      	     <div id="extra2" ng-show="bussServiceList.length!=0">
+                        <table class="table table-striped "   >
+                         
+                 
+	        <thead id="partnerhead">
+	        <tr>
+	            <th class="row-direction">Business Service</th>
+	            <th class="row-direction">ID</th>
+	            
+	            <th class="row-direction">Service Request ID</th>
+	             <th class="row-direction">BusinessService Comments</th>
+	          <!--   <th class="row-version">Protocol</th> --> 
+	             <th class="row-action">Action</th>
+	            
+	            
+	         </tr>
+	        </thead>
+	        
+	        <tbody>
+	        
+	        <tr ng-repeat="item in bussServiceList">
+	          
+	          <td ><div class="email">{{item.businessService.businessServiceName}}</div></td>
+	          <td ><div class="email">{{showName(serviceList,item.lightWellPartner.id)}}</div></td>
+	          
+	          <td ><div class="email">{{item.srId}}</div></td>
+	           <td ><div class="email">{{item.notes}}</div></td>
+	          <td><a href="" ng-click="editBService(item)"  ng-show="!upbsbt&&!hideEdit" > <img src="assets/edit.png" id="panellogo1"></a>&nbsp; 
+	         <a href="" ng-click="deleteBService(item)"  ng-show="!upbsbt&&!hideEdit" > <img src="assets/remove.png" id="panellogo1">
+	          
+	          </a></td> 
+	          
+	            
+	          
+	         
+	        </tr>
+	        </tbody>
+	       
+	     </table>
+	      </div>
+	      <div ng-show="!hideEdit">
+				<form name ="serviceForm">
+				<div class="row" id="row2" style="padding:0px;padding-top:10px;">
+						<div class="form-group">
+				
+				
+				<div class="col-6 col-md-4">
+					 <label class="control-label" id="contactfields1">Business Service<font color="red">*</font>: </label> 
+					     
+							<select class="form-control "   ng-options="item.id as item.businessServiceName for item in bserviceList" name="businessService" ng-disabled="idsDisabled||hideEdit" ng-change="showNm(bserviceList,bussService.businessService);showMap(bussService.businessService);showFour(bserviceList,bussService.businessService);" ng-model="bussService.businessService" onmousedown="if(this.options.length>7){this.size=7;}"  onchange='this.size=0;' onblur="this.size=0;" required>
+							<option value="">Please Select</option>
+							</select>
+							  <span><font color="red"  ng-show="servError&&serviceForm.businessService.$error.required">Business Service is Required</font></span> 
+							</div>
+					      
+                
+                 <div class="col-6 col-md-4">
+					  <label class="control-label "  id="contactfields1" >ID<font color="red">*</font>: </label> 
+					      
+							<select class="form-control "   ng-options="item.id as item.display for item in serviceList" name="serviceCategory" ng-model="bussService.serviceCategory" ng-disabled="idsDisabled||hideEdit||bussService.businessService==null"  onmousedown="if(this.options.length>7){this.size=7;}"  onchange='this.size=0;' onblur="this.size=0;" required>
+							
+							<option value="">Please Select</option>
+							</select>
+							 <span><font color="red"  ng-show="servError&&serviceForm.serviceCategory.$error.required">ABC ID is Required</font></span>
+							</div> 
+
+					
+							
+					
+				  
+				   
+							
+					
+							
+							
+							 
+							
+						<div class="col-6 col-md-4" style="padding-top:10px;">
+					   
+					   
+					     
+					      <label class="control-label " id="contactfields1" for="" >BusinessService Request ID<font color="red">*</font>:</label>
+					      
+					        
+					        
+					        <input class="form-control" type="text" style="width:250px;"  name="srId"  ng-model="bussService.srId"       ng-disabled="scSelectDisabled||hideEdit||idsDisabled||bussService.complianceCheck==null" uppercased required >
+					         <span><font color="red"  ng-show="servError&&serviceForm.srId.$error.required">ServiceRequest ID is Required</font></span>
+					         </div>
+					         
+					      
+					    	<div class="col-6 col-md-4" style="padding-top:10px;">
+					   
+					   
+					     
+					      <label class="control-label " id="contactfields1" for="" >BusinessService Comments:</label>
+					      
+					        
+					        
+					        <input class="form-control" type="text" style="width:250px;"  name="notes"  ng-model="bussService.notes"       ng-disabled="scSelectDisabled||hideEdit||idsDisabled||bussService.srId == null" uppercased >
+					         <span><font color="red"  ng-show="servError&&serviceForm.notes.$error.required">Service Request Number is Required</font></span>
+					         </div>
+					       
+					      
+					      </div>
+					      </div>
+					      
+					      
+					     
+					   
+					    
+					   
+					   
+					      
+					    
+					    
+					   
+					    
+		<div class="wrapper" id="addTrans" ng-show="!upbsbt" >
+				
+		        	 <button type="submit" class="btn btn-primary pull-right" id="primary" ng-disabled="hideEdit || scSelectDisabled"  ng-click="addBusinessService(serviceForm.$valid,bussService)" formnovalidate>ADD BUSINESS SERVICE</button> 
+					 <div class="divider" ></div>
+					 
+		      
+				</div>
+			<div class="wrapper" id="addTrans" ng-show="upbsbt">
+				
+		        	 <button type="submit" class="btn btn-default pull-right" id="warning" ng-click="revertBusinessServiceAll();"  formnovalidate>CANCEL</button> <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
+		        	 <button type="submit" class="btn btn-primary pull-right" style="font-size:10px;font-weight:400;margin-right: 6px;" ng-click="addBusinessService(serviceForm.$valid,bussService)" formnovalidate>UPDATE BUSINESS SERVICE</button> 
+					   
+					 <div class="divider" ></div>
+					 </div> 
+				
+				
+				<div class="titlehead" >   </div> 	
+		<div class="wrapper" id="addTrans" ng-show="!upgrbt" >
+			
+		        	 <button type="submit" class="btn btn-primary pull-right" id="primary" ng-disabled="bussServiceList.length<1 || upbsbt||!linkForm.$valid"  ng-click="addServiceCategory(linkForm.$valid);" formnovalidate>ADD GROUP</button> 
+					 <div class="divider" ></div>		
+		
+									      
+				</div>
+				
+				<div class="wrapper" id="addTrans" ng-show="upgrbt">
+				
+		        	 <button type="submit" class="btn btn-default pull-right" id="warning" ng-click="revertService();" ng-disabled="upbsbt" formnovalidate>CANCEL</button> <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
+		        	 <button type="submit" class="btn btn-primary pull-right" style="font-size:10px;font-weight:400;margin-right: 6px;" ng-disabled="upbsbt" ng-click="addServiceCategory(linkForm.$valid);" formnovalidate>UPDATE GROUP</button> 
+					   
+					 <div class="divider" ></div>
+					 </div> 
+				 
+				 </form>
+				 </div>
+				</div>	
+				</div>
+				</div>
+		        <div class="modal-footer" style="text-align:center;">
+		        	 <button type="button" class="btn btn-primary pull-left" id="primary"  ng-show="!hideEdit" ng-disabled="state == 'Y' || ServiceobjList.length<1 || upgrbt || upbsbt "  ng-click="comboCheck(selected,scname);">SAVE</button>
+		            <button type="button" class="btn btn-primary pull-left" id="primary"  ng-show="hideEdit" ng-disabled="state == 'Y'" ng-click="enableField();">EDIT</button>
+		        	   
+		          <button type="button" class="btn btn-default pull-right" id="warning" ng-click="cdata();"  data-dismiss="modal">CANCEL</button>
+		          <button type="button" class="btn btn-default"  ng-hide="hideremove" id="warning" ng-disabled="state == 'Y'" ng-click="deleteService();" >REMOVE</button>  
+		        </div>
+		      		      
+		    </div>
+		  </div>
+		  </div>
+		  </div>
+		  <script type="text/ng-template" id="myModalContent.html">
+    
+   
+		   
+       
+            <div class="modal-content" style="background-color: #f0f0f0 ;height:auto;" >
+                <div class="modal-header" style="background-color:#004c75;">
+                    <h1 class="modal-title" id="modtitle"> 3PP 
+                    <button type="button" class="close" data-dismiss="modal" ng-click="cancel()" style="color: #fff; font-weight: 400; font-size: 24px;" aria-hidden="true">&times;</button> </h1>
+                    
+                </div>
+               
+<div class="modal-body" style="border: 1px solid;margin:15px;background-color:#fff; text-align:center;  " >
+              <span style="font-family:arial;font-weight:700;"><b> {{user.msg}} </b> </span>
+ </div>
+
+               <div class="modal-footer">
+                    <button type="button" class="btn btn-primary pull-left"   id="primary" ng-click="cancel(user.del,user.edit)">OK</button>
+<button type="button" class="btn btn-default pull-right" ng-show="user.edit||user.del"   id="warning" ng-click="close(false)">CANCEL</button>
+
+   </div>     
+     
+            </div><!-- /.modal-content -->
+       
+     
+      
+    
+		</script>
+		
+		<script>
+      $('.modal-dialog').draggable({
+          handle: ".modal-header"
+});
+      
+      $('.modal-content').resizable({
+          //alsoResize: ".modal-dialog",
+          minHeight: 300,
+          minWidth: 300
+        });
+      
+      
+      </script>  
+		  </div>				    
+					   
+					    
+					    
+					    
+                        
+                     
+                 
+
+	      
+	      
+	      
+					
+					   
+					   
+		         
+				 
+		      
+					      
+					      
+		      
+				
+				
+				
+				
+		
+				
+	     
+	      
+				
+				 
+		  

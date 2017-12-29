@@ -1,0 +1,93 @@
+<div>
+
+<style>input:required:invalid {
+    outline: none;
+}
+</style>
+  <script type="text/ng-template"  id="tree_item_renderer.html">
+   <span ng-show="data.show||data.layer=='parent'" >
+
+	<input type="checkBox"  ng-show="data.layer!='parent'"  ng-model="data.select" /> 
+
+		{{data.layer}} <b> Name:</b> {{data.name}} <b> SRID:</b> {{data.srId}} <button ng-click="Show(data,data.layer)">+</button> 
+	
+	<ul>
+        <li ng-repeat="data in data.nodes" ng-include="'tree_item_renderer.html'"></li>
+    </ul>
+   </span>
+    
+    
+    
+    
+</script>
+<div style="margin:15px 20px 15px 20px; border:1px solid black;" >
+ <div  style="background-color: #404951;border:#404951" >
+
+<div class="row">
+<div class="col-6 col-md-4">
+ <div style="padding-top:20px;padding-left:20px;" >
+      
+      <div class="panel-heading ">SERVICE REQUEST ID</div>
+      </div>
+      <div class="panel-body " style="padding-top:0px; padding-left:20px" >
+      	
+		
+		<input class="form-control" id="panelsearch" type="text" name="SRID"  ng-model="SRID"  ng-change="table(SRID);"> 
+      
+      </div>
+      </div>
+    
+      </div>
+      
+      <div class=" panel-body pull-right col-sm-12" style=" background-color:#59626b ;">	
+
+  
+		  <!-- Trigger the modal with a button -->
+		  <button type="button" class="btn btn-primary pull-right"    data-toggle="modal" data-target="#myModal" id="panelbtn"><img src="assets/export.png" id="exportlogo">&nbsp;&nbsp;&nbsp; EXPORT</button>
+
+</div>
+</div>
+<div style="background-color:#fff;">
+ 
+	      
+	    
+  <li ng-repeat="data in items" ng-include="'tree_item_renderer.html'"></li>
+	      </div>
+	      </div>
+	      
+	      <!-- Modal -->
+	       
+		
+		  
+		  </div>				    
+					   
+					    
+					    
+					    
+                        
+                     
+                 
+
+	      
+	      
+	      
+					
+					   
+					   
+		         
+				 
+		      
+					      
+					      
+		      
+				
+				
+				
+				
+		
+				
+	     
+	      
+				
+				 
+		  

@@ -1,0 +1,244 @@
+package com.abc.tpi.db;
+
+import java.util.ArrayList;
+import java.util.Date;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import com.abc.tpi.model.master.Delimiter;
+import com.abc.tpi.model.poc.Poc;
+import com.abc.tpi.model.poc.PocParentWip;
+import com.abc.tpi.model.poc.PocWip;
+import com.abc.tpi.model.service.BusinessService;
+import com.abc.tpi.model.service.BusinessServiceW;
+import com.abc.tpi.model.tpp.LightWellPartner;
+import com.abc.tpi.repository.BusinessServiceRepository;
+import com.abc.tpi.repository.BusinessServiceWRepository;
+import com.abc.tpi.repository.DelimiterRepository;
+import com.abc.tpi.repository.LightWellPartnerRepository;
+import com.abc.tpi.repository.MigrationTrackerRepository;
+import com.abc.tpi.repository.PocEntityRepository;
+import com.abc.tpi.repository.PocParentWipRepository;
+import com.abc.tpi.repository.PocRepository;
+import com.abc.tpi.repository.PocWipRepository;
+import com.abc.tpi.repository.ServiceTypeRepository;
+import com.abc.tpi.service.DirectMigratorImpl;
+import com.abc.tpi.service.MasterDataService;
+
+@ContextConfiguration(locations={"classpath:application-contexttest.xml"})
+@RunWith(SpringJUnit4ClassRunner.class)
+public class TpiPocTest {
+
+	@Autowired 
+	PocRepository pocRepository;
+	
+	@Autowired
+	DelimiterRepository delimeterRepository;
+	
+	@Autowired
+	PocWipRepository pocWipRepository;
+		
+	@Autowired
+	MigrationTrackerRepository migrationTrackerRepository;
+	
+	@Autowired
+	DirectMigratorImpl migratorService;
+	
+	@Autowired
+	PocParentWipRepository pocParentWipRepository;
+	
+	@Autowired
+	PocEntityRepository	pocEntityRepository;
+	
+	@Autowired
+	BusinessServiceWRepository businessServiceWRepository;
+	
+	@Autowired
+	MasterDataService masterDataService;
+	
+	@Autowired
+	ServiceTypeRepository serviceTypeRepository;
+	
+	@Autowired
+	LightWellPartnerRepository lightWellPartnerRepository;
+	
+	@Autowired
+	BusinessServiceRepository businessServiceRepository;
+	
+	
+	@Test
+	public void testPocAdd()
+	{
+		Delimiter del = delimeterRepository.findAll().get(0); 
+		Poc poc = new Poc();
+		
+		poc.setPocValue("value1");
+		poc.setDescription("test description");
+		poc.setDelimiter(del);
+		
+		pocRepository.save(poc);
+	}
+	
+	@Test
+	public void testPocUpdate()
+	{
+		Poc poc = pocRepository.findAll().get(0);
+		
+		poc.setDescription("test description " + (new Date().toString()));		
+		pocRepository.save(poc);
+	}
+	
+	
+	@Test
+	public void testPocDelete()
+	{
+		Poc poc = pocRepository.findAll().get(0);		
+		pocRepository.delete(poc);
+	}
+	
+	@Test 
+	public void copyPocWipToPOC()
+	{
+		PocWip poc = pocWipRepository.findAll().get(0);
+		Poc newPoc = new Poc();
+		newPoc.setDelimiter(poc.getDelimiter());
+		newPoc.setDescription(poc.getDescription());
+		newPoc.setPocValue(poc.getPocValue());		
+		Poc result = pocRepository.save(newPoc);
+		pocWipRepository.save(poc);
+	}
+	
+	@Test
+	public void testPocWipAdd()
+	{
+		Delimiter del = delimeterRepository.findAll().get(0); 
+		PocWip poc = new PocWip();
+		
+		poc.setPocValue("value1");
+		poc.setDescription("test description");
+		poc.setDelimiter(del);
+		
+		pocWipRepository.save(poc);
+	}
+	
+	@Test
+	public void updatePocWip()
+	{
+		PocWip poc = pocWipRepository.findAll().get(0);		
+		poc.setDescription("test description " + (new Date().toString()));		
+		pocWipRepository.save(poc);
+	}
+	
+	@Test
+	public void deletePocWip()
+	{
+		PocWip poc = pocWipRepository.findAll().get(0);
+		pocWipRepository.delete(poc);
+	}
+	
+	@Test
+	public void migratePocWip()
+	{
+		//DirectMigratorImpl migrator = new DirectMigratorImpl();
+		PocWip poc = pocWipRepository.findAll().get(0);		
+		migrationTrackerRepository.findAll();
+		//migratorService.migrate(poc, pocRepository);
+	}
+	
+	@Test 
+	public void addPocParentWip()
+	{
+		PocParentWip pocParentWip = new PocParentWip();
+		pocParentWip.setDescription("First PocParent Object");
+		pocParentWip.setPocs(new ArrayList<PocWip>());
+
+		Delimiter del = delimeterRepository.findAll().get(0); 
+		PocWip poc = new PocWip();
+		
+		poc.setPocValue("value1");
+		poc.setDescription("test description");
+		poc.setDelimiter(del);
+		
+		pocParentWip.getPocs().add(poc);
+		
+		poc = new PocWip();
+		
+		poc.setPocValue("value2");
+		poc.setDescription("test description2");
+		poc.setDelimiter(del);
+		
+		pocParentWip.getPocs().add(poc);
+		
+		pocParentWipRepository.save(pocParentWip);
+	}
+	
+	@Test
+	public void testGetParentId()
+	{
+
+		Poc poc = pocRepository.findAll().get(0);		
+		long parentId = pocRepository.readParentbjectId(poc.getId());
+		System.out.println(parentId);
+		
+		//namedFindParentId
+
+	}
+	
+	@Test
+	public void testSaveUsingEntityRepo()
+	{
+		Delimiter del = delimeterRepository.findAll().get(0); 
+		Poc poc = pocRepository.findAll().get(0);
+		
+		poc.setPocValue("value2");
+		poc.setDescription("test description");
+		poc.setDelimiter(del);
+		
+		pocEntityRepository.save(poc);
+		
+		
+		//.save(poc);
+	}
+	
+	@Test 
+	public void testSaveBusinessServiceW()
+	{
+		BusinessServiceW bs = new BusinessServiceW();
+		bs.setAck(true);
+		bs.setAckPeriod(123);
+		bs.setComplianceCheck(true);
+		LightWellPartner lw = new LightWellPartner();
+		lw.setActive(true);
+		lw.setNotes("test notes");
+		lw.setOrganizationName("ABC");
+		lw.setProductionGsId("pGsId");	
+		lw.setProductionIsaID("pIsId");
+		lw.setProductionIsaQualifier("PQual");
+		lw.setTestGsId("tGsId");
+		lw.setTestIsaID("testIsId");
+		lw.setTestIsaQualifier("tQual");
+		lightWellPartnerRepository.save(lw);
+		
+		bs.setLightWellPartner(lw);
+		bs.setNotes("test notes");
+		bs.setProtocol(masterDataService.findAllProtocols().get(0));
+		bs.setServiceType(serviceTypeRepository.findAll().get(0));
+		bs.setSrId("SR ID TEST");
+		bs.setVersion(masterDataService.findAllVersions().get(0));
+		
+		
+		businessServiceWRepository.save(bs);
+	}
+	
+	@Test
+	public void cloneBusinessService()
+	{
+		BusinessServiceW bs = businessServiceWRepository.findAll().get(0);
+		BusinessService bsf = bs.cloneToFInal();
+		businessServiceRepository.save(bsf);
+	}
+}

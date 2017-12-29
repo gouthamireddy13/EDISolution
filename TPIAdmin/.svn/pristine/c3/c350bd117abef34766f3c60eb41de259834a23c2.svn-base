@@ -1,0 +1,74 @@
+package com.abc.tpi.model.service;
+
+import java.util.Collection;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+
+import com.abc.tpi.model.partner.Partner;
+
+@Entity
+@Table(name="ABC_TPI_SERVICE_SUBSCRIPTION")
+public class ServiceSubscription {
+
+	@Id
+	@SequenceGenerator(name="ABC_TPI_SUBSCR_GEN", sequenceName="ABC_TPI_SUBSCR_SEQ",allocationSize=10)
+	@GeneratedValue(generator="ABC_TPI_SUBSCR_GEN")
+	@Column(name="SUBSCRIPTION_ID")
+	private Long id;
+
+	@ManyToOne(cascade=CascadeType.REFRESH)
+	@JoinColumn(name="PARTNER_ID", nullable=false)	
+	private Partner partner;
+	
+	@NotNull
+	@ManyToOne
+	@JoinColumn(name="SC_ID", nullable=false)	
+	private ServiceCategory serviceCategory;
+	
+	@OneToMany(cascade=CascadeType.ALL,fetch=FetchType.EAGER, orphanRemoval=true)
+	@JoinTable(name="ABC_TPI_PARTNER_SERVICE",
+	joinColumns=@JoinColumn(name="SUBSCRIPTION_ID"),
+	inverseJoinColumns=@JoinColumn(name="SERVICE_ID"))
+	private Collection<Service> services;
+
+	public Long getId() {
+		return id;
+	}
+
+	public Partner getPartner() {
+		return partner;
+	}
+
+	public Collection<Service> getServices() {
+		return services;
+	}
+
+	public void setPartner(Partner partner) {
+		this.partner = partner;
+	}
+
+	public void setServices(Collection<Service> services) {
+		this.services = services;
+	}
+
+	public ServiceCategory getServiceCategory() {
+		return serviceCategory;
+	}
+
+	public void setServiceCategory(ServiceCategory serviceCategory) {
+		this.serviceCategory = serviceCategory;
+	}
+	
+}

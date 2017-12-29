@@ -1,0 +1,55 @@
+package com.abc.tpi.model.poc;
+
+import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Version;
+
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+
+@MappedSuperclass
+public abstract class TpiManagedEntity {
+
+	@Id
+	@GeneratedValue(generator="ABC_TPI_ID_GEN")
+	@SequenceGenerator(name="ABC_TPI_ID_GEN", sequenceName="ABC_TPI_ID_SEQ",allocationSize=10)
+	private Long id;
+	
+	@Version
+	@Column(name="VERSION_NUM")
+	private long versionNum;
+	
+	@CreatedDate
+	@Column(name="CREATED", updatable=false)
+	private Date createdDate;
+	
+	@Column(name="LASTMODIFIED", updatable=true)
+	@LastModifiedDate
+	private Date lastModifiedDate;
+
+	public Date getCreatedDate() {
+		return createdDate;
+	}
+
+	public Long getId() {
+		return id;
+	}
+	
+	public Date getLastModifiedDate() {
+		return lastModifiedDate;
+	}
+
+	public long getVersionNum() {
+		return versionNum;
+	}
+
+	public void setVersionNum(long versionNum) {
+		this.versionNum = versionNum;
+	}
+
+}

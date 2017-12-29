@@ -1,0 +1,176 @@
+package com.abc.tpi.service;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.abc.tpi.model.migrator.BusinessServiceApprovalReview;
+import com.abc.tpi.model.migrator.ObjectTracker;
+import com.abc.tpi.model.migrator.ServiceApprovalReview;
+import com.abc.tpi.model.migrator.ServiceSubscriptionApprovalReview;
+import com.abc.tpi.model.migrator.SubscriptionServiceObjectMigration;
+import com.abc.tpi.model.service.BusinessService;
+import com.abc.tpi.model.service.ServiceSubscription;
+import com.abc.tpi.repository.ObjectTrackerRepository;
+
+@Service
+public class MigratorClientServiceImpl implements MigratorClientService {
+
+	@Autowired
+	ObjectTrackerRepository objectTrackerRepository;
+	
+	@Autowired
+	ServiceSubscriptionService serviceSubscriptionService;
+	
+	public MigratorClientServiceImpl() {
+		// TODO Auto-generated constructor stub
+	}
+
+	@Override
+	//@Transactional
+	public void migrateServiceSubscription(List<ServiceSubscriptionApprovalReview> serviceApproval) throws Exception {
+		
+		List<SubscriptionServiceObjectMigration> payLoad = new ArrayList<SubscriptionServiceObjectMigration>(); 
+		
+		if (serviceApproval == null)
+		{
+			return;
+		}
+		
+		for (ServiceSubscriptionApprovalReview serviceSubscriptionMeta :serviceApproval)
+		{
+			SubscriptionServiceObjectMigration meta = new SubscriptionServiceObjectMigration();
+			
+			ObjectTracker ssTracker = this.getObjectTrackerData(ServiceSubscription.class.getName(), serviceSubscriptionMeta.getObjectId());
+			
+			if (ssTracker == null)
+			{
+				ssTracker = new ObjectTracker();
+				ssTracker.setClassName(ServiceSubscription.class.getName());
+				ssTracker.setSourceId(serviceSubscriptionMeta.getObjectId());				
+			}
+
+			meta.setMeta(ssTracker);												
+									
+			if (serviceSubscriptionMeta.isToBeExported())
+			{
+				meta.getMeta().setToBeExported(true);
+			}
+			else
+			{
+				meta.getMeta().setToBeExported(false);				
+			}
+			
+			for (ServiceApprovalReview serviceMeta:serviceSubscriptionMeta.getServices())
+			{
+				ObjectTracker serviceTracker = this.getObjectTrackerData(com.abc.tpi.model.service.Service.class.getName(), serviceMeta.getObjectId());
+				if (serviceTracker == null)
+				{
+					serviceTracker = new ObjectTracker();
+					serviceTracker.setClassName(com.abc.tpi.model.service.Service.class.getName());
+					serviceTracker.setSourceId(serviceMeta.getObjectId());
+					serviceTracker.setParentId(serviceSubscriptionMeta.getObjectId());
+					serviceTracker.setParentClassName(ServiceSubscription.class.getName());
+				}
+
+				if (serviceMeta.isToBeExported())
+				{
+					serviceTracker.setToBeExported(true);
+				}
+				else
+				{
+					serviceTracker.setToBeExported(false);				
+				}
+				
+				meta.getMeta().addObjectTracker(serviceTracker);
+				
+				for (BusinessServiceApprovalReview businessServiceMeta: serviceMeta.getBusinessServices())
+				{
+					ObjectTracker businessServiceTracker = this.getObjectTrackerData(BusinessService.class.getName(), businessServiceMeta.getObjectId());
+					if (businessServiceTracker == null)
+					{
+						businessServiceTracker = new ObjectTracker();
+						businessServiceTracker.setClassName(BusinessService.class.getName());
+						businessServiceTracker.setSourceId(businessServiceMeta.getObjectId());
+						businessServiceTracker.setParentId(serviceMeta.getObjectId());
+						businessServiceTracker.setParentClassName(com.abc.tpi.model.service.Service.class.getName());
+					}
+
+					if (serviceMeta.isToBeExported())
+					{
+						businessServiceTracker.setToBeExported(true);
+					}
+					else
+					{
+						businessServiceTracker.setToBeExported(false);				
+					}
+					
+					serviceTracker.addObjectTracker(serviceTracker);
+				}
+				
+			}			
+			this.populateServiceSubscriptionData(meta);
+			payLoad.add(meta);
+		}
+	}
+	
+	private ObjectTracker getObjectTrackerData(String className, long objectId)
+	{
+		
+		return objectTrackerRepository.findOneByClassNameAndSourceId(className, objectId);		
+	}
+	
+	//@Transactional
+	private void populateServiceSubscriptionData(SubscriptionServiceObjectMigration meta) throws Exception
+	{
+		ObjectTracker migrationMeta = meta.getMeta();
+		//ServiceSubscription serviceSubscriptionDest = new ServiceSubscription();
+		ServiceSubscription serviceSubscriptionSource = serviceSubscriptionService.getServiceSubscription(meta.getMeta().getSourceId());
+		
+		if (serviceSubscriptionSource != null)
+		{
+			if (migrationMeta.isToBeExported())
+			{
+				//clone ServiceSubscription				
+			}
+			
+			migrationMeta.setSourceVersionNum(serviceSubscriptionSource.getVersionNum());
+			
+			for (ObjectTracker service : meta.getMeta().getObjectTrackers())
+			{
+				for (com.abc.tpi.model.service.Service srvc: serviceSubscriptionSource.getServices())
+				{
+					if (srvc.getId() == service.getSourceId())
+					{
+						service.setSourceVersionNum(srvc.getVersionNum());
+						//clone service
+						for (ObjectTracker businessService: service.getObjectTrackers())
+						{
+							//clone business service
+							for (BusinessService bs: srvc.getBusinessServices())
+							{
+								if (bs.getId() == businessService.getSourceId())
+								{
+									businessService.setSourceVersionNum(bs.getVersionNum());
+									break;
+								}
+							}
+						}
+						break;
+					}
+				}
+			}
+			
+		
+		}
+		else
+		{
+			throw new Exception("Service Subscription with ID: " + meta.getMeta().getSourceId() + " not found" );
+		}
+		
+	}
+
+}

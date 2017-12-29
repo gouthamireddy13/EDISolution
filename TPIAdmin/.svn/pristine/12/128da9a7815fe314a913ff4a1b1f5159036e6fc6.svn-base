@@ -1,0 +1,167 @@
+package com.abc.tpi.controller;
+
+import java.net.URLDecoder;
+import java.util.Collection;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.abc.tpi.common.exceptions.TpiRepositoryException;
+import com.abc.tpi.model.master.Delimiter;
+import com.abc.tpi.model.master.Direction;
+import com.abc.tpi.model.master.Document;
+import com.abc.tpi.model.master.Protocol;
+import com.abc.tpi.model.master.TppType;
+import com.abc.tpi.model.master.Version;
+import com.abc.tpi.service.MasterDataService;
+
+@RestController
+public class LookUpDataControllerRest {
+
+	private static final Logger logger = LogManager.getLogger(LookUpDataControllerRest.class);
+
+	@Autowired
+	MasterDataService masterDataService;
+	
+	@RequestMapping(value = { "/documents"}, method = { RequestMethod.GET })
+	Collection<Document> getDocuments() throws TpiRepositoryException
+	{
+		logger.debug("Invoked getDocuments()");
+		
+		Collection<Document> result = null;
+		
+		try
+		{
+			result = masterDataService.findAllDocumentTypes();
+		}		
+		catch (Exception ex) 
+		{
+			logger.error("Failed to Retrieve List of Documents. ", ex);
+			throw new TpiRepositoryException("Failed to Retrieve List of Documents.");
+		}		
+		return result;	
+	}
+	
+	@RequestMapping(value = { "/protocols"}, method = { RequestMethod.GET })
+	Collection<Protocol> getProtocols() throws TpiRepositoryException
+	{
+		logger.debug("Invoked getProtocols()");
+		
+		Collection<Protocol> result = null;
+		
+		try
+		{
+			result =  masterDataService.findAllProtocols();
+		}		
+		catch (Exception ex) 
+		{
+			logger.error("Failed to Retrieve List of Protocols. ", ex);
+			throw new TpiRepositoryException("Failed to Retrieve List of Protocols.");
+		}
+		
+		return result;	
+	}
+	
+	@RequestMapping(value = { "/tppTypes"}, method = { RequestMethod.GET })
+	Collection<TppType> getTppTypes() throws TpiRepositoryException
+	{
+		logger.debug("Invoked getTppTypes()");
+		
+		Collection<TppType> result = null;
+		
+		try
+		{
+			result =  masterDataService.findAllTppTypes();
+		}		
+		catch (Exception ex) 
+		{
+			logger.error("Failed to Retrieve List of TppType. ", ex);
+			throw new TpiRepositoryException("Failed to Retrieve List of TppType.");
+		}
+		
+		return result;	
+	}
+	
+	@RequestMapping(value = { "/versions"}, method = { RequestMethod.GET })
+	Collection<Version> getVersions() throws TpiRepositoryException
+	{
+		logger.debug("Invoked getVersions()");
+		
+		Collection<Version> result = null;
+		
+		try
+		{
+			result = masterDataService.findAllVersions();
+		}		
+		catch (Exception ex) 
+		{
+			logger.error("Failed to Retrieve List of Versions. ", ex);
+			throw new TpiRepositoryException("Failed to Retrieve List of Versions.");
+		}
+		
+		return result;	
+	}
+	
+	@RequestMapping(value = { "/directions"}, method = { RequestMethod.GET })
+	Collection<Direction> getDirections() throws TpiRepositoryException
+	{
+		logger.debug("Invoked getDirections()");
+		
+		Collection<Direction> result = null;
+		
+		try
+		{
+			result = masterDataService.findAllDirections();
+		}		
+		catch (Exception ex) 
+		{
+			logger.error("Failed to Retrieve List of Directions. ", ex);
+			throw new TpiRepositoryException("Failed to Retrieve List of Directions.");
+		}
+		
+		return result;	
+	}
+	
+	@RequestMapping(value = { "/delimiters"}, method = { RequestMethod.GET })
+	Collection<Delimiter> getDelimiters(HttpServletRequest request, HttpServletResponse response) throws TpiRepositoryException
+	{
+		logger.debug("Invoked getDelimiters()");
+		Collection<Delimiter> result = null;
+
+		try {
+			if (request.getParameter("type") != null) {
+				logger.debug("Querty string: " + request.getQueryString());
+				String type = URLDecoder.decode(request.getParameter("type"), "UTF-8").toUpperCase();
+
+				switch (type) {
+				case "SEGMENT":
+					result = masterDataService.getSegmentDelimiters();
+					break;
+				case "ELEMENT":
+					result = masterDataService.getElementDelimiters();
+					break;
+				case "COMPOSITE":
+					result = masterDataService.getCompositeDelimiters();
+					break;
+				default:
+					result = null;
+					break;
+				}
+			} else {
+				result = masterDataService.findAllDelimiters();
+			}
+		} catch (Exception ex) {
+			logger.error("Failed to Retrieve List of Directions. ", ex);
+			throw new TpiRepositoryException("Failed to Retrieve List of Delimiters.");
+		}
+		return result;
+	}
+	
+}

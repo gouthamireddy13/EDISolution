@@ -1,0 +1,18 @@
+package com.abc.tpi.utils;
+
+public interface AppConstants {
+	public String errorCode01 = "Incorrect Partner Group or Sub Group.";
+	public String errorCode02 = "Failed to Insert Partner.";
+	public String errorCode03 = "Number of columns are incorrect.";
+	public String errorCode04 = "Mandatory field - Partner Name is missing.";
+	public String errorCode05 = "Mandatory field - Partner Group Name is missing.";
+	public String errorCode06 = "Mandatory field - Partner Sub Group Name is missing.";
+	public String errorCode07 = "Mandatory field - Partner Contact Name is missing.";
+	public String errorCode08 = "Mandatory field - Primary Email is missing.";
+	public String errorCode09 = "Mandatory field - Transaction Type is missing.";
+	
+	
+	public String errorCode10 = "Incorrect Transaction Type.";
+	
+
+}

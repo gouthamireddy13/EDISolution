@@ -1,0 +1,87 @@
+package com.abc.tpi.domain.soap;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlAccessorType( XmlAccessType.FIELD)
+@XmlRootElement(name="LW")
+public class LW {
+	
+	@XmlElement(name="ORGANIZATION",required=false)
+	String organization;
+	
+	@XmlElement(name="ISA_PROD_QUAL",required=false)
+	String isa_prod_qual;
+	
+	@XmlElement(name="ISA_PROD_ID",required=false)
+	String isa_prod_id;
+	
+	@XmlElement(name="GSA_PROD_ID",required=false)
+	String gsa_prod_id;
+	
+	@XmlElement(name="ISA_TEST_QUAL",required=false)
+	String isa_test_qual;
+	
+	@XmlElement(name="ISA_TEST_ID",required=false)
+	String isi_test_id;
+	
+	@XmlElement(name="GSA_TEST_ID",required=false)
+	String gsa_test_id;
+	
+	@XmlElement(name="NOTES",required=false)
+	String notes;
+	
+	@XmlElement(name="ACTIVE",required=false,defaultValue="true")
+	boolean isActive;
+	
+	public String getGsa_prod_id() {
+		return gsa_prod_id;
+	}
+	public String getGsa_test_id() {
+		return gsa_test_id;
+	}
+	public String getIsa_prod_id() {
+		return isa_prod_id;
+	}
+	public String getIsa_prod_qual() {
+		return isa_prod_qual;
+	}
+	public String getIsa_test_qual() {
+		return isa_test_qual;
+	}
+	public String getIsi_test_id() {
+		return isi_test_id;
+	}
+	public String getOrganization() {
+		return organization;
+	}
+	public void setGsa_prod_id(String gsa_prod_id) {
+		this.gsa_prod_id = gsa_prod_id;
+	}
+	public void setGsa_test_id(String gsa_test_id) {
+		this.gsa_test_id = gsa_test_id;
+	}
+	public void setIsa_prod_id(String isa_prod_id) {
+		this.isa_prod_id = isa_prod_id;
+	}
+	public void setIsa_prod_qual(String isa_prod_qual) {
+		this.isa_prod_qual = isa_prod_qual;
+	}
+	public void setIsa_test_qual(String isa_test_qual) {
+		this.isa_test_qual = isa_test_qual;
+	}
+	public void setIsi_test_id(String isi_test_id) {
+		this.isi_test_id = isi_test_id;
+	}
+	public void setOrganization(String organization) {
+		this.organization = organization;
+	}
+	public String getNotes() {
+		return notes;
+	}
+	public void setNotes(String notes) {
+		this.notes = notes;
+	}
+}

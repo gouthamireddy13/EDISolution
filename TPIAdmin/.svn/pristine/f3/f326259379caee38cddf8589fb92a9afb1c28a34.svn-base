@@ -1,0 +1,46 @@
+package com.abc.tpi.model.poc;
+
+import java.util.Collection;
+
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.FetchType;
+import javax.persistence.MappedSuperclass;
+import javax.persistence.OneToMany;
+
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.RelationTargetAuditMode;
+
+@MappedSuperclass
+@AttributeOverrides
+({
+	@AttributeOverride(name="id",column=@Column(name="PARENT_ID"))
+})
+abstract class PocParentEntity<T extends PocEntity> extends TpiManagedEntity {
+
+	@Column(name="POC_PARENT_DESC")
+	private String description;
+	
+	@OneToMany(fetch=FetchType.LAZY, cascade=CascadeType.ALL,orphanRemoval=true)
+	private Collection<T> pocs;
+
+	public String getDescription() {
+		return description;
+	}
+
+	@Audited(targetAuditMode=RelationTargetAuditMode.NOT_AUDITED)
+	public Collection<T> getPocs() {
+		return pocs;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public void setPocs(Collection<T> pocs) {
+		this.pocs = pocs;
+	}
+	
+}

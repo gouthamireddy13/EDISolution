@@ -1,0 +1,100 @@
+package com.abc.dashboard.service;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.abc.dashboard.model.SdServiceAccess;
+import com.abc.dashboard.model.SdServiceCategoryDef;
+import com.abc.dashboard.repository.SdServiceAccessRepository;
+import com.abc.dashboard.repository.SdServiceCategoryDefRepository;
+
+@Service("sdServiceCategoryService")
+public class SdServiceCategoryServiceImpl implements SdServiceCategoryService {
+
+	@PersistenceContext	
+	EntityManager em;
+	
+	@Autowired
+	SdServiceCategoryDefRepository sdServiceCategoryDefRepository;
+	
+	@Autowired
+	SdServiceAccessRepository sdServiceAccessRepository;
+	
+	@Override
+	public SdServiceCategoryDef saveSdServiceCategoryDef(SdServiceCategoryDef sdServiceCategoryDef) {
+		return sdServiceCategoryDefRepository.save(sdServiceCategoryDef);
+	}
+
+	@Override
+	public <T> List<T> findSdServiceCategoryByName(String name, Class<T> type) {
+		return sdServiceCategoryDefRepository.namedFindServiceCategoryByName(name, type);
+	}
+
+	@Override
+	public  <T> List<T> getAllSdServiceCategoryDefs(Class<T> type) {
+		return sdServiceCategoryDefRepository.findAllByOrderByServiceCategory(type);
+	}
+
+	@Override
+	public void deleteSdServiceCategoryDef(long id) {
+		sdServiceCategoryDefRepository.delete(id);		
+	}
+
+	@Override
+	public void deleteSdServiceCategoryDef(SdServiceCategoryDef sdServiceCategoryDef) {
+		sdServiceCategoryDefRepository.delete(sdServiceCategoryDef);		
+	}
+
+	@Override
+	public SdServiceCategoryDef findSdServiceCategoryById(long id) {
+		return sdServiceCategoryDefRepository.findOne(id);
+	}
+
+	@Override
+	public <T> T findGenericEntityUsingEntityGrpah(Class<T> entityCls, Long id, String entityGraphName) {
+		Map<String,Object> props = new HashMap<String,Object>();
+		props.put("javax.persistence.fetchgraph",em.getEntityGraph(entityGraphName));
+		return em.find	(entityCls,id, props);
+	}
+
+	@Override
+	public SdServiceAccess saveSdServiceAccess(SdServiceAccess sdServiceAccess) {
+		return sdServiceAccessRepository.save(sdServiceAccess);
+	}
+
+	@Override
+	public <T> List<T> getAllSdServiceAccess(Class<T> entityCls) {
+		return sdServiceAccessRepository.findAllBy(entityCls);
+	}
+
+	@Override
+	public <T> T getSdServiceAccessById(long id, Class<T> entityCls) {
+		return sdServiceAccessRepository.findOneById(entityCls, id);
+	}
+
+	@Override
+	public void deleteSdServiceAccessDef(SdServiceAccess sdServiceAccess) {
+		sdServiceAccessRepository.delete(sdServiceAccess);
+		
+	}
+
+	@Override
+	public void deleteSdServiceAccessDef(long id) {
+		sdServiceAccessRepository.delete(id);
+		
+	}
+
+	@Override
+	public <T> List<T> getServiceCategoriesWithPartnerSubscription(Class<T> entityCls) {
+		// TODO Auto-generated method stub
+		return sdServiceCategoryDefRepository.namedFindServiceCategoriesWithPartnerSubscription(entityCls);
+	}
+	
+}

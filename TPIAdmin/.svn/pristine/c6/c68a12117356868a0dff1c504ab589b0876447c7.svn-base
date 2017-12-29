@@ -1,0 +1,7 @@
+package com.abc.tpi.model.migrator;
+
+import java.util.List;
+
+public class SubscriptionServiceTracker {
+	List<ObjectTracker> services;
+}

@@ -1,0 +1,94 @@
+package com.abc.tpi.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.abc.tpi.model.Protocol;
+import com.abc.tpi.model.Tpp;
+import com.abc.tpi.model.Transaction;
+import com.abc.tpi.repository.TppRepository;
+
+@Service
+public class TppServiceImpl implements TppService {
+
+	@Autowired
+	TppRepository tppRepository;
+	
+	@Transactional
+	public Tpp createTpp(Tpp tpp) {
+		return tppRepository.save(tpp);
+	}
+
+	@Transactional
+	public void deleteTpp(Tpp tpp) {
+		tppRepository.delete(tpp);
+
+	}
+
+	@Transactional
+	public void deleteTppById(long id) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Transactional
+	public Tpp addProtocol(Protocol protocol) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Transactional
+	public Tpp addTransaction(Transaction transaction) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Transactional
+	public Tpp removeProtocol(Protocol protocol) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Transactional
+	public Tpp removeProtocolByID(long id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Transactional
+	public Tpp removeTransaction(Transaction transaction) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Transactional
+	public Tpp removeTransactionById(long id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	public Tpp findTppById(long id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public List<Tpp> findAllTpps() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public List<Tpp> findTppByName(String name) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Transactional
+	public Tpp updateService(Tpp tpp) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+}

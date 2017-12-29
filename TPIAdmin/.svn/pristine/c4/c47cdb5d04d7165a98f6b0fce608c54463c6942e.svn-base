@@ -1,0 +1,112 @@
+package com.abc.tpi.service;
+
+import java.util.List;
+
+import com.abc.tpi.model.master.Ack;
+import com.abc.tpi.model.master.Delimiter;
+import com.abc.tpi.model.master.Direction;
+import com.abc.tpi.model.master.Document;
+import com.abc.tpi.model.master.MapForDropDownProjection;
+import com.abc.tpi.model.master.Protocol;
+import com.abc.tpi.model.master.TpiMap;
+import com.abc.tpi.model.master.TppType;
+import com.abc.tpi.model.master.Version;
+import com.abc.tpi.model.service.ServiceType;
+import com.abc.tpi.model.service.ServiceTypeProjectionIdName;
+import com.abc.tpi.model.tpp.LightWellPartner;
+
+public interface MasterDataService {
+	
+	//TPP Type
+	TppType saveTppType(TppType tppType);
+	void deleteTppType(TppType tppType);
+	List<TppType> findAllTppTypes();
+
+	//TPP
+	TppType findTppTypeById(long Id);
+	TppType findTppTypeByTypeCode(short typeCode);
+	
+	//Protocol
+	Protocol saveProtocol(Protocol protocol);
+	void deleteProtocol(Protocol protocol);
+	List<Protocol> findAllProtocols();
+	Protocol findProtocolById(long id);
+	Protocol findProtocolByProtocolType(String protocolType);
+	
+	//Document	
+	void deleteDocumentType(Document docType);
+	List<Document> findAllDocumentTypes();
+	Document findDocumentTypeById(long id);
+	Document findDocumentTypeByDocumentType(String documentType);
+	Document saveDocument(Document document);
+	
+	//Version	
+	void deleteVersion(Version version);	
+	List<Version> findAllVersions();
+	Version findVersionById(long id);
+	Version findVersionByVersionNumber(int versionNumber);
+	Version saveVersion(Version version);
+	
+	//Delimiter	
+	List<Delimiter> findAllDelimiters();
+	Delimiter saveDelimiter(Delimiter delimiter);	
+	Delimiter findDelimiterByCode(String code);
+	List<Delimiter> getSegmentDelimiters();
+	List<Delimiter> getElementDelimiters();
+	List<Delimiter> getCompositeDelimiters();
+	List<Delimiter> getRepeatDeleimiters();
+	
+	//Direction
+	List<Direction> findAllDirections();
+	
+	
+	//Direction
+	Direction findDirectionById(long id);
+	Direction findDirectionByName(String name);
+	Direction saveDirection(Direction direction);
+	void deleteDirection(Direction direction);
+	
+	//LightWellPartner
+	LightWellPartner findLWPartnerById(long id);
+	
+	//ACK
+	Ack findAckByCode(String ackValue);
+	Ack saveAck(Ack ack);
+	
+	//TPI MAP	
+	TpiMap saveMap(TpiMap map);
+	List<MapForDropDownProjection> findMapForServiceType(long serviceTypeId);
+	List<MapForDropDownProjection> findMapForServiceType(ServiceType serviceType);
+	List<TpiMap> getAllMaps();
+	List<MapForDropDownProjection> getAllMapsProjections();
+	TpiMap findMapById(long id);
+	MapForDropDownProjection findMapByIdProjection(long id);
+	TpiMap findMapByName(String name);
+
+	//Business Unit	
+	//SdServiceAccess saveBussinessUnit(SdServiceAccess businessUnit);	
+	//List<SdServiceAccess> findAllBusinessUnit();
+	
+	//SD Service Category
+/*	Collection<SdServiceCategoryLookup> findAllSDServiceCategory();
+	SdServiceCategoryLookup saveServiceCategories(SdServiceCategoryLookup serviceCategory);
+	void deleteServiceCategoriesById(String id);
+	Collection<SdServiceCategoryDef> findAllSDServiceCategoryDef();
+	SdServiceCategoryDef saveServiceCategoriesDef(SdServiceCategoryDef serviceCategoryDef);
+	void deleteServiceCategoryDefById(String id);*/
+	
+	//ServiceType
+	ServiceType findServiceTypeByName(String name);
+	ServiceType findServiceTypeById(Long id);
+	List<ServiceTypeProjectionIdName> findAllServiceTypeProjectionsIdName();
+	List<ServiceType> findAllServiceTypes();
+	<T> List<T> findAllServiceTypes(Class<T> projection);
+	
+	List<ServiceType> getServiceTypesForServiceCategory(Long serviceCategoryId);
+	<T> List<T> getServiceTypesForServiceCategory(Long serviceCategoryId, Class<T> projection);
+	
+	void addMapToServiceType(Long serviceTypeId, TpiMap map);
+	void addMapToServiceType(Long serviceTypeId, Long mapId);
+	void deleteMapForServiceType(Long serviceTypeId,TpiMap map);
+	
+}

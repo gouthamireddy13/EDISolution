@@ -1,0 +1,281 @@
+package com.abc.tpi.model.service;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+
+import com.abc.tpi.model.master.Map;
+import com.abc.tpi.model.master.Protocol;
+import com.abc.tpi.model.master.Version;
+import com.abc.tpi.model.tpp.LightWellPartner;
+
+@Entity
+@NamedQueries
+(
+	{
+	@NamedQuery(name="BusinessService.namedFindBusinessServicesByServiceId", 
+			query="select bs from Service sc join sc.businessServices bs where sc.id = :serviceId"),
+	@NamedQuery(name="BusinessService.namedFindBusinessServicesByServiceSubscriptionAndServiceId", 
+			query="select bs from ServiceSubscription ss join ss.services sc join sc.businessServices bs where ss.id = :subscriptionId and sc.id = :serviceId"),
+	@NamedQuery(name="BusinessService.namedInEnvelopeBySrId", 
+			query="select NEW com.abc.tpi.model.reporting.PartnerSubscriptionRecord("
+					+ " ss.partner.partnerName,"
+					+ " bs.serviceType.document.documentType, "
+					+ " bs.serviceType.direction.directionCode, "
+					+ " sc.lightWellPartner.testIsaQualifier, "
+					+ " sc.lightWellPartner.testIsaID, "
+					+ " sc.lightWellPartner.testGsId, "
+					+ " sc.lightWellPartner.productionIsaQualifier, "
+					+ " sc.lightWellPartner.productionIsaID, "
+					+ " sc.lightWellPartner.productionGsId, "
+					+ " sc.segmentDelimiter.delimiter, "
+					+ " sc.elementDelimiter.delimiter, "
+					+ " sc.compositeElementDelimiter.delimiter, " 
+					+ " sc.repeatDelimiter.delimiter, "
+					+ " bs.version.versionNumber, "
+					+ " bs.lightWellPartner.testIsaQualifier,"
+					+ " bs.lightWellPartner.testIsaID, "
+					+ " bs.lightWellPartner.testGsId, "
+					+ " bs.lightWellPartner.productionIsaQualifier, "
+					+ " bs.lightWellPartner.productionIsaID, "
+					+ " bs.lightWellPartner.productionGsId, "
+					+ " bs.ackPeriod, "
+					+ " bs.ack, "
+					+ " bs.complianceCheck,"
+					+ " m.mapName ) " 
+					+ " from ServiceSubscription ss join ss.services sc join sc.businessServices bs left join bs.map m"
+					+ " where bs.srId = :srId "
+					+ " order by ss.partner.partnerName"),
+	@NamedQuery(name="BusinessService.namedInEnvelopeByServiceSubscriptionId", 
+			query="select NEW com.abc.tpi.model.reporting.PartnerSubscriptionRecord("
+					+ " ss.partner.partnerName,"
+					+ " bs.serviceType.document.documentType, "
+					+ " bs.serviceType.direction.directionCode, "
+					+ " sc.lightWellPartner.testIsaQualifier, "
+					+ " sc.lightWellPartner.testIsaID, "
+					+ " sc.lightWellPartner.testGsId, "
+					+ " sc.lightWellPartner.productionIsaQualifier, "
+					+ " sc.lightWellPartner.productionIsaID, "
+					+ " sc.lightWellPartner.productionGsId, "
+					+ " sc.segmentDelimiter.delimiter, "
+					+ " sc.elementDelimiter.delimiter, "
+					+ " sc.compositeElementDelimiter.delimiter, " 
+					+ " sc.repeatDelimiter.delimiter, "
+					+ " bs.version.versionNumber, "
+					+ " bs.lightWellPartner.testIsaQualifier,"
+					+ " bs.lightWellPartner.testIsaID, "
+					+ " bs.lightWellPartner.testGsId, "
+					+ " bs.lightWellPartner.productionIsaQualifier, "
+					+ " bs.lightWellPartner.productionIsaID, "
+					+ " bs.lightWellPartner.productionGsId, "
+					+ " bs.ackPeriod, "
+					+ " bs.ack, "
+					+ " bs.complianceCheck,"
+					+ " m.mapName ) " 
+					+ " from ServiceSubscription ss join ss.services sc join sc.businessServices bs left join bs.map m"
+					+ " where ss.id = :subscriptionId"),
+	@NamedQuery(name="BusinessService.namedGenericInEnvelopeByServiceSubscriptionId", 
+			query="select "
+					+ " ss.partner.partnerName,"
+					+ " bs.serviceType.document.documentType, "
+					+ " bs.serviceType.direction.directionCode, "
+					+ " sc.lightWellPartner.testIsaQualifier, "
+					+ " sc.lightWellPartner.testIsaID, "
+					+ " sc.lightWellPartner.testGsId, "
+					+ " sc.lightWellPartner.productionIsaQualifier, "
+					+ " sc.lightWellPartner.productionIsaID, "
+					+ " sc.lightWellPartner.productionGsId, "
+					+ " sc.segmentDelimiter.delimiter, "
+					+ " sc.elementDelimiter.delimiter, "
+					+ " sc.compositeElementDelimiter.delimiter, " 
+					+ " sc.repeatDelimiter.delimiter, "
+					+ " bs.version.versionNumber, "
+					+ " bs.lightWellPartner.testIsaQualifier,"
+					+ " bs.lightWellPartner.testIsaID, "
+					+ " bs.lightWellPartner.testGsId, "
+					+ " bs.lightWellPartner.productionIsaQualifier, "
+					+ " bs.lightWellPartner.productionIsaID, "
+					+ " bs.lightWellPartner.productionGsId, "
+					+ " bs.ackPeriod, "
+					+ " bs.ack "
+					+ " from ServiceSubscription ss join ss.services sc join sc.businessServices bs "
+					+ " where ss.id = :subscriptionId"),
+	@NamedQuery(name="BusinessService.namedInEnvelopeBySrIdBusinessServiceIds", 
+					query="select NEW com.abc.tpi.model.reporting.PartnerSubscriptionRecord("
+					+ " ss.partner.partnerName,"
+					+ " bs.serviceType.document.documentType, "
+					+ " bs.serviceType.direction.directionCode, "
+					+ " sc.lightWellPartner.testIsaQualifier, "
+					+ " sc.lightWellPartner.testIsaID, "
+					+ " sc.lightWellPartner.testGsId, "
+					+ " sc.lightWellPartner.productionIsaQualifier, "
+					+ " sc.lightWellPartner.productionIsaID, "
+					+ " sc.lightWellPartner.productionGsId, "
+					+ " sc.segmentDelimiter.delimiter, "
+					+ " sc.elementDelimiter.delimiter, "
+					+ " sc.compositeElementDelimiter.delimiter, " 
+					+ " sc.repeatDelimiter.delimiter, "
+					+ " bs.version.versionNumber, "
+					+ " bs.lightWellPartner.testIsaQualifier,"
+					+ " bs.lightWellPartner.testIsaID, "
+					+ " bs.lightWellPartner.testGsId, "
+					+ " bs.lightWellPartner.productionIsaQualifier, "
+					+ " bs.lightWellPartner.productionIsaID, "
+					+ " bs.lightWellPartner.productionGsId, "
+					+ " bs.ackPeriod, "
+					+ " bs.ack, "
+					+ " bs.complianceCheck,"
+					+ " m.mapName ) " 
+					+ " from ServiceSubscription ss join ss.services sc join sc.businessServices bs left join bs.map m"
+					+ " where bs.srId = :srId "
+					+ " and bs.id IN :ids"
+					+ " order by ss.partner.partnerName")												
+	}
+	
+)
+
+@Table(name="ABC_TPI_BUSINESS_SERVICE")
+public class BusinessService {
+	@Id
+	@SequenceGenerator(name="ABC_TPI_BUS_SERVICE_GEN", sequenceName="ABC_TPI_BUS_SERVICE_SEQ",allocationSize=10)
+	@GeneratedValue(generator="ABC_TPI_BUS_SERVICE_GEN")
+	@Column(name="BUSINESS_SERVICE_ID")
+	private Long id;
+	
+	@NotNull(message="Service Type is mandarory field")
+	@ManyToOne(fetch=FetchType.EAGER)
+	@JoinColumn(name="SERVICE_TYPE_ID", nullable=false)
+	private ServiceType serviceType;
+	
+	@NotNull(message="Version is mandarory field")
+	@ManyToOne
+	@JoinColumn(name="VERSION_ID", nullable=false)
+	private Version version;
+
+	@NotNull(message="Protocol is mandarory field")
+	@ManyToOne
+	@JoinColumn(name="PROTOCOL_ID", nullable=false)
+	private Protocol protocol;
+	
+	@NotNull (message="LightWell is mandarory field")
+	@OneToOne(fetch=FetchType.EAGER)
+	@JoinColumn(name="LW_ID", nullable=false)
+	private LightWellPartner lightWellPartner;
+	
+	@NotNull
+	@Column(name="ACK",nullable=false)
+	private boolean ack=false;
+	
+	@Column(name="ACK_PERIOD",nullable=true)
+	private int ackPeriod;
+	
+	@Column(name="SR_ID")
+	private String srId;
+	
+	@Column(name="NOTES")
+	private String notes;
+	
+	@NotNull (message="Compliance is mandarory field")
+	@Column(name="COMPLIANCE", nullable=false)
+	private boolean complianceCheck;
+	
+	@ManyToOne
+	@JoinColumn(name="MAP_ID", nullable=true)
+	private Map map;
+	
+	
+	public int getAckPeriod() {
+		return ackPeriod;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public LightWellPartner getLightWellPartner() {
+		return lightWellPartner;
+	}
+
+	public Protocol getProtocol() {
+		return protocol;
+	}
+
+	public ServiceType getServiceType() {
+		return serviceType;
+	}
+
+	public Version getVersion() {
+		return version;
+	}
+
+	public boolean isAck() {
+		return ack;
+	}
+
+	public void setAck(boolean ack) {
+		this.ack = ack;
+	}
+
+	public void setAckPeriod(int ackPeriod) {
+		this.ackPeriod = ackPeriod;
+	}
+
+	public void setLightWellPartner(LightWellPartner lightWellPartner) {
+		this.lightWellPartner = lightWellPartner;
+	}
+
+	public void setProtocol(Protocol protocol) {
+		this.protocol = protocol;
+	}
+
+	public void setServiceType(ServiceType serviceType) {
+		this.serviceType = serviceType;
+	}
+
+	public void setVersion(Version version) {
+		this.version = version;
+	}
+
+	public String getSrId() {
+		return srId;
+	}
+
+	public void setSrId(String srId) {
+		this.srId = srId;
+	}
+
+	public String getNotes() {
+		return notes;
+	}
+
+	public void setNotes(String notes) {
+		this.notes = notes;
+	}
+
+	public boolean complianceCheck() {
+		return complianceCheck;
+	}
+
+	public void setComplianceCheck(boolean complianceCheck) {
+		this.complianceCheck = complianceCheck;
+	}
+
+	public Map getMap() {
+		return map;
+	}
+
+	public void setMap(Map map) {
+		this.map = map;
+	}
+		
+}

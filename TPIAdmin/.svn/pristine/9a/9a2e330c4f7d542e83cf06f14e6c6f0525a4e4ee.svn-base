@@ -1,0 +1,54 @@
+var ABApp = angular.module('ABApp');
+
+
+ABApp.controller('exportController', function($scope,$modal, $http, $window,$interval,$filter) {
+	
+	
+	$scope.emptyList = [];
+	$scope.items = [];
+	$scope.table = function(srid)
+	{
+		 $scope.items = angular.copy($scope.emptyList) ;
+		var tableList=[];
+		 $http.get('/TPIAdmin/app/search?q=businessServiceForSrId&filter='+srid)
+	     .success(function (response, status, headers, config) {
+	    	
+	    	 tableList=angular.copy(response);
+	    	 
+	    	// console.log("inputdata "+JSON.stringify(tempList));
+	     })
+	     .error(function (data, status, header, config) {
+	    	
+	         $scope.ResponseDetails = "Data: " + data +
+	             "<br />status: " + status ;
+	         //    "<br />headers: " + jsonFilter(header) +
+	           //  "<br />config: " + jsonFilter(config);
+	     })
+	     	
+		 .then(function(response) {
+			
+			 angular.forEach(tableList, function (item) {
+				 
+				 try
+				 {var obj=
+				 {       id:item.serviceSubscripionId, 
+						 srId:item.srId,
+						 businessServiceName:item.businessServiceName
+						 
+					 };
+				 
+				 $scope.items.push(obj);
+				 }catch(e)
+				 {}
+				
+			 });
+			
+		 
+		 });
+		 console.log("list "+JSON.stringify($scope.items) );
+		 
+	
+	};
+	
+	
+});

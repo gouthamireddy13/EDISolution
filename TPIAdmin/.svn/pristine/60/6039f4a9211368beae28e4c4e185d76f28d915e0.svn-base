@@ -1,0 +1,79 @@
+package com.abc.tpi.model.service;
+
+import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
+import javax.persistence.NamedAttributeNode;
+import javax.persistence.NamedEntityGraph;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.NamedSubgraph;
+import javax.persistence.Table;
+
+import org.hibernate.envers.Audited;
+
+import com.abc.tpi.service.TpiManagedEntityListener;
+
+@Entity
+@Audited
+//@AuditOverride(name="businessServices",isAudited=false)
+@NamedQueries({
+	@NamedQuery(name = "Service.namedFindByAbcId", 
+				query = "select t.id from Service t "
+						+ " where t.lightWellPartner.testIsaID = :testIsaId "
+						+ " or t.lightWellPartner.testGsId = :testGsId "
+						+ "	or t.lightWellPartner.productionIsaID = :prodIsaId "
+						+ "	or t.lightWellPartner.productionGsId = :prodGsId"),
+	
+	@NamedQuery(name = "Service.namedFindByAbcIdAndServiceId", 
+				query = "select t.id from Service t "
+						+ "	where ( t.lightWellPartner.testIsaID = :testIsaId "
+						+ "	or t.lightWellPartner.testGsId = :testGsId "
+						+ "	or t.lightWellPartner.productionIsaID = :prodIsaId "
+						+ "	or t.lightWellPartner.productionGsId =:prodGsId) "
+						+ "	and t.id <> :serviceId"),
+	@NamedQuery(name="Service.namedFindAllNotMigratedServices",
+	query="select s.id " 
+			+ " from Service s "
+			+ " where NOT EXISTS "
+			+ " (select 1 "
+			+ "		from ObjectTracker ot "
+			+ "			where s.id = ot.sourceId "
+			+ "			and s.versionNum = ot.sourceVersionNum "
+			+ "			and ot.className = 'com.abc.tpi.model.service.Service')"),
+	@NamedQuery(name="Service.namedFindNotMigratedServicesBySrId",
+	query="select s.id " 
+			+ " from Service s "
+			+ " where NOT EXISTS "
+			+ " (select 1 "
+			+ "		from ObjectTracker ot "
+			+ "			where s.id = ot.sourceId "
+			+ "			and s.versionNum = ot.sourceVersionNum "
+			+ "			and ot.className = 'com.abc.tpi.model.service.Service')"
+			+ "	and s.srId = :srId")
+})
+
+@Table(name="ABC_TPI_SERVICE")
+@EntityListeners({TpiManagedEntityListener.class})
+
+@NamedEntityGraph(name="ServiceEntity.graphServiceId",
+attributeNodes=
+{
+	@NamedAttributeNode(value="serviceSubscription",subgraph="serviceSubscription"),
+	@NamedAttributeNode(value="lightWellPartner",subgraph="lightWellPartner")
+},
+subgraphs={
+	@NamedSubgraph(name="serviceSubscription",
+			attributeNodes={
+					@NamedAttributeNode("id")
+			}),
+	@NamedSubgraph(name="lightWellPartner",
+	attributeNodes={
+			@NamedAttributeNode("productionIsaID"),
+			@NamedAttributeNode("productionGsId")
+	})
+}
+)
+public class Service extends ServiceEntity
+{
+	
+}

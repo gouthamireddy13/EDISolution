@@ -1,0 +1,167 @@
+package com.abc.dashboard.service;
+
+import java.util.List;
+
+import javax.persistence.Entity;
+import javax.transaction.Transactional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.abc.dashboard.model.SdBusinessService;
+import com.abc.dashboard.model.SdServiceAccess;
+import com.abc.dashboard.model.SdServiceCategoryDef;
+import com.abc.dashboard.repository.SdBusinessServiceRepository;
+import com.abc.dashboard.repository.SdServiceAccessRepository;
+import com.abc.dashboard.repository.SdServiceCategoryDefRepository;
+import com.abc.tpi.service.CommonJpaService;
+
+@Service("sdServiceCategoryService")
+public class SdServiceCategoryServiceImpl implements SdServiceCategoryService {
+
+
+	@Autowired
+	CommonJpaService commonJpaService;
+	
+	@Autowired
+	SdServiceCategoryDefRepository sdServiceCategoryDefRepository;
+	
+	@Autowired
+	SdServiceAccessRepository sdServiceAccessRepository;
+	
+	@Autowired
+	SdBusinessServiceRepository sdBusinessServiceRepository;
+	
+	@Override
+	public SdServiceCategoryDef saveSdServiceCategoryDef(SdServiceCategoryDef sdServiceCategoryDef) {
+		return sdServiceCategoryDefRepository.save(sdServiceCategoryDef);
+	}
+
+	@Override
+	public <T> T findSdServiceCategoryByName(String name, Class<T> type) {
+		return sdServiceCategoryDefRepository.namedFindServiceCategoryByName(name, type);
+	}
+
+	@Override
+	public  <T> List<T> getAllSdServiceCategoryDefs(Class<T> type) {
+		return sdServiceCategoryDefRepository.findAllByOrderByServiceCategory(type);
+	}
+
+	@Override
+	public void deleteSdServiceCategoryDef(long id) {
+		sdServiceCategoryDefRepository.delete(id);		
+	}
+
+	@Override
+	public void deleteSdServiceCategoryDef(SdServiceCategoryDef sdServiceCategoryDef) {
+		sdServiceCategoryDefRepository.delete(sdServiceCategoryDef);		
+	}
+
+	@Override
+	public SdServiceCategoryDef findSdServiceCategoryById(long id) {
+		return sdServiceCategoryDefRepository.findOne(id);
+	}
+
+	@Override
+	public SdServiceAccess saveSdServiceAccess(SdServiceAccess sdServiceAccess) {
+		return sdServiceAccessRepository.save(sdServiceAccess);
+	}
+
+	@Override
+	public <T> List<T> getAllSdServiceAccess(Class<T> entityCls) {
+		if (entityCls == SdServiceAccess.class)
+		{			
+			return commonJpaService.findGenericEntitiesUsingEntityGraph(entityCls, "SdServiceAccess.graphWebView", "SdServiceAccess.namedFindAllServiceAccess");
+		}
+		else
+		{
+			return sdServiceAccessRepository.findAllBy(entityCls);
+		}
+	}
+
+	@Override
+	public <T> T getSdServiceAccessById(long id, Class<T> entityCls) {
+		if (entityCls == SdServiceAccess.class)
+		{
+			return commonJpaService.findGenericEntityUsingEntityGrpah(entityCls, new Long(id), "SdServiceAccess.graphWebView");
+		}
+		else
+		{
+			return sdServiceAccessRepository.findOneById(entityCls, id);
+		}
+	}
+
+	@Override
+	public void deleteSdServiceAccessDef(SdServiceAccess sdServiceAccess) {
+		sdServiceAccessRepository.delete(sdServiceAccess);
+		
+	}
+
+	@Override
+	public void deleteSdServiceAccessDef(long id) {
+		sdServiceAccessRepository.delete(id);
+		
+	}
+
+	public <T> List<T> getServiceCategoriesWithPartnerSubscription(Class<T> entityCls) {
+		return sdServiceCategoryDefRepository.namedFindServiceCategoriesWithPartnerSubscription(entityCls);
+	}
+
+	@Override
+	public List<SdBusinessService> getAllSdBusinessServices() {
+		return sdBusinessServiceRepository.findAll();
+	}
+
+	@Override
+	public <T> List<T> getAllSdBusinessServices(Class<T> entityCls) {
+		if (entityCls == SdBusinessService.class)
+		{
+		return commonJpaService.findGenericEntitiesUsingEntityGraph(entityCls,
+				"SdBusinessService.graphWebView","SdBusinessService.namedFindAllBusinessServices");
+		}
+		else
+		{
+			return sdBusinessServiceRepository.namedFindAllBusinessServices(entityCls);
+		}
+	}
+
+	@Override
+	public <T> T findBusinessServiceById(long id,Class<T> type) {
+		return sdBusinessServiceRepository.namedFindSdBusinessServiceById(id, type);
+	}
+
+	@Override
+	@Transactional
+	public SdBusinessService saveSdBusinessService(SdBusinessService sdBusinessService) {
+		return sdBusinessServiceRepository.save(sdBusinessService);
+	}
+
+	@Override
+	@Transactional
+	public void deleteSdBusinessService(SdBusinessService sdBusinessService) {
+		sdBusinessServiceRepository.delete(sdBusinessService);
+		
+	}
+
+	@Override
+	@Transactional
+	public void deleteSdBusinessService(long id) {
+		sdBusinessServiceRepository.delete(id);		
+	}
+
+	@Override
+	public SdBusinessService findBusinessServiceById(long id) {
+		return commonJpaService.findGenericEntityUsingEntityGrpah(SdBusinessService.class, id, "SdBusinessService.graphWebView");
+	}
+
+	@Override
+	public <T> T findBusinessServiceByServiceKey(String serviceKey, Class<T> type) {
+		// TODO Auto-generated method stub
+		return sdBusinessServiceRepository.namedFindSdBusinessServiceByServiceKey(serviceKey, type);
+	}
+
+	@Override
+	public <T> T findSdServiceCategoryByCategoryId(String categoryId, Class<T> entityCls) {
+		return sdServiceCategoryDefRepository.namedFindServiceCategoryByCategoryId(categoryId, entityCls);
+	}
+}

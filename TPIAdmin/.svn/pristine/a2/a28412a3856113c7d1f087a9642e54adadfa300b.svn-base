@@ -1,0 +1,40 @@
+package com.abc.tpi.db;
+
+import java.util.List;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import com.abc.tpi.model.service.ServiceTypeProjectionIdName;
+import com.abc.tpi.repository.ServiceTypeRepository;
+
+@ContextConfiguration(locations={"classpath:application-contexttest.xml"})
+@RunWith(SpringJUnit4ClassRunner.class)
+
+public class TestServiceTypeTest {
+
+	public TestServiceTypeTest() {
+		// TODO Auto-generated constructor stub
+	}
+	
+	@Autowired
+	ServiceTypeRepository serviceTypeRepository;
+	
+	
+	@Test
+	public void findServiceTestRepositoryByServiceCategoryWithProjection()
+	{
+		List<ServiceTypeProjectionIdName> result =  serviceTypeRepository.findServiceTypeByServiceCategoryIdOrderByBusinessServiceName((long)4,ServiceTypeProjectionIdName.class);
+		
+		for (ServiceTypeProjectionIdName o:result)
+		{
+			System.out.println(o.getBusinessServiceName());
+		}
+		
+		
+	}
+
+}

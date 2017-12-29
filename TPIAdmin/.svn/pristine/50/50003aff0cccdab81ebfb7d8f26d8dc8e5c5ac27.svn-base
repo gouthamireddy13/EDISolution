@@ -1,0 +1,102 @@
+package com.abc.dashboard.model;
+
+import java.io.Serializable;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+
+@Entity
+@Table(name="ABC_SD_SERVICE_ACCESS" )
+public class SdServiceAccess implements Serializable{
+	
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6398488982476253183L;
+
+	@Id
+	
+	@SequenceGenerator(name="ABC_SD_SERVICE_ACCESS_GEN", sequenceName="ABC_SD_SERVICE_ACCESS_SEQ",allocationSize=10)
+	@GeneratedValue(generator="ABC_SD_SERVICE_ACCESS_GEN")
+	
+	@Column(name="BU_ID")
+	private String buID;
+	
+	public String getBuID() {
+		return buID;
+	}
+
+	@Column(name="SOURCE_ID")
+	private String sourceID;
+	
+	
+	@Column(name="DESTINATION_ID")
+	private String destinationID;
+	
+	@Column(name="BUSINESS_UNIT")
+	private String businessUnit;
+	
+	
+	@Column(name="SUB_BUSINESS_UNIT")
+	private String subBusinessUnit;
+	
+	@Column(name="SERVICE_PREAMBLE")
+	private String servicePreamble;
+
+	public String getSourceID() {
+		return sourceID;
+	}
+
+	public void setSourceID(String sourceID) {
+		this.sourceID = sourceID;
+	}
+
+	public String getDestinationID() {
+		return destinationID;
+	}
+
+	public void setDestinationID(String destinationID) {
+		this.destinationID = destinationID;
+	}
+
+	public String getBusinessUnit() {
+		return businessUnit;
+	}
+
+	public void setBusinessUnit(String businessUnit) {
+		this.businessUnit = businessUnit;
+	}
+
+	public String getSubBusinessUnit() {
+		return subBusinessUnit;
+	}
+
+	public void setSubBusinessUnit(String subBusinessUnit) {
+		this.subBusinessUnit = subBusinessUnit;
+	}
+
+	public String getServicePreamble() {
+		return servicePreamble;
+	}
+
+	public void setServicePreamble(String servicePreamble) {
+		this.servicePreamble = servicePreamble;
+	}
+
+	@Override
+	public String toString() {
+		return "BusinessUnit [sourceID=" + sourceID + ", destinationID=" + destinationID + ", businessUnit="
+				+ businessUnit + ", subBusinessUnit=" + subBusinessUnit + ", servicePreamble=" + servicePreamble + "]";
+	}
+	
+	
+	
+	
+	
+
+}

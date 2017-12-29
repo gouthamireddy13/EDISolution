@@ -1,0 +1,96 @@
+package com.abc.tpi.controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import com.abc.tpi.model.partner.Partner;
+import com.abc.tpi.model.reporting.LightWellPartnerRecord;
+import com.abc.tpi.model.reporting.PartnerRecord;
+import com.abc.tpi.model.reporting.PartnerSubscriptionRecord;
+import com.abc.tpi.model.reporting.TPPRecord;
+import com.abc.tpi.service.ReportingService;
+
+@Controller
+
+public class PartnerSubscriptionReportingController {
+
+	@Autowired
+	ReportingService reportingService;
+
+	
+	@RequestMapping(value = {"/partnerSubscriptionReport"}, method = RequestMethod.GET)
+	public String generatePartnerSubscriptionReport(@RequestParam(required = true, value = "id") long serviceSubscriptionId, Model model) 
+	{
+		List<PartnerSubscriptionRecord> reportRecords = reportingService.getPartnerSubscriptionRecordsByServiceSubscriptionId(serviceSubscriptionId);
+		model.addAttribute("partnerSubscription", reportRecords);
+		return "partnerSubscriptionReport";
+	}
+	
+	@RequestMapping(value = {"/partnerSubscriptionReportForSrId"}, method = RequestMethod.GET)
+	public String generatePartnerSubscriptionReportForSrId(@RequestParam(required = true, value = "id") String srId, Model model) 
+	{
+		List<PartnerSubscriptionRecord> reportRecords = reportingService.getPartnerSubscriptionRecordsBySrId(srId);
+		model.addAttribute("partnerSubscription", reportRecords);
+		model.addAttribute("srId", srId);
+		return "partnerSubscriptionReport";
+	}
+	
+	@RequestMapping(value = {"/partnerSubscriptionReportForSrIdPrtnrId"}, method = RequestMethod.GET)
+	public String generatePartnerSubscriptionReportForSrIdPrtnrId(@RequestParam(required = true, value = "id") String srId,
+			@RequestParam(required = true, value = "prtnrIds") List <Long> partnerIds,
+			@RequestParam(required = true, value = "direction") String direction,
+			Model model) 
+	{
+		List<PartnerSubscriptionRecord> reportRecords = reportingService.getPartnerSubscriptionRecordsBySrIdBusinessSrvcId(srId,partnerIds);
+		
+		model.addAttribute("partnerSubscription", reportRecords);
+		model.addAttribute("srId", srId);		
+		model.addAttribute("direction",direction);		
+		return "partnerSubscriptionReport";
+	}
+	
+	//================================================================================================================================
+	@RequestMapping(value = {"/partnerReportForpartnerName"}, method = RequestMethod.GET)
+	public String generatePartnerReportForPrtnrId(@RequestParam(required = true, value = "id") List <Long> prId, Model model) 
+	{
+		List<PartnerRecord> reportRecords = reportingService.getPartnerRecordsByPartnerId(prId);
+		model.addAttribute("partnerRecord", reportRecords);
+		return "partnerReport";
+	}
+	
+	@RequestMapping(value = {"/partnerSubscriptionReportForPartnerName"}, method = RequestMethod.GET)
+	public String generatePartnerSubscriptionReportForPartnerName(@RequestParam(required = true, value = "name") String name, Model model) 
+	{
+		List<PartnerSubscriptionRecord> reportRecords = reportingService.getPartnerSubscriptionRecordsByPartnerName(name);		
+		model.addAttribute("partnerSubscription", reportRecords);
+		return "partnerSubscriptionReport";
+	}
+	
+	
+ @RequestMapping(value = {"/lightWellIdentity"}, method = RequestMethod.GET)
+	public String generateLightWellIdentityForLWids(@RequestParam(required = true, value = "pId") long partnerId,
+			@RequestParam(required = true, value = "lIds") List <Long> lwIds, Model model) 
+	{
+		List<LightWellPartnerRecord> reportRecords = reportingService.getLightWellIdentityForLwIds(partnerId,lwIds);		
+		model.addAttribute("lightWellIdentity", reportRecords);				
+		return "lightWellIdentityReport";
+	}
+ 
+ //
+ @RequestMapping(value = {"/tppReportForTPPName"}, method = RequestMethod.GET)
+	public String generateTppReportForTppId(@RequestParam(required = true, value = "id") List<Long> tppId, Model model) 
+	{
+		List<TPPRecord> reportRecords = reportingService.getTPPRecordsByTPPId(tppId);
+		
+		model.addAttribute("tppRecord", reportRecords);
+		return "tppReport";
+	}
+}
+
+

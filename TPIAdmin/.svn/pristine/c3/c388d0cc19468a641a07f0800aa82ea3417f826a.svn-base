@@ -1,0 +1,20 @@
+package com.abc.tpi.model.reporting;
+
+public class ABCGsIds {
+	
+	private String testGSid;
+	public String getTestGSid() {
+		return testGSid;
+	}
+	public void setTestGSid(String testGSid) {
+		this.testGSid = testGSid;
+	}
+	public String getProdGSid() {
+		return prodGSid;
+	}
+	public void setProdGSid(String prodGSid) {
+		this.prodGSid = prodGSid;
+	}
+	private String prodGSid;
+
+}

@@ -1,0 +1,56 @@
+package com.abc.tpi.utils;
+
+public interface AppConstants {
+	public String errorCode01 = "Incorrect Partner Group or Sub Group.";
+	public String errorCode02 = "Failed to Insert Partner.";
+	public String errorCode03 = "Number of columns are incorrect.";
+	public String errorCode04 = "Mandatory field - Partner Name is missing.";
+	public String errorCode05 = "Mandatory field - Partner Group Name is missing.";
+	public String errorCode06 = "Mandatory field - Partner Sub Group Name is missing.";
+	public String errorCode07 = "Mandatory field - Partner Contact Name is missing.";
+	public String errorCode08 = "Mandatory field - Primary Email is missing.";
+	public String errorCode09 = "Mandatory field - Transaction Type is missing.";	
+	public String errorCode10 = "Incorrect Transaction Type.";
+	
+	public String errorCode11 = "Mandatory field - 3PP Name is missing.";
+	public String errorCode12 = "Mandatory field - 3PP Type is missing.";
+	public String errorCode13 = "Mandatory field - Protocol is missing.";
+	
+	public String errorCode14 = "Mandatory field - TEST ISA ID is missing.";
+	public String errorCode15 = "Mandatory field - TEST ISA QUAL missing.";
+	public String errorCode16 = "Mandatory field - TEST GS ID is missing.";
+	public String errorCode17 = "Mandatory field - PROD ISA ID is missing.";
+	public String errorCode18 = "Mandatory field - PROD ISA QUAL is missing.";
+	public String errorCode19 = "Mandatory field - PROD GS ID is missing.";
+	public String errorCode20 = "Incorrect Protocol Code.";
+	
+	
+	public String errorCode21 = "Mandatory field - TRANSACTION DIRECTION is missing.";
+	public String errorCode22 = "Mandatory field - TRANSACTION TYPE is missing.";
+	public String errorCode23 = "Mandatory field - TRANSACTION VERSION is missing.";
+	public String errorCode24 = "Incorrect TRANSACTION DIRECTION.";
+	public String errorCode25 = "Incorrect TRANSACTION TYPE.";
+	public String errorCode26 = "Incorrect TRANSACTION VERSION.";
+	public String errorCode27 = "Mandatory field - 3PP Contact Name is missing.";
+	public String errorCode28 = "Duplicate Transaction - combination of DIRECTION, TRANSACTION TYPE and VERSION has to be unique.";
+	public String errorCode29 = "Duplicate Delimiter.";
+	public String errorCode30 = "Only Protocol#1 selection is allowed for TPP Type Code 1 & 2. Please keep remaining Protocol columns blank.";
+	public String errorCode31 = "Incorrect SEGMENT DELIMETER.";
+	public String errorCode32 = "Incorrect ELEMENT DELIMETER.";
+	public String errorCode33 = "Incorrect COMPOSITE DELIMETER.";
+	public String errorCode34 = "Incorrect REPEAT DELIMETER.";
+	public String errorCode35 = "ISA IDs & GS Ids should be unique.";
+	public String errorCode36 = "Mandatory fields - TEST ISA ID,TEST ISA QUAL,TEST GS ID,PROD ISA ID,PROD ISA QUAL,PROD GS ID can't be left blank.";
+	public String errorCode37 = "For 3PP Type Code 2 and 3, TEST ISA ID,TEST ISA QUAL,TEST GS ID,PROD ISA ID,PROD ISA QUAL,PROD GS ID fields should be left blank.";
+	public String errorCode38 = "Please specify all Delimeter fields for Delimeter update.";
+	
+	public String errorCode39 = "Mandatory field - Service Category is missing.";
+	public String errorCode40 = "Incorrect Service Category.";
+	
+	public String errorCode41 = "Incorrect Business Service Name.";
+	public String errorCode42 = "Mandatory field - Business Service is missing.";
+	public String errorCode43 = "Mandatory field - Map Name is missing.";
+
+	
+
+}

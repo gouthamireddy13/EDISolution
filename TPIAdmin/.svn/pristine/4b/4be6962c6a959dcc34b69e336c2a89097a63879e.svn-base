@@ -1,0 +1,34 @@
+package com.abc.tpi.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.abc.tpi.model.service.ServiceType;
+import com.abc.tpi.repository.ServiceCategoryRepository;
+import com.abc.tpi.repository.ServiceTypeRepository;
+
+public class ServiceSubscriptionServiceImpl implements ServiceSubscriptionService {
+
+	@Autowired
+	ServiceCategoryRepository serviceCategoryRepository;
+	
+	@Autowired
+	ServiceTypeRepository servivceTypeRepository;
+	
+	@Override
+	public List<ServiceType> getBusinessServiceForTppAndServiceCat(long serviceCategoryId, long tppId) {
+		
+		if (tppId<=0) 
+		{
+			servivceTypeRepository.namedFindAllServiceTypesByServiceCategoryId(serviceCategoryId);
+		}
+		else
+		{
+			
+		}
+		
+		return null;
+	}
+
+}

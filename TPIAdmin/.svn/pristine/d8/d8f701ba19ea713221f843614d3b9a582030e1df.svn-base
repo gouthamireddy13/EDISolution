@@ -1,0 +1,246 @@
+package com.abc.tpi.model.sd;
+import java.io.Serializable;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+
+
+@Entity
+@Table(name="ABC_SERVICE_CATEGORY_LOOKUP" ,  schema = "PCCE")
+public class ServiceCategories {
+	
+	@Id
+	@NotNull
+	@Column(name="SERVICE_KEY",nullable=false)
+	private String serviceKey;
+	
+	@NotNull
+	@Column(name="SERVICE_CATEGORY",nullable=false)
+	private String serviceCategory;
+	
+	@Column(name="CATEGORY_ID")
+	private String categoryID;
+	
+	
+	@Column(name="SERVICE_LEVEL")
+	private String serviceLevel;
+	
+	@Column(name="SERVICE_LEVEL_ID")
+	private String serviceLevelID;
+	
+	@Column(name="BUSINESS_UNIT")
+	private String businessUnit;
+	
+	@Column(name="BUSINESS_SUB_UNIT")
+	private String businessSubUnit;
+	
+	@Column(name="SEVICE_PREAMBLE")
+	private String servicePreamble;
+	
+	@Column(name="TRANSACTION_TYPE")
+	private String transactionType;
+	
+	@Column(name="DIRECTION")
+	private String direction;
+	
+	
+	@Column(name="SERVICE_TYPE")
+	private String serviceType;
+	
+	@Column(name="INTERCOMPANY_SENDTO_BU")
+	private String intercompanySendToBU;
+
+	public String getServiceKey() {
+		return serviceKey;
+	}
+
+	public void setServiceKey(String serviceKey) {
+		this.serviceKey = serviceKey;
+	}
+
+	public String getServiceCategory() {
+		return serviceCategory;
+	}
+
+	public void setServiceCategory(String serviceCategory) {
+		this.serviceCategory = serviceCategory;
+	}
+
+	public String getCategoryID() {
+		return categoryID;
+	}
+
+	public void setCategoryID(String categoryID) {
+		this.categoryID = categoryID;
+	}
+
+	public String getServiceLevel() {
+		return serviceLevel;
+	}
+
+	public void setServiceLevel(String serviceLevel) {
+		this.serviceLevel = serviceLevel;
+	}
+
+	public String getServiceLevelID() {
+		return serviceLevelID;
+	}
+
+	public void setServiceLevelID(String serviceLevelID) {
+		this.serviceLevelID = serviceLevelID;
+	}
+
+	public String getBusinessUnit() {
+		return businessUnit;
+	}
+
+	public void setBusinessUnit(String businessUnit) {
+		this.businessUnit = businessUnit;
+	}
+
+	public String getBusinessSubUnit() {
+		return businessSubUnit;
+	}
+
+	public void setBusinessSubUnit(String businessSubUnit) {
+		this.businessSubUnit = businessSubUnit;
+	}
+
+	public String getServicePreamble() {
+		return servicePreamble;
+	}
+
+	public void setServicePreamble(String servicePreamble) {
+		this.servicePreamble = servicePreamble;
+	}
+
+	public String getTransactionType() {
+		return transactionType;
+	}
+
+	public void setTransactionType(String transactionType) {
+		this.transactionType = transactionType;
+	}
+
+	public String getDirection() {
+		return direction;
+	}
+
+	public void setDirection(String direction) {
+		this.direction = direction;
+	}
+
+	public String getServiceType() {
+		return serviceType;
+	}
+
+	public void setServiceType(String serviceType) {
+		this.serviceType = serviceType;
+	}
+
+	public String getIntercompanySendToBU() {
+		return intercompanySendToBU;
+	}
+
+	public void setIntercompanySendToBU(String intercompanySendToBU) {
+		this.intercompanySendToBU = intercompanySendToBU;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((businessSubUnit == null) ? 0 : businessSubUnit.hashCode());
+		result = prime * result + ((businessUnit == null) ? 0 : businessUnit.hashCode());
+		result = prime * result + ((categoryID == null) ? 0 : categoryID.hashCode());
+		result = prime * result + ((direction == null) ? 0 : direction.hashCode());
+		result = prime * result + ((intercompanySendToBU == null) ? 0 : intercompanySendToBU.hashCode());
+		result = prime * result + ((serviceCategory == null) ? 0 : serviceCategory.hashCode());
+		result = prime * result + ((serviceKey == null) ? 0 : serviceKey.hashCode());
+		result = prime * result + ((serviceLevel == null) ? 0 : serviceLevel.hashCode());
+		result = prime * result + ((serviceLevelID == null) ? 0 : serviceLevelID.hashCode());
+		result = prime * result + ((servicePreamble == null) ? 0 : servicePreamble.hashCode());
+		result = prime * result + ((serviceType == null) ? 0 : serviceType.hashCode());
+		result = prime * result + ((transactionType == null) ? 0 : transactionType.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ServiceCategories other = (ServiceCategories) obj;
+		if (businessSubUnit == null) {
+			if (other.businessSubUnit != null)
+				return false;
+		} else if (!businessSubUnit.equals(other.businessSubUnit))
+			return false;
+		if (businessUnit == null) {
+			if (other.businessUnit != null)
+				return false;
+		} else if (!businessUnit.equals(other.businessUnit))
+			return false;
+		if (categoryID == null) {
+			if (other.categoryID != null)
+				return false;
+		} else if (!categoryID.equals(other.categoryID))
+			return false;
+		if (direction == null) {
+			if (other.direction != null)
+				return false;
+		} else if (!direction.equals(other.direction))
+			return false;
+		if (intercompanySendToBU == null) {
+			if (other.intercompanySendToBU != null)
+				return false;
+		} else if (!intercompanySendToBU.equals(other.intercompanySendToBU))
+			return false;
+		if (serviceCategory == null) {
+			if (other.serviceCategory != null)
+				return false;
+		} else if (!serviceCategory.equals(other.serviceCategory))
+			return false;
+		if (serviceKey == null) {
+			if (other.serviceKey != null)
+				return false;
+		} else if (!serviceKey.equals(other.serviceKey))
+			return false;
+		if (serviceLevel == null) {
+			if (other.serviceLevel != null)
+				return false;
+		} else if (!serviceLevel.equals(other.serviceLevel))
+			return false;
+		if (serviceLevelID == null) {
+			if (other.serviceLevelID != null)
+				return false;
+		} else if (!serviceLevelID.equals(other.serviceLevelID))
+			return false;
+		if (servicePreamble == null) {
+			if (other.servicePreamble != null)
+				return false;
+		} else if (!servicePreamble.equals(other.servicePreamble))
+			return false;
+		if (serviceType == null) {
+			if (other.serviceType != null)
+				return false;
+		} else if (!serviceType.equals(other.serviceType))
+			return false;
+		if (transactionType == null) {
+			if (other.transactionType != null)
+				return false;
+		} else if (!transactionType.equals(other.transactionType))
+			return false;
+		return true;
+	}
+	
+
+}

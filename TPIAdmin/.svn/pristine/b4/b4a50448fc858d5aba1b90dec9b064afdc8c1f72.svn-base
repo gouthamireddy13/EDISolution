@@ -1,0 +1,12 @@
+package com.abc.tpi.service.soap;
+
+import java.util.List;
+
+import javax.jws.WebParam;
+import javax.jws.WebService;
+
+import com.abc.tpi.domain.soap.Tpp;
+@WebService
+public interface TpiWebService {
+	String uploadTpps(@WebParam(name="TPP") List<Tpp> tpps);
+}

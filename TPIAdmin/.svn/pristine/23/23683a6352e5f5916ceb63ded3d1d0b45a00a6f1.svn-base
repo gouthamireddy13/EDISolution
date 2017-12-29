@@ -1,0 +1,34 @@
+package com.abc.tpi.service;
+
+import java.io.IOException;
+
+import org.springframework.web.multipart.MultipartFile;
+
+import com.abc.tpi.model.master.Ack;
+import com.abc.tpi.model.master.Delimiter;
+import com.abc.tpi.model.master.Direction;
+import com.abc.tpi.model.master.Document;
+import com.abc.tpi.model.master.Map;
+import com.abc.tpi.model.master.PartnerType;
+import com.abc.tpi.model.master.Protocol;
+import com.abc.tpi.model.master.TppType;
+import com.abc.tpi.model.master.Version;
+import com.abc.tpi.model.partner.PartnerGroup;
+import com.abc.tpi.model.service.ServiceType;
+import com.abc.tpi.model.tpp.LightWellPartner;
+
+public interface SeedDataLoadService {
+	Delimiter getDelimiterFromCsvString(String delimiter);
+	Ack getAckFromCsvString(String ack);
+	Direction getDirectionFromCsvString(String direction);
+	Document getDocumentFromCsvString(String document);
+	PartnerType getPartnerTypeFromCsvString(String partnerType);
+	Protocol getProtocolFromCcvString(String protocol);
+	TppType	getTppTypeFromCsvString(String tppType);
+	Version getVersionFromCsvString(String version);
+	PartnerGroup getPartnerGroupFromCsvString(String text);	
+	ServiceType getServiceTypeFromCsvString(String text);
+	String processSeedDataCSVFile(MultipartFile file, String entityName) throws IOException;
+	Map getMapFromCsvString(String text);
+	LightWellPartner getLightWellPartnerFromCsvString(String text);
+}

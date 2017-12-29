@@ -1,0 +1,236 @@
+package com.abc.tpi.model.service;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+
+import org.hibernate.annotations.Loader;
+import org.hibernate.annotations.ResultCheckStyle;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
+import org.hibernate.envers.AuditOverride;
+import org.hibernate.envers.Audited;
+
+import com.abc.tpi.domain.core.Approvable;
+import com.abc.tpi.domain.core.ApprovableEntityEnum;
+
+//@Audited
+@Entity
+@AuditOverride(forClass=com.abc.tpi.model.service.BusinessServiceEntity.class,isAudited=false)
+@Table(name="ABC_TPI_BUSINESS_SERVICE_W")
+@NamedQueries
+(
+	{
+	@NamedQuery(name="BusinessServiceW.namedFindBusinessServicesByServiceId", 
+			query="select bs from Service sc join sc.businessServices bs where sc.id = :serviceId"),
+	@NamedQuery(name="BusinessServiceW.namedFindBusinessServicesByServiceSubscriptionAndServiceId", 
+			query="select bs from ServiceSubscription ss join ss.services sc join sc.businessServices bs where ss.id = :subscriptionId and sc.id = :serviceId"),
+	@NamedQuery(name="BusinessServiceW.namedInEnvelopeBySrId", 
+			query="select NEW com.abc.tpi.model.reporting.PartnerSubscriptionRecord("
+					+ " ss.partner.partnerName,"
+					+ " bs.serviceType.document.documentType, "
+					+ " bs.serviceType.direction.directionCode, "
+					+ " sc.lightWellPartner.testIsaQualifier, "
+					+ " sc.lightWellPartner.testIsaID, "
+					+ " sc.lightWellPartner.testGsId, "
+					+ " sc.lightWellPartner.productionIsaQualifier, "
+					+ " sc.lightWellPartner.productionIsaID, "
+					+ " sc.lightWellPartner.productionGsId, "
+					+ " sc.segmentDelimiter.delimiter, "
+					+ " sc.elementDelimiter.delimiter, "
+					+ " sc.compositeElementDelimiter.delimiter, " 
+					+ " sc.repeatDelimiter.delimiter, "
+					+ " bs.version.versionNumber, "
+					+ " bs.lightWellPartner.testIsaQualifier,"
+					+ " bs.lightWellPartner.testIsaID, "
+					+ " bs.lightWellPartner.testGsId, "
+					+ " bs.lightWellPartner.productionIsaQualifier, "
+					+ " bs.lightWellPartner.productionIsaID, "
+					+ " bs.lightWellPartner.productionGsId, "
+					+ " bs.ackPeriod, "
+					+ " bs.ack, "
+					+ " bs.complianceCheck,"
+					+ " m.mapName, "
+					+ " bs.stControlNum,"
+					+ " bs.stAcceptorLookUpAlias,"
+					+ " bs.gsIdVersion,"
+					+ " bs.isaControlNum,"
+					+ " bs.serviceType.company,"
+					+ " bs.serviceType.partnerCategory ) " 
+					+ " from ServiceSubscription ss join ss.services sc join sc.businessServices bs left join bs.map m"
+					+ " where bs.srId = :srId "
+					+ " order by ss.partner.partnerName"),
+	@NamedQuery(name="BusinessServiceW.namedInEnvelopeByServiceSubscriptionId", 
+			query="select NEW com.abc.tpi.model.reporting.PartnerSubscriptionRecord("
+					+ " ss.partner.partnerName,"
+					+ " bs.serviceType.document.documentType, "
+					+ " bs.serviceType.direction.directionCode, "
+					+ " sc.lightWellPartner.testIsaQualifier, "
+					+ " sc.lightWellPartner.testIsaID, "
+					+ " sc.lightWellPartner.testGsId, "
+					+ " sc.lightWellPartner.productionIsaQualifier, "
+					+ " sc.lightWellPartner.productionIsaID, "
+					+ " sc.lightWellPartner.productionGsId, "
+					+ " sc.segmentDelimiter.delimiter, "
+					+ " sc.elementDelimiter.delimiter, "
+					+ " sc.compositeElementDelimiter.delimiter, " 
+					+ " sc.repeatDelimiter.delimiter, "
+					+ " bs.version.versionNumber, "
+					+ " bs.lightWellPartner.testIsaQualifier,"
+					+ " bs.lightWellPartner.testIsaID, "
+					+ " bs.lightWellPartner.testGsId, "
+					+ " bs.lightWellPartner.productionIsaQualifier, "
+					+ " bs.lightWellPartner.productionIsaID, "
+					+ " bs.lightWellPartner.productionGsId, "
+					+ " bs.ackPeriod, "
+					+ " bs.ack, "
+					+ " bs.complianceCheck,"
+					+ " bs.stControlNum,"
+					+ " bs.stAcceptorLookUpAlias,"
+					+ " bs.gsIdVersion,"
+					+ " bs.isaControlNum,"
+					+ " m.mapName, "
+					+ " bs.serviceType.company,"
+					+ " bs.serviceType.partnerCategory ) " 
+					+ " from ServiceSubscription ss join ss.services sc join sc.businessServices bs left join bs.map m"
+					+ " where ss.id = :subscriptionId"),
+	@NamedQuery(name="BusinessServiceW.namedGenericInEnvelopeByServiceSubscriptionId", 
+			query="select "
+					+ " ss.partner.partnerName,"
+					+ " bs.serviceType.document.documentType, "
+					+ " bs.serviceType.direction.directionCode, "
+					+ " sc.lightWellPartner.testIsaQualifier, "
+					+ " sc.lightWellPartner.testIsaID, "
+					+ " sc.lightWellPartner.testGsId, "
+					+ " sc.lightWellPartner.productionIsaQualifier, "
+					+ " sc.lightWellPartner.productionIsaID, "
+					+ " sc.lightWellPartner.productionGsId, "
+					+ " sc.segmentDelimiter.delimiter, "
+					+ " sc.elementDelimiter.delimiter, "
+					+ " sc.compositeElementDelimiter.delimiter, " 
+					+ " sc.repeatDelimiter.delimiter, "
+					+ " bs.version.versionNumber, "
+					+ " bs.lightWellPartner.testIsaQualifier,"
+					+ " bs.lightWellPartner.testIsaID, "
+					+ " bs.lightWellPartner.testGsId, "
+					+ " bs.lightWellPartner.productionIsaQualifier, "
+					+ " bs.lightWellPartner.productionIsaID, "
+					+ " bs.lightWellPartner.productionGsId, "
+					+ " bs.ackPeriod, "
+					+ " bs.ack "
+					+ " from ServiceSubscription ss join ss.services sc join sc.businessServices bs "
+					+ " where ss.id = :subscriptionId"),
+	@NamedQuery(name="BusinessServiceW.namedInEnvelopeBySrIdBusinessServiceIds", 
+					query="select NEW com.abc.tpi.model.reporting.PartnerSubscriptionRecord("
+					+ " ss.partner.partnerName,"
+					+ " bs.serviceType.document.documentType, "
+					+ " bs.serviceType.direction.directionCode, "
+					+ " sc.lightWellPartner.testIsaQualifier, "
+					+ " sc.lightWellPartner.testIsaID, "
+					+ " sc.lightWellPartner.testGsId, "
+					+ " sc.lightWellPartner.productionIsaQualifier, "
+					+ " sc.lightWellPartner.productionIsaID, "
+					+ " sc.lightWellPartner.productionGsId, "
+					+ " sc.segmentDelimiter.delimiter, "
+					+ " sc.elementDelimiter.delimiter, "
+					+ " sc.compositeElementDelimiter.delimiter, " 
+					+ " sc.repeatDelimiter.delimiter, "
+					+ " bs.version.versionNumber, "
+					+ " bs.lightWellPartner.testIsaQualifier,"
+					+ " bs.lightWellPartner.testIsaID, "
+					+ " bs.lightWellPartner.testGsId, "
+					+ " bs.lightWellPartner.productionIsaQualifier, "
+					+ " bs.lightWellPartner.productionIsaID, "
+					+ " bs.lightWellPartner.productionGsId, "
+					+ " bs.ackPeriod, "
+					+ " bs.ack, "
+					+ " bs.complianceCheck,"
+					+ " bs.stControlNum,"
+					+ " bs.stAcceptorLookUpAlias,"
+					+ " bs.gsIdVersion,"
+					+ " bs.isaControlNum,"
+					+ " m.mapName, "
+					+ " bs.serviceType.company,"
+					+ " bs.serviceType.partnerCategory ) " 
+					+ " from ServiceSubscription ss join ss.services sc join sc.businessServices bs left join bs.map m"
+					+ " where bs.srId = :srId "
+					+ " and bs.id IN :ids"
+					+ " order by ss.partner.partnerName")												
+	}
+	
+)
+@SQLDelete(sql="UPDATE ABC_TPI_BUSINESS_SERVICE_W SET DELETED = 1 WHERE BUSINESS_SERVICE_ID = ? and VERSION_NUM =? ",callable=false,check=ResultCheckStyle.NONE)
+@Where (clause = "DELETED = 0")
+@Loader(namedQuery="findBusinessServiceWById")
+@NamedQuery(name = "findBusinessServiceWById", query = "SELECT b FROM BusinessServiceW b WHERE b.id = ?1 AND b.deleted = false")
+
+public class BusinessServiceW extends BusinessServiceEntity implements Approvable<BusinessService> {
+
+	@NotNull(message="State value is required")
+	@Column(name="STATE", nullable=false)
+	private ApprovableEntityEnum state = ApprovableEntityEnum.DRAFT;
+	
+	@Column(name="DELETED")
+	private boolean deleted = false;
+	
+	@Override
+	public BusinessService cloneToFInal() {
+		BusinessService clone = new BusinessService();
+		clone.setAck(this.isAck());
+		clone.setAckPeriod(this.getAckPeriod());
+		clone.setComplianceCheck(this.isComplianceCheck());
+		clone.setLightWellPartner(this.getLightWellPartner());	
+		clone.setMap(this.getMap());
+		clone.setNotes(this.getNotes());
+		clone.setProtocol(this.getProtocol());
+		clone.setServiceType(this.getServiceType());
+		clone.setSrId(this.getSrId());
+		clone.setVersion(this.getVersion());
+		return clone;
+	}
+
+	@Override
+	public ApprovableEntityEnum getState() {
+		return this.state;
+	}
+
+	@Override
+	public boolean isDeleted() {	
+		return this.deleted;
+	}
+
+	@Override
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
+	}
+
+	@Override
+	public void setState(ApprovableEntityEnum state) {
+		this.state = state;
+	}
+
+	@Override
+	public BusinessService updateFinal(BusinessService finalObject) {
+		
+		finalObject.setAck(this.isAck());
+		finalObject.setAckPeriod(this.getAckPeriod());
+		finalObject.setComplianceCheck(this.isComplianceCheck());		
+		finalObject.setLightWellPartner(this.getLightWellPartner());				
+		finalObject.setMap(this.getMap());
+		finalObject.setNotes(this.getNotes());
+		finalObject.setProtocol(this.getProtocol());
+		finalObject.setServiceType(this.getServiceType());
+		finalObject.setSrId(this.getSrId());
+		finalObject.setVersion(this.getVersion());				
+		return finalObject;
+	}
+
+	@Override
+	public boolean hasParent() {
+		return true;
+	}
+
+}

@@ -1,0 +1,152 @@
+var ABApp = angular.module('ABApp');
+
+
+ABApp.controller('exportController', function($scope,$modal, $http, $window,$interval,$filter) {
+	
+	
+	$scope.emptyList = [];
+	$scope.items = [];
+	$scope.idrequest=[];
+	$scope.bussidrequest=[];
+	$scope.excelList=[];
+	$scope.getExcel=function(id,bussid,check)
+	{
+		
+			  if (!check) {
+			    $scope.idrequest.push(id);
+			   
+				var tempsc = $filter("filter")($scope.items, {bId:bussid});
+				if(tempsc.length!=0)
+					{
+					
+					$scope.excelList.push(tempsc[0].businessServiceName);
+					tempsc[0].checked=true;
+					angular.forEach($scope.excelList, function (item2){
+					$scope.showOut= item2.indexOf("Out")!=-1;
+					if($scope.showOut!=false)
+						{
+						var tempse = $filter("filter")($scope.excelList, "In");
+						if(tempse.length!=0)
+							{
+						angular.forEach($scope.items, function (item) {
+							if(item.businessServiceName.indexOf("Out")!=-1)
+								{
+						item.checked=false;
+						var index = $scope.excelList.indexOf(item.businessServiceName);
+						$scope.excelList.splice(index, 1);
+						
+								}
+							
+							console.log(item.businessServiceName+" "+item.checked);
+						}
+						);
+							}
+						}
+					else
+						{
+
+						var tempse = $filter("filter")($scope.excelList, "Out");
+						if(tempse.length!=0)
+							{
+						angular.forEach($scope.items, function (item) {
+							if(item.businessServiceName.indexOf("In")!=-1)
+						item.checked=false;
+							
+							var index = $scope.excelList.indexOf(item.businessServiceName);
+							$scope.excelList.splice(index, 1);
+							
+							console.log(item.businessServiceName+" "+item.checked);
+						}
+						);
+							}
+						
+						}
+					});
+					
+				/*	$scope.showOut= $scope.excelList.indexOf("In")==-1;
+					if($scope.showOut!=false)
+						{
+						$scope.showIn= $scope.excelList.indexOf("Out")==-1;
+						if($scope.showIn!=false)
+							{
+						angular.forEach($scope.items, function (item) {
+							if(item.businessServiceName.indexOf("In")!=-1)
+						item.checked=false;
+						}
+						);
+							}
+						}*/
+					}
+			    $scope.bussidrequest.push(bussid);
+			  } else {
+				  var index = $scope.idrequest.indexOf(id);
+				  $scope.idrequest.splice(index, 1);
+				  var index1 = $scope.bussidrequest.indexOf(bussid);
+				  $scope.bussidrequest.splice(index1, 1);
+				  var tempsc = $filter("filter")($scope.items, {bId:bussid});
+					if(tempsc.length!=0)
+						{
+				  var index = $scope.excelList.indexOf(tempsc[0].businessServiceName);
+					$scope.excelList.splice(index, 1);
+						}
+			    // unchecked
+			  }
+			
+		
+	};
+	 $scope.downloadExcel = function () {
+		for(var i=0;i<$scope.idrequest.length;i++) { 
+			  
+
+		 $window.open('/TPIAdmin/app/partnerSubscriptionReportForSrId?id='+$scope.idrequest[i]+'&&bussId='+$scope.bussidrequest[i], '_blank');
+		 
+		 }
+		// $scope.idrequest.length=0;
+		 };
+	$scope.table = function(srid)
+	{
+		 $scope.items = angular.copy($scope.emptyList) ;
+		var tableList=[];
+		 $http.get('/TPIAdmin/app/search?q=businessServiceForSrId&filter='+srid)
+	     .success(function (response, status, headers, config) {
+	    	
+	    	 tableList=angular.copy(response);
+	    	 
+	    	// console.log("inputdata "+JSON.stringify(tempList));
+	     })
+	     .error(function (data, status, header, config) {
+	    	
+	         $scope.ResponseDetails = "Data: " + data +
+	             "<br />status: " + status ;
+	         //    "<br />headers: " + jsonFilter(header) +
+	           //  "<br />config: " + jsonFilter(config);
+	     })
+	     	
+		 .then(function(response) {
+			
+			 angular.forEach(tableList, function (item) {
+				 
+				 try
+				 {var obj=
+				 {       id:item.serviceSubscripionId, 
+						 srId:item.srId,
+						 businessServiceName:item.businessServiceName,
+						 bId:item.businessServiceId,
+						checked:false
+					 };
+				 
+				 $scope.items.push(obj);
+				 }catch(e)
+				 {}
+				
+			 });
+			
+		 
+		 });
+		 console.log("list "+JSON.stringify($scope.items) );
+		 
+	
+	};
+	
+	
+});

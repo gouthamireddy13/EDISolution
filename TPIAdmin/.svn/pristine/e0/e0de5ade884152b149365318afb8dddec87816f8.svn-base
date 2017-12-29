@@ -1,0 +1,487 @@
+<div>
+<div class="dashboard-wrap">
+<div class="breadcrumbs">
+	
+	<h2>Service Subscription</h2>	
+</div>
+</div>	
+<style>input:required:invalid {
+    outline: none;
+}
+</style>
+
+<div style="width:95%;" >
+ <div class="panel panel-default" style="background-color: #404951;" >
+ <div style="padding-top:20px;padding-left:20px;" ng-init="inittpp();initname();inittable();">
+      <div class="panel-heading ">PARTNER NAME</div>
+      </div>
+      <div class="panel-body " style="padding-top:0px; padding-left:20px" >
+      	
+		
+		<input class="form-control" id="panelsearch" type="text" name="search"  ng-model="search.partnerName"> 
+      
+      </div>
+      <div class=" panel-body pull-right col-sm-12" style=" background-color:#59626b ;">	
+
+  
+		  <!-- Trigger the modal with a button -->
+		  <button type="button" class="btn btn-primary pull-right"   data-toggle="modal" data-target="#myModal" id="panelbtn"><img src="assets/AddPartner.png" id="panellogo">&nbsp;&nbsp;&nbsp; NEW SERVICE</button>
+
+</div>
+</div>
+ <table class="table table-striped">
+
+	        <thead id="partnerhead">
+	        <tr>
+	            
+	            <tr>
+	            
+	            <th id="partnerrow"> <a id="sortlink"
+	             ng-click="sortType = 'partnerName'; sortReverse = !sortReverse">PARTNER NAME
+            
+            <span ng-show="sortType == 'partnerName' && !sortReverse" ><img src="assets/up.png" id="sort"></span>
+            <span ng-show="sortType == 'partnerName' && sortReverse" ><img src="assets/down.png" id="sort"></span></a>
+	             </th>
+	            <th id="partnerrow"> <a id="sortlink"
+	             ng-click="sortType = 'serviceCategoryName'; sortReverse = !sortReverse">SERVICE CATEGORY 
+	              <span ng-show="sortType == 'serviceCategoryName' && !sortReverse" ><img src="assets/up.png" id="sort"></span>
+                 <span ng-show="sortType == 'serviceCategoryName' && sortReverse" ><img src="assets/down.png" id="sort"></span></a> </th>
+	        </tr>
+	        </thead>
+	        <tbody>
+	        <tr ng-repeat="item in items  |    orderBy:sortType:sortReverse   |    filter:search " ng-click="" data-toggle="modal" data-target="#myModal"  >
+	       
+	          <td id="partnerrow">{{item.partnerName}}</td>
+	          
+	          <td id="partnerrow">{{item.serviceCategoryName}}</td>
+	        
+	        </tr>
+	        </tbody>
+	      </table>
+	      
+	      </div>
+	      
+	      <!-- Modal -->
+	       
+		  <div class="modal fade" id="myModal" role="dialog"  data-backdrop="static" >
+		    <div class="modal-dialog modal-megamenu" >
+		    <div class="centered">
+		    <div class="modal-content" style="background-color: rgb(240, 240, 240);">
+		    <div class="modal-header" style="background-color:#004c75;">
+		         <!-- <button type="button" class="close" data-dismiss="modal">&times;</button>-->
+				 <h1 class="modal-title" id="modtitle">Service - New Service
+				  <button type="button" class="close" id="close1" ng-click="cleardata();" data-dismiss="modal">&times;</button> </h1>
+		    </div>
+		    <div  class="extra1">
+		    <div class="modal-wrap" style="margin-top:20px;background-color:#fff;">
+		       
+		        <div class="modal-body" style="text-align:left; "> 	
+		         <form name="serviceDetails" class="form-horizontal" autocomplete="off" 
+		         ng-init="findPartner('');inittableList();">	
+		              
+		               
+		              
+					    <div class="row" id="row1">
+					   
+					    <div class="form-group" >
+					     <div class = "col-sm-5 col-md-6 ">
+					      <label class="control-label col-sm-4" id="contactfields1" for="" >Partner Name<font color="red">*</font>:</label>
+					      
+					        <div class="col-sm-8"> 
+					        
+					        <input class="form-control" type="text"   typeahead="item as item.partnerName for item in partnerlist | filter:$viewValue | limitTo:8" id="partnerName" typeahead-editable="false"
+					         name="partnerName"  ng-model="selected"  ng-keypress="partChange(selected);" ng-change="partChange(selected);" typeahead-on-select="partChange(selected);"  required >
+					         
+                              <span style= "color:red;" >{{message}}</span>    
+    
+					          
+					         
+					         <span><font color="red"  ng-show="ErrorMsg&&serviceDetails.partnerName.$error.required">Partner Name is Required</font></span>
+					         </div>
+					      
+					    
+					     </div>
+					   
+					     </div>
+					     </div>
+					     
+					     <div class="row" id="row1">
+					     <div class="form-group" >
+					     <div class="col-sm-5 col-md-6">
+					      <label class="control-label col-sm-4"  id="contactfields1" >Service Category<font color="red">*</font>: </label> 
+					      <div class="col-sm-8">
+							<select class="form-control "   ng-options="item.name as item.name for item in serviceNameList" name="scname" ng-model="scname" ng-disabled="selectAllDisabled" ng-change="disableId(scname);serviceId(scname);"  onmousedown="if(this.options.length>7){this.size=7;}"  onchange='this.size=0;' onblur="this.size=0;" required>
+							
+							<option value="">Please Select</option>
+							</select>
+							 <span><font color="red"  ng-show="ErrorMsg&&serviceDetails.name.$error.required">Service Category is Required</font></span> 
+							</div>
+							</div>
+							</div>
+					    </div>
+					    
+					     <div class="row" id="row1">
+					     <div class="form-group" >
+					     <div class="col-sm-5 col-md-6">
+					      <label class="control-label col-sm-4"  id="contactfields1" >ABC_ID<font color="red">*</font>: </label> 
+					      <div class="col-sm-8">
+							<select class="form-control "   ng-options="item.id as item.display for item in serviceList" name="serviceCategory" ng-model="serviceCategory" ng-disabled="idsDisabled" ng-change="disableServiceC(serviceCategory);" onmousedown="if(this.options.length>7){this.size=7;}"  onchange='this.size=0;' onblur="this.size=0;" required>
+							
+							<option value="">Please Select</option>
+							</select>
+							 <span><font color="red"  ng-show="ErrorMsg&&serviceDetails.serviceCategory.$error.required">ID is Required</font></span> 
+							</div>
+							</div>
+							</div>
+					    </div>
+					    </form>
+					   <div class="titlehead" >   </div> 
+					   <div id="extra" ng-show="ServiceobjList.length!=0" >
+                        <table class="table table-striped"  >
+                         
+                 
+	        <thead id="partnerhead">
+	        <tr>
+	            <th class="row-direction" id="contactrowXY">3PPName</th>
+	            <th class="row-transaction" id="contactrowXY">ISA ID T</th>
+	            <th class="row-version" id="contactrowXY" >ISA ID P</th>
+	            <th class="row-version" id="contactrowXY">ISA QUAL T</th>
+	            <th class="row-version" id="contactrowXY">ISA QUAL P</th>
+	            <th class="row-version" id="contactrowXY">GS ID T</th>
+	            <th class="row-version" id="contactrowXY">GS ID P</th>
+	            <th class="row-version" id="contactrowXY">SegmentDelimiter</th>
+	            <th class="row-version" id="contactrowXY">ElementDelimiter</th>
+	            <th class="row-version" id="contactrowXY">CompositeElementDelimiter</th>
+	            <th class="row-version" id="contactrowXY">BusinessService</th>
+	            <th class="row-version" id="contactrowXY">Version</th>
+	            
+	            <th class="row-action" id="contactrowXY">Action</th> 
+	            
+	            
+	         </tr>
+	        </thead>
+	        
+	        <tbody ng-repeat="item in ServiceobjList">
+	        
+	        <tr  ng-repeat="item1 in item.businessServices" >
+	         
+	          <td id="contactrow">{{item.services.tpp}}</td>
+	          <td id="contactrow">{{item.services.lightWellPartner.testIsaID}}</td>
+	          <td id="contactrow">{{item.services.lightWellPartner.productionIsaID}}</td>
+	          <td id="contactrow">{{item.services.lightWellPartner.testIsaQualifier}}</td>
+	          <td id="contactrow">{{item.services.lightWellPartner.productionIsaQualifier}}</td>
+	          <td id="contactrow">{{item.services.lightWellPartner.testGsId}}</td>
+	          <td id="contactrow">{{item.services.lightWellPartner.productionGsId}}</td>
+	          <td id="contactrow">{{item.services.segmentDelimiter}}</td>
+	          <td id="contactrow">{{item.services.elementDelimiter}}</td>
+	          <td id="contactrow">{{item.services.compositeElementDelimiter}}</td>
+	          <td id="contactrow">{{item1.businessService.businessServiceName}}</td>
+	          <td id="contactrow">{{item1.version.versionNumber}}</td>
+	          
+	          
+	          <td ><a href=""  ng-click="editServiceCategory(item)" > <span class="glyphicon glyphicon-pencil"  ></span></a>&nbsp; 
+	         <a href=""     ng-click="deleteServiceCategory(item1,item)" > <span class="glyphicon glyphicon-remove"  > </span></a></td>  
+	          
+	         </tr>
+	        
+	        </tbody>
+	      
+	     </table>
+	      </div>
+					   
+					   
+					 <form name="linkForm" class="form-horizontal">
+					    <div class="row" id="row2">
+					     <div class="form-group" >
+					     <div class="col-sm-5 col-md-6">
+					        
+					      
+					      <div class="col-sm-4">
+					      <input type="checkbox"  ng-model="selecttpp" ng-disabled="scSelectDisabled || bussServiceList.length>0" id="contactfields1" ng-click="changeSelTpp();"><span style="padding-left:5px;">3PP Name: </span> </div>
+							<div class="col-sm-8">
+							<select  class="form-control"   ng-disabled="enabletppn || bussServiceList.length>0"  ng-options="item.id as item.name for item in ttpNameList" name="tppName" ng-model="tppName" ng-change="select3PPName(tppName);bspList(serviceCategory,tppName);" required>
+							
+							<option value="">Please Select</option>
+							</select>
+							 
+							</div>
+							</div>
+							</div>
+					    </div>
+	
+				
+				
+				<div class="row" id="row2">
+					
+					    <div class="form-group" >
+					 <div class = "col-sm-5 col-md-6 " id="test"><b>Test</b></div>
+					 <div class = "col-sm-5 col-md-6" id="test"><b>Production</b></div>
+					 <div class = "col-sm-5 col-md-6 " id="space">      
+					      <label class="control-label col-sm-4" id="contactfields1" >ISA ID<font color="red">*</font>:</label>
+					         <div class="col-sm-8">
+					         <input class="form-control"  id="isaidt" name="isaidt" ng-model="lightWellPartner.testIsaID" ng-disabled="lightWellPartnerDisabled || scSelectDisabled" required></input>
+					       <span><font color="red"  ng-show="ErrorMsg1&&linkForm.isaidt.$error.required">Test ISA ID is Required</font></span>
+					      </div>
+					      </div>
+					    
+ 
+					   <div class = "col-sm-5 col-md-6 " id="space">
+					      <label class="control-label col-sm-4" id="contactfields1" >ISA ID<font color="red">*</font>:</label>
+					        <div class="col-sm-8">        
+					        <input  class="form-control"  id="Cisaidp" name="isaidp" ng-model="lightWellPartner.productionIsaID" ng-disabled="lightWellPartnerDisabled || scSelectDisabled" required></input>
+					         <span><font color="red"  ng-show="ErrorMsg1&&linkForm.isaidp.$error.required">Production ISA ID is Required</font></span> 
+					      </div>
+					      </div>
+					      </div>
+					      <div class="form-group" >
+					      <div class = "col-sm-5 col-md-6 " id="space">      
+					      <label class="control-label col-sm-4" id="contactfields1" >ISA QUAL<font color="red">*</font>:</label>
+					         <div class="col-sm-8">
+					         <input class="form-control"  id="isaqualt" name="isaqualt" ng-model="lightWellPartner.testIsaQualifier" ng-disabled="lightWellPartnerDisabled || scSelectDisabled"  required></input>
+					     <span><font color="red"  ng-show="ErrorMsg1&&linkForm.isaqualt.$error.required">Test ISA QUAL is Required</font></span>
+					      </div>
+					      </div>
+					      
+					      <div class = "col-sm-5 col-md-6 " id="space">      
+					      <label class="control-label col-sm-4" id="contactfields1" >ISA QUAL<font color="red">*</font>:</label>
+					         <div class="col-sm-8">
+					         <input class="form-control"  id="isaqualp" name="isaqualp" ng-model="lightWellPartner.productionIsaQualifier" ng-disabled="lightWellPartnerDisabled || scSelectDisabled" required></input>
+					       <span><font color="red"  ng-show="ErrorMsg1&&linkForm.isaqualp.$error.required">Production ISA QUAL is Required</font></span>
+					      </div>
+					      </div>
+					      </div>
+					      
+					       <div class="form-group" >
+					      <div class = "col-sm-5 col-md-6 " id="space1">      
+					      <label class="control-label col-sm-4" id="contactfields1" >GS ID<font color="red">*</font>:</label>
+					         <div class="col-sm-8">
+					         <input class="form-control"  id="gsidt" name="gsidt" ng-model="lightWellPartner.testGsId" ng-disabled="lightWellPartnerDisabled || scSelectDisabled" required></input>
+					      <span><font color="red"  ng-show="ErrorMsg1&&linkForm.gsidt.$error.required">Test GS ID is Required</font></span>
+					      </div>
+					      </div>
+					      
+					      <div class = "col-sm-5 col-md-6 " id="space1">      
+					      <label class="control-label col-sm-4" id="contactfields1" >GS ID<font color="red">*</font>:</label>
+					         <div class="col-sm-8">
+					         <input class="form-control"  id="gsidp" name="gsidp" ng-model="lightWellPartner.productionGsId" ng-disabled="lightWellPartnerDisabled || scSelectDisabled" required></input>
+					      <span><font color="red"  ng-show="ErrorMsg1&&linkForm.gsidp.$error.required">Production GS ID is Required</font></span>
+					      </div>
+					      </div>
+					      </div>
+					     
+					      </div>
+					   
+					      <div class="row" id="row2">
+						<div class="form-group">
+					      <div class="col-6 col-md-4">
+					      <label class="control-label" id="contactfields1">Segment Delimiter<font color="red">*</font>: </label> 
+					     
+							<select class="form-control"  ng-options="item.id as item.delimiter for item  in delimitersSList" name="segmentDelimiter" ng-disabled="scSelectDisabled" ng-model="segmentDelimiter" onmousedown="if(this.options.length>7){this.size=7;}"  onchange='this.size=0;' onblur="this.size=0;" required>
+							<option value="">Please Select</option>
+							</select>
+							  <span><font color="red"  ng-show="ErrorMsg1&&linkForm.segmentDelimiter.$error.required">Segment Delimiter is Required</font></span>  
+							</div>
+
+					<div class="col-6 col-md-4">
+					 <label class="control-label" id="contactfields1">Element Delimiter<font color="red">*</font>: </label> 
+					     
+							<select class="form-control "   ng-options="item.id as item.delimiter for item in delimitersEList" name="elementDelimiter" ng-disabled="scSelectDisabled" ng-model="elementDelimiter" onmousedown="if(this.options.length>7){this.size=7;}"  onchange='this.size=0;' onblur="this.size=0;" required>
+							<option value="">Please Select</option>
+							</select>
+							  <span><font color="red"  ng-show="ErrorMsg1&&linkForm.elementDelimiter.$error.required">Element Delimiter is Required</font></span> 
+							</div>
+							
+					<div class="col-6 col-md-4">
+					 <label class="control-label" id="contactfields1">Composite Element Delimiter<font color="red">*</font>: </label> 
+					     
+							<select class="form-control "   ng-options="item.id as item.delimiter for item in delimitersCList" name="compositeDelimiter" ng-disabled="scSelectDisabled" ng-model="compositeDelimiter" onmousedown="if(this.options.length>7){this.size=7;}"  onchange='this.size=0;' onblur="this.size=0;" required>
+							<option value="">Please Select</option>
+							</select>
+							  <span><font color="red"  ng-show="ErrorMsg1&&linkForm.compositeDelimiter.$error.required">Composite Element Delimiter is Required</font></span>  
+							</div>
+					      </div>
+					      </div>
+					      </form>
+					      
+					 
+		      
+				
+				
+				 
+		      <div class="titlehead" >   </div>
+		      
+		      	     <div id="extra2" ng-show="bussServiceList.length!=0">
+                        <table class="table table-striped "   style="table-layout: fixed;">
+                         
+                 
+	        <thead id="partnerhead">
+	        <tr>
+	            <th class="row-direction">Business Service</th>
+	            <th class="row-transaction">Version</th>
+	          <!--   <th class="row-version">Protocol</th> --> 
+	             <th class="row-action">Action</th>
+	            
+	            
+	         </tr>
+	        </thead>
+	        
+	        <tbody>
+	        
+	        <tr ng-repeat="item in bussServiceList">
+	          
+	          <td id="contactrow">{{item.businessService.businessServiceName}}</td>
+	          <td id="contactrow">{{item.version.versionNumber}}</td>
+	          <td><a href="" ng-click="editBService(item)"  ng-show="!upbsbt&&!hideEdit" > <span class="glyphicon glyphicon-pencil"  ></span></a>&nbsp; 
+	         <a href="" ng-click="deleteBService(item)"  ng-show="!upbsbt&&!hideEdit" > <span class="glyphicon glyphicon-remove"  >
+	          
+	          </span></a></td> 
+	          
+	            
+	          
+	         
+	        </tr>
+	        </tbody>
+	       
+	     </table>
+	      </div>
+				<form name ="serviceForm">
+				<div class="row" id="row2">
+						<div class="form-group">
+					      
+
+					<div class="col-6 col-md-4">
+					 <label class="control-label" id="contactfields1">Business Service<font color="red">*</font>: </label> 
+					     
+							<select class="form-control "   ng-options="item.id as item.businessServiceName for item in bserviceList" name="businessService" ng-disabled="scSelectDisabled" ng-model="bussService.businessService"  required>
+							<option value="">Please Select</option>
+							</select>
+							  <span><font color="red"  ng-show="servError&&serviceForm.businessService.$error.required">Business Service is Required</font></span> 
+							</div>
+							
+					<div class="col-6 col-md-4">
+					 <label class="control-label" id="contactfields1">Version<font color="red">*</font>: </label> 
+					     
+							<select class="form-control "   ng-options="item.id as item.versionNumber for item in versionList" name="version" ng-disabled="scSelectDisabled" ng-model="bussService.version" required>
+							<option value="">Please Select</option>
+							</select>
+							  <span><font color="red"  ng-show="servError&&serviceForm.version.$error.required">Version is Required</font></span>  
+							</div>
+				<!--  <div class="col-6 col-md-4">
+					 <label class="control-label" id="contactfields1">Protocol<font color="red">*</font>: </label> 
+					     
+							<select class="form-control "   ng-options="item.id as item.documentType for item in ttypeList" name="protocol" ng-disabled="scSelectDisabled" ng-model="protocol" required>
+							<option value="">Please Select</option>
+							</select>
+							  <span><font color="red"  ng-show="ErrorMsgS&&serviceForm.protocol.$error.required">Protocol is Required</font></span> 
+							</div>  -->   
+					      
+					      </div>
+					      </div>
+		<div class="wrapper" id="addTrans" ng-show="!upbsbt" >
+				
+		        	 <button type="submit" class="btn btn-primary pull-right" id="primary" ng-disabled="hideEdit || scSelectDisabled"  ng-click="addBusinessService(serviceForm.$valid,bussService)" formnovalidate>ADD BUSINESS SERVICE</button> 
+					 <div class="divider" ></div>
+					 
+		      
+				</div>
+			<div class="wrapper" id="addTrans" ng-show="upbsbt">
+				
+		        	 <button type="submit" class="btn btn-default pull-right" id="warning" ng-click="revertBusinessServiceAll();"  formnovalidate>CANCEL</button> <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
+		        	 <button type="submit" class="btn btn-primary pull-right" style="font-size:10px;font-weight:400;margin-right: 6px;" ng-click="addBusinessService(serviceForm.$valid,bussService)" formnovalidate>UPDATE BUSINESS SERVICE</button> 
+					   
+					 <div class="divider" ></div>
+					 </div> 
+				
+				
+				<div class="titlehead" >   </div> 	
+		<div class="wrapper" id="addTrans" ng-show="!upgrbt" >
+				
+		        	 <button type="submit" class="btn btn-primary pull-right" id="primary" ng-disabled="bussServiceList.length<1 || upbsbt"  ng-click="addServiceCategory(linkForm.$valid);" formnovalidate>ADD GROUP</button> 
+					 <div class="divider" ></div>		
+		
+									      
+				</div>
+				
+				<div class="wrapper" id="addTrans" ng-show="upgrbt">
+				
+		        	 <button type="submit" class="btn btn-default pull-right" id="warning" ng-click="" ng-disabled="upbsbt" formnovalidate>CANCEL</button> <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
+		        	 <button type="submit" class="btn btn-primary pull-right" style="font-size:10px;font-weight:400;margin-right: 6px;" ng-disabled="upbsbt" ng-click="addServiceCategory(linkForm.$valid);" formnovalidate>UPDATE GROUP</button> 
+					   
+					 <div class="divider" ></div>
+					 </div> 
+				 
+				 </form>
+				</div>	
+				</div>
+				</div>
+		        <div class="modal-footer" style="text-align:center;">
+		        	 <button type="button" class="btn btn-primary pull-left" id="primary"  ng-show="!hideEdit" ng-disabled="ServiceobjList.length<1 || upgrbt || upbsbt" ng-click="saveSS();">SAVE</button>
+		           
+		        	   
+		          <button type="button" class="btn btn-default pull-right" id="warning" ng-click="cleadata();" data-dismiss="modal">CANCEL</button>
+		        </div>
+		      		      
+		    </div>
+		  </div>
+		  </div>
+		  </div>
+		  <script type="text/ng-template" id="myModalContent.html">
+    
+   
+		   
+       
+            <div class="modal-content" style="background-color: #f0f0f0 ;height:auto;" >
+                <div class="modal-header" style="background-color:#004c75;">
+                    <h1 class="modal-title" id="modtitle"> 3PP 
+                    <button type="button" class="close" data-dismiss="modal" ng-click="cancel()" style="color: #fff; font-weight: 400; font-size: 24px;" aria-hidden="true">&times;</button> </h1>
+                    
+                </div>
+               
+<div class="modal-body" style="border: 1px solid;margin:15px;background-color:#fff; text-align:center;  " >
+              <span style="font-family:arial;font-weight:700;"><b> {{user.msg}} </b> </span>
+ </div>
+
+               <div class="modal-footer">
+                    <button type="button" class="btn btn-primary pull-left"   id="primary" ng-click="cancel(user.del,user.edit)">OK</button>
+<button type="button" class="btn btn-default pull-right" ng-show="user.edit||user.del"   id="warning" ng-click="close(false)">CANCEL</button>
+
+   </div>     
+     
+            </div><!-- /.modal-content -->
+       
+     
+      
+    
+		</script>  
+		  </div>				    
+					   
+					    
+					    
+					    
+                        
+                     
+                 
+
+	      
+	      
+	      
+					
+					   
+					   
+		         
+				 
+		      
+					      
+					      
+		      
+				
+				
+				
+				
+		
+				
+	     
+	      
+				
+				 
+		  

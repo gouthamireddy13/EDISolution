@@ -1,0 +1,28 @@
+var ABApp = angular.module('ABApp');
+
+
+ABApp.controller('serviceController', function($scope,$modal, $http, $window) {
+	$scope.tpplist=[];
+	$scope.inittpp = function()
+	{
+		
+		
+		
+		 $http.get('/TPIAdmin/app/tpps')
+	     .success(function (response, status, headers, config) {
+	    	 $scope.tpplist = angular.copy(response);
+	    	// console.log(JSON.stringify($scope.tpplist));
+	     })
+	     .error(function (data, status, header, config) {
+	         $scope.ResponseDetails = "Data: " + data +
+	             "<br />status: " + status ;
+	         //    "<br />headers: " + jsonFilter(header) +
+	           //  "<br />config: " + jsonFilter(config);
+	     })
+		 .then(function(response) {
+		        $scope.myWelcome = response.data;
+		    });
+		 };
+						
+						
+});

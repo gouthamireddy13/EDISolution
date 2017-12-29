@@ -1,0 +1,39 @@
+package com.abc.tpi.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.abc.tpi.model.reporting.PartnerSubscriptionRecord;
+import com.abc.tpi.repository.BusinessServiceRepository;
+
+@Service
+public class ReportingServiceImpl implements ReportingService 
+{	
+	@Autowired
+	BusinessServiceRepository businessServiceRepository;
+
+	@Override
+	public List<PartnerSubscriptionRecord> getPartnerSubscriptionRecordsByServiceSubscriptionId(long serviceSubscriptionId) 
+	{
+		return businessServiceRepository.namedInEnvelopeByServiceSubscriptionId(serviceSubscriptionId);
+	}
+	
+	@Override
+	public List<PartnerSubscriptionRecord> getPartnerSubscriptionRecordsBySrId(String srId) 
+	{
+		return businessServiceRepository.namedInEnvelopeBySrId(srId);
+	}
+
+	@Override
+	public List<PartnerSubscriptionRecord> getPartnerSubscriptionRecordsBySrIdBusinessSrvcId(String srId,
+			List<Long> businessServiceIds) {		
+		return businessServiceRepository.namedInEnvelopeBySrIdBusinessServiceIds(srId,businessServiceIds);
+	}
+
+	@Override
+	public List<PartnerSubscriptionRecord> getPartnerSubscriptionRecordsByPartnerName(String partnerName) {		
+		return businessServiceRepository.namedInEnvelopeByPartnerName(partnerName);
+	}
+}

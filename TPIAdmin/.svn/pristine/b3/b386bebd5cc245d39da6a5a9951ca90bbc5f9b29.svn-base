@@ -1,0 +1,148 @@
+package com.abc.tpi.controller;
+
+import java.util.List;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.abc.tpi.common.exceptions.TpiRepositoryException;
+import com.abc.tpi.model.migrator.ServiceSubscriptionApprovalReview;
+import com.abc.tpi.service.migrator.MigratorDataService;
+
+@RestController
+@RequestMapping("/migrate")
+public class MigrationControllerRest {
+
+	@Autowired
+	MigratorDataService migratorService;
+	
+	private static final Logger logger = LogManager.getLogger(MigrationControllerRest.class);
+	
+	@RequestMapping(method = {RequestMethod.GET})
+	public ResponseEntity<List<ServiceSubscriptionApprovalReview>> getSearchResults(@RequestParam(name="srId",required=true) String sriId)
+											  throws TpiRepositoryException 
+	{
+		List<ServiceSubscriptionApprovalReview> result = migratorService.getApprovalReviewForSriId(sriId);
+		return ResponseEntity.status(HttpStatus.OK).body(result);
+	}
+	/*
+	@RequestMapping(method = {RequestMethod.GET})
+	public ResponseEntity<List<com.abc.tpi.model.migrator.json.Subscription>> getSearchResults(@RequestParam(name="srId",required=true) String sriId)
+											  throws TpiRepositoryException 
+	{
+
+		ArrayList<com.abc.tpi.model.migrator.json.Subscription> result = new ArrayList<com.abc.tpi.model.migrator.json.Subscription>();
+		Service service = null;
+		BusinessService bs = new BusinessService();
+		
+		com.abc.tpi.model.migrator.json.Subscription subscription = null;
+		logger.debug("Executing getSearchResults() for " + sriId);
+
+		subscription = new Subscription();
+		
+		subscription.setName("Test Service Subscription");
+		subscription.setNew(false);
+		subscription.setObjectId(12345);
+		subscription.setSrId("SR 12345");
+		subscription.setToBeApproved(false);
+		subscription.setApproved(true);
+		
+		subscription.setServices(new ArrayList<Service>());
+		
+		service = new Service();
+		service.setNew(false);
+		service.setObjectId(111111);
+		service.setSrId("SR 12345");
+		service.setToBeApproved(true);
+		service.setApproved(false);
+		service.setName("Test Service One");
+		
+		subscription.getServices().add(service);
+		
+		bs = new BusinessService();
+		
+		bs.setNew(false);
+		bs.setObjectId(111111);
+		bs.setSrId("SR 56789");
+		bs.setToBeApproved(false);
+		bs.setApproved(true);
+		bs.setName("Test Business Service One");
+		
+		service.setBusinessServices(new ArrayList<BusinessService>());
+		service.getBusinessServices().add(bs);
+		
+		bs = new BusinessService();
+		
+		bs.setNew(false);
+		bs.setObjectId(222222);
+		bs.setSrId("SR 56789");
+		bs.setToBeApproved(false);
+		bs.setApproved(true);
+		bs.setName("Test Business Service Two");
+		
+		service.getBusinessServices().add(bs);
+		
+		subscription.getServices().add(service);
+		
+		result.add(subscription);
+
+		
+		subscription = new Subscription();
+		
+		subscription.setName("Test Service Subscription Two");
+		subscription.setNew(false);
+		subscription.setObjectId(12345);
+		subscription.setSrId("SR 12345");
+		subscription.setToBeApproved(false);
+		subscription.setApproved(true);
+		
+		subscription.setServices(new ArrayList<Service>());
+		
+		service = new Service();
+		service.setNew(false);
+		service.setObjectId(111111);
+		service.setSrId("SR 12345");
+		service.setToBeApproved(true);
+		service.setApproved(false);
+		service.setName("Test Service One");
+		
+		subscription.getServices().add(service);
+		
+		bs = new BusinessService();
+		
+		bs.setNew(false);
+		bs.setObjectId(111111);
+		bs.setSrId("SR 56789");
+		bs.setToBeApproved(false);
+		bs.setApproved(true);
+		bs.setName("Test Business Service Three");
+		
+		service.setBusinessServices(new ArrayList<BusinessService>());
+		service.getBusinessServices().add(bs);
+		
+		bs = new BusinessService();
+		
+		bs.setNew(false);
+		bs.setObjectId(222222);
+		bs.setSrId("SR 56789");
+		bs.setToBeApproved(false);
+		bs.setApproved(true);
+		bs.setName("Test Business Service Four");
+		
+		service.getBusinessServices().add(bs);
+		
+		subscription.getServices().add(service);
+		
+		result.add(subscription);
+		
+		return ResponseEntity.status(HttpStatus.OK).body(result);
+	}*/
+
+}

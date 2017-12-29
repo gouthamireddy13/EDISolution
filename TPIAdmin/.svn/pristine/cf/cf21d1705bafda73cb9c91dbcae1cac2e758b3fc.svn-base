@@ -1,0 +1,2 @@
+#Default parent view.
+partnerSubscriptionReport.(class)=com.abc.tpi.view.excel.ExcelPartnerSubscriptionReport

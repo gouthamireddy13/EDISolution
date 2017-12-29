@@ -1,0 +1,14 @@
+package com.abc.tpi.service;
+import java.util.List;
+
+import com.abc.tpi.model.reporting.LightWellPartnerRecord;
+import com.abc.tpi.model.reporting.PartnerSubscriptionRecord;
+
+public interface ReportingService {
+	List<PartnerSubscriptionRecord> getPartnerSubscriptionRecordsByServiceSubscriptionId(long serviceSubscriptionId);
+	List<PartnerSubscriptionRecord> getPartnerSubscriptionRecordsByPartnerName(String partnerName);
+	List<PartnerSubscriptionRecord> getPartnerSubscriptionRecordsBySrId(String srId);
+	List<PartnerSubscriptionRecord> getPartnerSubscriptionRecordsBySrIdBusinessSrvcId(String srId, List<Long> businessServiceIds);
+	List<LightWellPartnerRecord> getLightWellIdentityForLwIds(List<Long>lwIds);
+	
+}

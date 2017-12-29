@@ -1,0 +1,10 @@
+package com.abc.tpi.service;
+
+import java.util.List;
+
+import com.abc.tpi.model.service.ServiceType;
+
+public interface ServiceSubscriptionService {
+
+	List<ServiceType> getBusinessServiceForTppAndServiceCat(long serviceCategoryId , long tppId);
+}
